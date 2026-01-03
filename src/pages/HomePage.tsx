@@ -10,10 +10,21 @@ export default function HomePage() {
     const { t } = useTranslation()
     const [plots, setPlots] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [isAdmin, setIsAdmin] = useState(false)
 
     useEffect(() => {
+        checkAuth()
         fetchPlots()
     }, [])
+
+    async function checkAuth() {
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            setIsAdmin(user?.user_metadata?.role === 'admin')
+        } catch (error) {
+            setIsAdmin(false)
+        }
+    }
 
     async function fetchPlots() {
         try {
@@ -65,15 +76,17 @@ export default function HomePage() {
                             {t('gallery.title')}
                         </Link>
                         <LanguageSwitcher />
-                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                            <Link
-                                to="/admin"
-                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 shadow-sm"
-                            >
-                                <LayoutDashboard className="h-4 w-4" />
-                                <span className="hidden sm:inline">{t('common.dashboard')}</span>
-                            </Link>
-                        </motion.div>
+                        {isAdmin && (
+                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Link
+                                    to="/admin"
+                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 shadow-sm"
+                                >
+                                    <LayoutDashboard className="h-4 w-4" />
+                                    <span className="hidden sm:inline">{t('common.dashboard')}</span>
+                                </Link>
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </header>
