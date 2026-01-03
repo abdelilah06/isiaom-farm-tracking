@@ -1,0 +1,134 @@
+{
+    "common": {
+        "dashboard": "لوحة التحكم",
+        "home": "الرئيسية",
+        "loading": "جاري التحميل...",
+        "save": "حفظ",
+        "cancel": "إلغاء",
+        "add": "إضافة",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "success": "تم بنجاح!",
+        "error": "حدث خطأ!",
+        "analytics": "التحليلات",
+        "days": "أيام"
+    },
+    "offline": {
+        "you_are_offline": "أنت غير متصل بالإنترنت",
+        "last_sync": "آخر مزامنة",
+        "syncing": "جاري المزامنة",
+        "synced": "تمت المزامنة بنجاح",
+        "offline_mode": "وضع عدم الاتصال"
+    },
+    "gallery": {
+        "title": "معرض ضيعة ISIAOM",
+        "subtitle": "استكشف جميع قطعنا الزراعية",
+        "search_placeholder": "البحث عن القطع...",
+        "filter_crop": "تصفية حسب المحصول",
+        "filter_status": "الحالة",
+        "sort_by": "ترتيب حسب",
+        "sort_area": "المساحة",
+        "sort_name": "الاسم",
+        "sort_date": "تاريخ الإضافة",
+        "view_details": "عرض التفاصيل",
+        "last_op": "آخر عملية",
+        "ops_month": "عمليات هذا الشهر",
+        "no_plots": "لم يتم العثور على قطع تطابق اختياراتك.",
+        "back_home": "العودة للرئيسية"
+    },
+    "dashboard": {
+        "title": "إدارة الضيعة",
+        "subtitle": "إدارة القطع والعمليات",
+        "add_plot": "إضافة قطعة",
+        "active": "نشط",
+        "harvested": "محصود",
+        "log_operation": "تسجيل عملية",
+        "qr_code": "رمز QR",
+        "total_plots": "إجمالي القطع",
+        "ops_this_month": "عمليات هذا الشهر",
+        "irrigation_7d": "سقي (7 أيام)",
+        "search_placeholder": "ابحث عن قطعة (اسم أو ID)...",
+        "filter_all": "الكل",
+        "filter_status": "الحالة",
+        "clear_filters": "مسح الفلاتر",
+        "no_results": "لم يتم العثور على نتائج تطابق معايير البحث.",
+        "no_plots": "لا توجد قطع أرض مسجلة بعد. ابدأ بإضافة قطعة جديدة!",
+        "no_plots_desc": "اضغط على زر إضافة قطعة للبدء في تتبع ضيعتك.",
+        "no_results_desc": "جرب تغيير كلمات البحث أو الفلاتر للعثور على ما تبحث عنه.",
+        "reset_btn": "إعادة تعيين البحث"
+    },
+    "add_plot": {
+        "title": "إضافة قطعة جديدة",
+        "basic_info": "معلومات أساسية",
+        "plot_id": "رمز القطعة (ID)",
+        "plot_name": "اسم القطعة",
+        "crop_variety": "نوع المحصول",
+        "area": "المساحة (م²)",
+        "tree_spacing_row": "المسافة بين الأشجار (م)",
+        "tree_spacing_between": "المسافة بين الصفوف (م)",
+        "plant_count": "عدد النباتات",
+        "training_method": "طريقة التربية",
+        "methods": {
+            "goblet": "كأسية (Goblet)",
+            "central_axis": "محور مركزي (Central Axis)",
+            "espalier": "سياجية (Espalier)"
+        },
+        "planting_date": "تاريخ الغرس",
+        "illustration": "صورة توضيحية",
+        "select_image": "اختر صورة للقطعة",
+        "submit": "إضافة القطعة"
+    },
+    "quick_log": {
+        "title": "تسجيل عملية جديدة",
+        "operation_type": "نوع العملية",
+        "notes": "ملاحظات (اختياري)",
+        "photo_proof": "توثيق بالصورة (اختياري)",
+        "submit": "حفظ العملية",
+        "types": {
+            "irrigation": "سقي (Irrigation)",
+            "fertilization": "تسميد (Fertilization)",
+            "pest_control": "معالجة (Pest Control)",
+            "pruning": "تقليم (Pruning)",
+            "harvest": "حصاد (Harvest)",
+            "observation": "مراقبة (Observation)",
+            "planting": "غرس (Planting)",
+            "other": "أخرى (Other)"
+        }
+    },
+    "public_plot": {
+        "not_found": "عفواً! لم يتم العثور على القطعة",
+        "crop": "المحصول",
+        "area": "المساحة",
+        "date": "التاريخ",
+        "spacing": "مسافة الغرس",
+        "plant_count": "عدد النباتات",
+        "training_method": "طريقة التربية",
+        "plant_unit": "نبتة",
+        "timeline": "سجل العمليات",
+        "no_operations": "لا توجد عمليات مسجلة.",
+        "share_qr": "مشاركة / رمز QR"
+    },
+    "analytics": {
+        "title": "لوحة البيانات التحليلية",
+        "total_plots": "إجمالي القطع",
+        "total_operations": "إجمالي العمليات",
+        "avg_ops_per_plot": "متوسط العمليات لكل قطعة",
+        "last_operation": "آخر عملية",
+        "ops_over_time": "العمليات بمرور الوقت (30 يومًا)",
+        "ops_by_type": "العمليات حسب النوع",
+        "ops_per_plot": "العمليات لكل قطعة",
+        "plot_status_dist": "توزيع حالة القطع",
+        "recent_activities": "الأنشطة الأخيرة",
+        "filters": {
+            "date_range": "النطاق الزمني",
+            "all_types": "جميع الأنواع",
+            "all_plots": "جميع القطع"
+        },
+        "table": {
+            "plot": "القطعة",
+            "type": "النوع",
+            "date": "التاريخ",
+            "notes": "ملاحظات"
+        }
+    }
+}

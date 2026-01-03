@@ -1,0 +1,134 @@
+{
+    "common": {
+        "dashboard": "Tableau de bord",
+        "home": "Accueil",
+        "loading": "Chargement...",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "add": "Ajouter",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "success": "Succès!",
+        "error": "Une erreur est survenue!",
+        "analytics": "Analyses",
+        "days": "Jours"
+    },
+    "offline": {
+        "you_are_offline": "Vous êtes hors ligne",
+        "last_sync": "Dernière synchro",
+        "syncing": "Synchronisation",
+        "synced": "Synchronisé avec succès",
+        "offline_mode": "Mode hors ligne"
+    },
+    "gallery": {
+        "title": "Galerie de la Ferme ISIAOM",
+        "subtitle": "Explorez toutes nos parcelles agricoles",
+        "search_placeholder": "Rechercher des parcelles...",
+        "filter_crop": "Filtrer par culture",
+        "filter_status": "Statut",
+        "sort_by": "Trier par",
+        "sort_area": "Surface",
+        "sort_name": "Nom",
+        "sort_date": "Date d'ajout",
+        "view_details": "Voir Détails",
+        "last_op": "Dernière op",
+        "ops_month": "ops ce mois",
+        "no_plots": "Aucune parcelle ne correspond à vos filtres.",
+        "back_home": "Retour à l'accueil"
+    },
+    "dashboard": {
+        "title": "Gestion de la Ferme",
+        "subtitle": "Gestion des parcelles et opérations",
+        "add_plot": "Ajouter parcelle",
+        "active": "Actif",
+        "harvested": "Récolté",
+        "log_operation": "Enregistrer op.",
+        "qr_code": "Code QR",
+        "total_plots": "Total des parcelles",
+        "ops_this_month": "Opérations ce mois-ci",
+        "irrigation_7d": "Irrigation (7j)",
+        "search_placeholder": "Rechercher une parcelle (nom ou ID)...",
+        "filter_all": "Tous",
+        "filter_status": "Statut",
+        "clear_filters": "Effacer les filtres",
+        "no_results": "Aucun résultat ne correspond à votre recherche.",
+        "no_plots": "Aucune parcelle enregistrée pour le moment. Commencez par en ajouter une !",
+        "no_plots_desc": "Cliquez sur le bouton Ajouter une parcelle pour commencer à suivre votre exploitation.",
+        "no_results_desc": "Essayez de modifier vos termes de recherche ou vos filtres pour trouver ce que vous cherchez.",
+        "reset_btn": "Réinitialiser les filtres"
+    },
+    "add_plot": {
+        "title": "Ajouter une nouvelle parcelle",
+        "basic_info": "Informations de base",
+        "plot_id": "ID de la parcelle",
+        "plot_name": "Nom de la parcelle",
+        "crop_variety": "Variété de culture",
+        "area": "Surface (m²)",
+        "tree_spacing_row": "Espacement (Sur rang) (m)",
+        "tree_spacing_between": "Espacement (Entre rangs) (m)",
+        "plant_count": "Nombre de plants",
+        "training_method": "Mode de conduite",
+        "methods": {
+            "goblet": "Gobelet",
+            "central_axis": "Axe central",
+            "espalier": "Espalier"
+        },
+        "planting_date": "Date de plantation",
+        "illustration": "Illustration",
+        "select_image": "Choisir une image",
+        "submit": "Ajouter la parcelle"
+    },
+    "quick_log": {
+        "title": "Enregistrer une opération",
+        "operation_type": "Type d'opération",
+        "notes": "Notes (optionnel)",
+        "photo_proof": "Photo de preuve (optionnel)",
+        "submit": "Enregistrer l'opération",
+        "types": {
+            "irrigation": "Irrigation",
+            "fertilization": "Fertilisation",
+            "pest_control": "Lutte antiparasitaire",
+            "pruning": "Taille",
+            "harvest": "Récolte",
+            "observation": "Observation",
+            "planting": "Plantation",
+            "other": "Autre"
+        }
+    },
+    "public_plot": {
+        "not_found": "Désolé ! Parcelle non trouvée",
+        "crop": "Culture",
+        "area": "Surface",
+        "date": "Date",
+        "spacing": "Espacement",
+        "plant_count": "Nombre de plants",
+        "training_method": "Mode de conduite",
+        "plant_unit": "plante",
+        "timeline": "Historique des opérations",
+        "no_operations": "Aucune opération enregistrée pour le moment.",
+        "share_qr": "Partager / QR"
+    },
+    "analytics": {
+        "title": "Tableau de Bord Analytique",
+        "total_plots": "Total des Parcelles",
+        "total_operations": "Total des Opérations",
+        "avg_ops_per_plot": "Moy. Opérations / Parcelle",
+        "last_operation": "Dernière Opération",
+        "ops_over_time": "Opérations au fil du Temps (30 jours)",
+        "ops_by_type": "Opérations par Type",
+        "ops_per_plot": "Opérations par Parcelle",
+        "plot_status_dist": "Distribution du Statut des Parcelles",
+        "recent_activities": "Activités Récentes",
+        "filters": {
+            "date_range": "Plage de Dates",
+            "all_types": "Tous les Types",
+            "all_plots": "Toutes les Parcelles"
+        },
+        "table": {
+            "plot": "Parcelle",
+            "type": "Type",
+            "date": "Date",
+            "notes": "Notes"
+        }
+    }
+}

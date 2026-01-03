@@ -1,0 +1,134 @@
+{
+    "common": {
+        "dashboard": "Dashboard",
+        "home": "Home",
+        "loading": "Loading...",
+        "save": "Save",
+        "cancel": "Cancel",
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete",
+        "success": "Success!",
+        "error": "An error occurred!",
+        "analytics": "Analytics",
+        "days": "Days"
+    },
+    "offline": {
+        "you_are_offline": "You are offline",
+        "last_sync": "Last sync",
+        "syncing": "Syncing",
+        "synced": "Synced successfully",
+        "offline_mode": "Offline Mode"
+    },
+    "gallery": {
+        "title": "ISIAOM Farm Gallery",
+        "subtitle": "Explore all our agricultural plots",
+        "search_placeholder": "Search plots...",
+        "filter_crop": "Filter by Crop",
+        "filter_status": "Status",
+        "sort_by": "Sort by",
+        "sort_area": "Area",
+        "sort_name": "Name",
+        "sort_date": "Date Added",
+        "view_details": "View Details",
+        "last_op": "Last op",
+        "ops_month": "ops this month",
+        "no_plots": "No plots found matching your filters.",
+        "back_home": "Back to Home"
+    },
+    "dashboard": {
+        "title": "Farm Management",
+        "subtitle": "Manage plots and operations",
+        "add_plot": "Add Plot",
+        "active": "Active",
+        "harvested": "Harvested",
+        "log_operation": "Log Op.",
+        "qr_code": "QR Code",
+        "total_plots": "Total Plots",
+        "ops_this_month": "Ops this Month",
+        "irrigation_7d": "Irrigation (7d)",
+        "search_placeholder": "Search plot (name or ID)...",
+        "filter_all": "All",
+        "filter_status": "Status",
+        "clear_filters": "Clear Filters",
+        "no_results": "No results match your search criteria.",
+        "no_plots": "No plots registered yet. Start by adding a new one!",
+        "no_plots_desc": "Click the Add Plot button to start tracking your farm.",
+        "no_results_desc": "Try changing your search terms or filters to find what you're looking for.",
+        "reset_btn": "Reset Filters"
+    },
+    "add_plot": {
+        "title": "Add New Plot",
+        "basic_info": "Basic Information",
+        "plot_id": "Plot ID",
+        "plot_name": "Plot Name",
+        "crop_variety": "Crop Variety",
+        "area": "Area (m²)",
+        "tree_spacing_row": "Tree Spacing (Row) (m)",
+        "tree_spacing_between": "Tree Spacing (Between) (m)",
+        "plant_count": "Plant Count",
+        "training_method": "Training Method",
+        "methods": {
+            "goblet": "Goblet",
+            "central_axis": "Central Axis",
+            "espalier": "Espalier"
+        },
+        "planting_date": "Planting Date",
+        "illustration": "Illustration",
+        "select_image": "Select Plot Image",
+        "submit": "Add Plot"
+    },
+    "quick_log": {
+        "title": "Log New Operation",
+        "operation_type": "Operation Type",
+        "notes": "Notes (optional)",
+        "photo_proof": "Photo Proof (optional)",
+        "submit": "Save Operation",
+        "types": {
+            "irrigation": "Irrigation",
+            "fertilization": "Fertilization",
+            "pest_control": "Pest Control",
+            "pruning": "Pruning",
+            "harvest": "Harvest",
+            "observation": "Observation",
+            "planting": "Planting",
+            "other": "Other"
+        }
+    },
+    "public_plot": {
+        "not_found": "Sorry! Plot not found",
+        "crop": "Crop",
+        "area": "Area",
+        "date": "Date",
+        "spacing": "Planting Spacing",
+        "plant_count": "Plant Count",
+        "training_method": "Training Method",
+        "plant_unit": "plant",
+        "timeline": "Activity Log",
+        "no_operations": "No operations recorded yet.",
+        "share_qr": "Share / QR"
+    },
+    "analytics": {
+        "title": "Analytics Dashboard",
+        "total_plots": "Total Plots",
+        "total_operations": "Total Operations",
+        "avg_ops_per_plot": "Avg Ops / Plot",
+        "last_operation": "Last Operation",
+        "ops_over_time": "Operations Over Time (30 days)",
+        "ops_by_type": "Operations by Type",
+        "ops_per_plot": "Operations per Plot",
+        "plot_status_dist": "Plot Status Distribution",
+        "recent_activities": "Recent Activities",
+        "filters": {
+            "date_range": "Date Range",
+            "all_types": "All Types",
+            "all_plots": "All Plots"
+        },
+        "table": {
+            "plot": "Plot",
+            "type": "Type",
+            "date": "Date",
+            "notes": "Notes"
+        }
+    }
+}
