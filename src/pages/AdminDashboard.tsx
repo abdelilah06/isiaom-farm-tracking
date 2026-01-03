@@ -14,6 +14,7 @@ export default function AdminDashboard() {
     const { t, i18n } = useTranslation()
     const [plots, setPlots] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [authChecking, setAuthChecking] = useState(true)
     const [selectedPlotForLog, setSelectedPlotForLog] = useState<string | null>(null)
     const [selectedPlotForQR, setSelectedPlotForQR] = useState<string | null>(null)
     const [showAddPlotModal, setShowAddPlotModal] = useState(false)
@@ -29,9 +30,33 @@ export default function AdminDashboard() {
 
     const isRtl = i18n.language === 'ar'
 
+    // SECURITY: Check authentication on mount
     useEffect(() => {
-        fetchData()
+        const checkAuth = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+
+                if (!user || user.user_metadata?.role !== 'admin') {
+                    console.warn('Unauthorized access attempt to /admin')
+                    window.location.href = '/'
+                    return
+                }
+
+                setAuthChecking(false)
+            } catch (error) {
+                console.error('Auth check failed:', error)
+                window.location.href = '/'
+            }
+        }
+
+        checkAuth()
     }, [])
+
+    useEffect(() => {
+        if (!authChecking) {
+            fetchData()
+        }
+    }, [authChecking])
 
     async function fetchData() {
         setLoading(true)
