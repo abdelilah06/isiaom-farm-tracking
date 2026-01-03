@@ -110,7 +110,7 @@ export default function PublicGallery() {
             dir={isRtl ? 'rtl' : 'ltr'}
         >
             {/* Hero Header */}
-            <header className="relative h-[40vh] min-h-[300px] flex items-center justify-center overflow-hidden">
+            <header className="relative h-[35vh] md:h-[40vh] min-h-[280px] max-h-[400px] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-emerald-800" />
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                     <div className="absolute top-0 left-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
