@@ -35,7 +35,11 @@
         "last_op": "Dernière op",
         "ops_month": "ops ce mois",
         "no_plots": "Aucune parcelle ne correspond à vos filtres.",
-        "back_home": "Retour à l'accueil"
+        "back_home": "Retour à l'accueil",
+        "plot_gallery": "Galerie Photos",
+        "add_photo": "Ajouter Photo",
+        "no_photos": "Aucune photo pour le moment",
+        "confirm_delete": "Supprimer cette photo ?"
     },
     "dashboard": {
         "title": "Gestion de la Ferme",
@@ -56,24 +60,33 @@
         "no_plots": "Aucune parcelle enregistrée pour le moment. Commencez par en ajouter une !",
         "no_plots_desc": "Cliquez sur le bouton Ajouter une parcelle pour commencer à suivre votre exploitation.",
         "no_results_desc": "Essayez de modifier vos termes de recherche ou vos filtres pour trouver ce que vous cherchez.",
-        "reset_btn": "Réinitialiser les filtres"
+        "reset_btn": "Réinitialiser les filtres",
+        "all_plots": "Toutes les Parcelles"
     },
     "add_plot": {
         "title": "Ajouter une nouvelle parcelle",
         "basic_info": "Informations de base",
         "plot_id": "ID de la parcelle",
         "plot_name": "Nom de la parcelle",
-        "crop_variety": "Variété de culture",
-        "area": "Surface (m²)",
-        "tree_spacing_row": "Espacement (Sur rang) (m)",
-        "tree_spacing_between": "Espacement (Entre rangs) (m)",
-        "plant_count": "Nombre de plants",
-        "training_method": "Mode de conduite",
+        "crop_variety": "Cultivar",
+        "area": "Superficie (m²)",
+        "tree_spacing_row": "Écartement sur le rang (m)",
+        "tree_spacing_between": "Écartement inter-rang (m)",
+        "plant_count": "Densité de plantation",
+        "training_method": "Système de conduite",
         "methods": {
-            "goblet": "Gobelet",
-            "central_axis": "Axe central",
-            "espalier": "Espalier"
+            "goblet": "Gobelet (forme libre)",
+            "central_axis": "Axe central (fuseau)",
+            "espalier": "Palissage (Palmette)"
         },
+        "irrigation_system": "Système d'irrigation",
+        "irrigation_types": {
+            "goutte_a_goutte": "Goutte-à-goutte (localisée)",
+            "aspersion": "Aspersion",
+            "gravitaire": "Gravitaire (à la raie)",
+            "micro_aspersion": "Micro-aspersion"
+        },
+        "rootstock": "Porte-greffe",
         "planting_date": "Date de plantation",
         "illustration": "Illustration",
         "select_image": "Choisir une image",
@@ -101,13 +114,15 @@
         "crop": "Culture",
         "area": "Surface",
         "date": "Date",
-        "spacing": "Espacement",
-        "plant_count": "Nombre de plants",
-        "training_method": "Mode de conduite",
-        "plant_unit": "plante",
+        "spacing": "Écartement",
+        "plant_count": "Densité",
+        "training_method": "Système de conduite",
+        "plant_unit": "plants/ha",
         "timeline": "Historique des opérations",
         "no_operations": "Aucune opération enregistrée pour le moment.",
-        "share_qr": "Partager / QR"
+        "share_qr": "Partager / QR",
+        "irrigation_system": "Irrigation",
+        "rootstock": "Porte-greffe"
     },
     "analytics": {
         "title": "Tableau de Bord Analytique",
@@ -115,11 +130,22 @@
         "total_operations": "Total des Opérations",
         "avg_ops_per_plot": "Moy. Opérations / Parcelle",
         "last_operation": "Dernière Opération",
-        "ops_over_time": "Opérations au fil du Temps (30 jours)",
+        "total_yield": "Récolte Totale (kg)",
+        "disease_incidents": "Incidents Sanitaires",
+        "high_severity": "Cas Critiques/Élevés",
+        "ops_over_time": "Opérations au fil du Temps",
         "ops_by_type": "Opérations par Type",
         "ops_per_plot": "Opérations par Parcelle",
-        "plot_status_dist": "Distribution du Statut des Parcelles",
+        "yield_trend": "Tendance de Production (kg)",
+        "harvest_quality": "Distribution de la Qualité",
+        "disease_severity": "Sévérité des Problèmes",
+        "plot_status_dist": "Distribution du Statut",
         "recent_activities": "Activités Récentes",
+        "sections": {
+            "operations": "Activité Opérationnelle",
+            "production": "Analyse de Production",
+            "health": "Santé & Risques"
+        },
         "filters": {
             "date_range": "Plage de Dates",
             "all_types": "Tous les Types",
@@ -163,5 +189,69 @@
         "new_email": "Nouvel email",
         "email_updated": "Email mis à jour !",
         "confirm_sent": "Un lien de confirmation a été envoyé à votre nouvel email !"
+    },
+    "yield": {
+        "title": "Enregistrer une Récolte",
+        "harvest_date": "Date de récolte",
+        "quantity": "Quantité récoltée",
+        "quality": "Qualité",
+        "notes_placeholder": "Observations sur la récolte...",
+        "photo": "Photo de la récolte",
+        "submit": "Enregistrer",
+        "grades": {
+            "A": "Catégorie A (Premium)",
+            "B": "Catégorie B (Standard)",
+            "C": "Catégorie C (Industrie)",
+            "export": "Qualité Export",
+            "local": "Marché Local"
+        },
+        "history": "Historique des Récoltes",
+        "total_yield": "Rendement Total",
+        "no_records": "Aucune récolte enregistrée"
+    },
+    "disease": {
+        "title": "Signaler un Problème Sanitaire",
+        "log_date": "Date d'observation",
+        "type": "Type",
+        "types": {
+            "disease": "Maladie",
+            "pest": "Ravageur",
+            "deficiency": "Carence"
+        },
+        "name": "Nom du problème",
+        "name_placeholder": "Ex: Oïdium, Tavelure, Puceron...",
+        "severity": "Gravité",
+        "severity_levels": {
+            "low": "Faible",
+            "medium": "Modérée",
+            "high": "Élevée",
+            "critical": "Critique"
+        },
+        "affected": "Zone affectée",
+        "treatment": "Traitement appliqué",
+        "treatment_placeholder": "Ex: Bouillie bordelaise, Bacillus...",
+        "photo": "Photo du problème",
+        "submit": "Enregistrer",
+        "history": "Historique Sanitaire",
+        "no_records": "Aucun problème signalé"
+    },
+    "weather": {
+        "title": "Météo",
+        "today": "Auj.",
+        "tomorrow": "Demain",
+        "humidity": "Humidité",
+        "wind": "Vent",
+        "rain_chance": "Pluie",
+        "forecast_7day": "Prévisions 7 jours",
+        "unavailable": "Météo indisponible",
+        "irrigation_advice": "Conseil d'irrigation",
+        "advice_rain": "Pluie prévue - Réduisez l'irrigation aujourd'hui",
+        "advice_hot": "Temps chaud - Augmentez l'irrigation tôt le matin",
+        "advice_normal": "Conditions normales - Suivez le programme habituel",
+        "alerts": {
+            "frost": "⚠️ Risque de gel - Protégez les jeunes plants",
+            "heat": "🌡️ Canicule - Irrigation supplémentaire recommandée",
+            "rain": "🌧️ Fortes pluies prévues demain"
+        }
     }
 }

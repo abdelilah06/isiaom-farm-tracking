@@ -7,8 +7,8 @@ import {
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts'
 import {
-    Calendar, Filter, Grid, TrendingUp, Activity, ClipboardList,
-    Search, ArrowLeft
+    Calendar, Filter, Grid, TrendingUp, Activity,
+    Search, ArrowLeft, Bug, AlertTriangle
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -21,6 +21,8 @@ export default function Analytics() {
 
     const [plots, setPlots] = useState<any[]>([])
     const [operations, setOperations] = useState<any[]>([])
+    const [yields, setYields] = useState<any[]>([])
+    const [diseaseLogs, setDiseaseLogs] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [authChecking, setAuthChecking] = useState(true)
 
@@ -60,19 +62,31 @@ export default function Analytics() {
     async function fetchData() {
         setLoading(true)
         try {
-            const [plotsRes, opsRes] = await Promise.all([
+            const [plotsRes, opsRes, yieldRes, diseaseRes] = await Promise.all([
                 supabase.from('plots').select('*'),
                 supabase.from('operations').select(`
                     *,
                     plots (name)
-                `).order('date', { ascending: false })
+                `).order('date', { ascending: false }),
+                supabase.from('yield_records').select(`
+                    *,
+                    plots (name)
+                `).order('harvest_date', { ascending: false }),
+                supabase.from('disease_logs').select(`
+                    *,
+                    plots (name)
+                `).order('log_date', { ascending: false })
             ])
 
             if (plotsRes.error) throw plotsRes.error
             if (opsRes.error) throw opsRes.error
+            if (yieldRes.error) throw yieldRes.error
+            if (diseaseRes.error) throw diseaseRes.error
 
             setPlots(plotsRes.data || [])
             setOperations(opsRes.data || [])
+            setYields(yieldRes.data || [])
+            setDiseaseLogs(diseaseRes.data || [])
         } catch (error) {
             console.error('Error fetching analytics data:', error)
         } finally {
@@ -159,6 +173,68 @@ export default function Analytics() {
             { name: t('dashboard.harvested'), value: harvested }
         ]
     }, [plots, t])
+
+    // New Advanced Analytics Data
+    const yieldTrendData = useMemo(() => {
+        const groups: Record<string, number> = {}
+        const lastDays = parseInt(dateRange === 'all' ? '90' : dateRange)
+
+        for (let i = lastDays; i >= 0; i--) {
+            const d = new Date()
+            d.setDate(d.getDate() - i)
+            const dateStr = d.toISOString().split('T')[0]
+            groups[dateStr] = 0
+        }
+
+        yields.forEach(y => {
+            const dateStr = y.harvest_date
+            if (groups[dateStr] !== undefined) {
+                groups[dateStr] += y.quantity_kg
+            }
+        })
+
+        return Object.entries(groups).map(([date, kg]) => ({
+            date: date.split('-').slice(1).reverse().join('/'),
+            kg
+        }))
+    }, [yields, dateRange])
+
+    const yieldPerPlotData = useMemo(() => {
+        const groups: Record<string, number> = {}
+        yields.forEach(y => {
+            const plotName = y.plots?.name || y.plot_id.slice(0, 4)
+            groups[plotName] = (groups[plotName] || 0) + y.quantity_kg
+        })
+        return Object.entries(groups)
+            .map(([name, kg]) => ({ name, kg }))
+            .sort((a, b) => b.kg - a.kg)
+    }, [yields])
+
+    const yieldQualityData = useMemo(() => {
+        const groups: Record<string, number> = {}
+        yields.forEach(y => {
+            const grade = y.quality_grade || 'Unknown'
+            groups[grade] = (groups[grade] || 0) + y.quantity_kg
+        })
+        return Object.entries(groups).map(([name, value]) => ({ name, value }))
+    }, [yields])
+
+    const diseaseSeverityData = useMemo(() => {
+        const groups: Record<string, number> = {}
+        diseaseLogs.forEach(log => {
+            const severity = t(`disease.severity_levels.${log.severity}`)
+            groups[severity] = (groups[severity] || 0) + 1
+        })
+        return Object.entries(groups).map(([name, value]) => ({ name, value }))
+    }, [diseaseLogs, t])
+
+    const advancedStats = useMemo(() => {
+        const totalYieldKg = yields.reduce((acc, y) => acc + (y.quantity_kg || 0), 0)
+        const totalDiseaseIncidents = diseaseLogs.length
+        const highSeverityCount = diseaseLogs.filter(log => ['high', 'critical'].includes(log.severity)).length
+
+        return { totalYieldKg, totalDiseaseIncidents, highSeverityCount }
+    }, [yields, diseaseLogs])
 
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 gap-4">
@@ -249,9 +325,9 @@ export default function Analytics() {
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[
                         { label: t('analytics.total_plots'), val: stats.totalPlots, icon: Grid, color: 'from-green-400 to-emerald-600' },
-                        { label: t('analytics.total_operations'), val: stats.totalOps, icon: Activity, color: 'from-blue-400 to-indigo-600' },
-                        { label: t('analytics.avg_ops_per_plot'), val: stats.avgOps, icon: TrendingUp, color: 'from-purple-400 to-violet-600' },
-                        { label: t('analytics.last_operation'), val: stats.lastOp !== '---' ? new Date(stats.lastOp).toLocaleDateString(i18n.language) : '---', icon: Calendar, color: 'from-orange-400 to-amber-600', isDate: true }
+                        { label: t('analytics.total_yield'), val: `${advancedStats.totalYieldKg} kg`, icon: TrendingUp, color: 'from-blue-400 to-indigo-600' },
+                        { label: t('analytics.disease_incidents'), val: advancedStats.totalDiseaseIncidents, icon: Bug, color: 'from-red-400 to-rose-600' },
+                        { label: t('analytics.high_severity'), val: advancedStats.highSeverityCount, icon: AlertTriangle, color: 'from-orange-400 to-amber-600' }
                     ].map((card, i) => (
                         <motion.div
                             key={i}
@@ -259,107 +335,199 @@ export default function Analytics() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
                             whileHover={{ y: -4, scale: 1.02 }}
-                            className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 dark:border-gray-700 flex items-center gap-4 transition-all duration-300"
+                            className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-100 dark:border-gray-700 flex items-center gap-4 transition-all duration-300"
                         >
                             <div className={`w-14 h-14 bg-gradient-to-br ${card.color} rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg`}>
                                 <card.icon className="h-7 w-7" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 font-black uppercase tracking-wider mb-1">{card.label}</p>
-                                <p className={`font-black text-gray-900 dark:text-white ${card.isDate ? 'text-sm' : 'text-3xl'}`}>{card.val}</p>
+                                <p className="font-black text-gray-900 dark:text-white text-2xl">{card.val}</p>
                             </div>
                         </motion.div>
                     ))}
                 </section>
 
-                {/* Charts Grid */}
-                <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Operations Over Time */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-50 dark:border-gray-700 space-y-6">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
-                                <TrendingUp className="h-4 w-4 text-white" />
-                            </div>
-                            {t('analytics.ops_over_time')}
-                        </h3>
-                        <div className="h-64">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={overTimeData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
-                                    <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                                    <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
-                                    <Line type="monotone" dataKey="count" stroke="#059669" strokeWidth={4} dot={{ fill: '#059669', r: 4 }} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                {/* Operational Activity Section */}
+                <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-2">
+                        <div className="w-1.5 h-6 bg-green-500 rounded-full" />
+                        <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('analytics.sections.operations')}</h2>
                     </div>
+                    <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Operations Over Time */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4" />
+                                {t('analytics.ops_over_time')}
+                            </h3>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={overTimeData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
+                                        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Line type="monotone" dataKey="count" stroke="#059669" strokeWidth={4} dot={{ fill: '#059669', r: 4 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
 
-                    {/* Operations by Type */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-50 dark:border-gray-700 space-y-6">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl flex items-center justify-center">
-                                <Grid className="h-4 w-4 text-white" />
+                        {/* Operations by Type */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <Grid className="h-4 w-4" />
+                                {t('analytics.ops_by_type')}
+                            </h3>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={byTypeData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                                            {byTypeData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
                             </div>
-                            {t('analytics.ops_by_type')}
-                        </h3>
-                        <div className="h-64">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={byTypeData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                                    <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
-                                    <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                                        {byTypeData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
                         </div>
-                    </div>
+                        {/* Operations per Plot */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6 lg:col-span-2">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <Activity className="h-4 w-4" />
+                                {t('analytics.ops_per_plot')}
+                            </h3>
+                            <div className="h-48">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={perPlotData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Bar dataKey="count" fill="#8B5CF6" radius={[6, 6, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </section>
+                </div>
 
-                    {/* Operations per Plot */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-50 dark:border-gray-700 space-y-6">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-violet-600 rounded-xl flex items-center justify-center">
-                                <ClipboardList className="h-4 w-4 text-white" />
-                            </div>
-                            {t('analytics.ops_per_plot')}
-                        </h3>
-                        <div className="h-64">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart layout="vertical" data={perPlotData}>
-                                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" opacity={0.1} />
-                                    <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" width={60} axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                                    <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
-                                    <Bar dataKey="count" fill="#8B5CF6" radius={[0, 8, 8, 0]} barSize={20} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
+                {/* Production Analytics Section */}
+                <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-2">
+                        <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
+                        <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('analytics.sections.production')}</h2>
                     </div>
+                    <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Yield Trend (kg over time) */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4" />
+                                {t('analytics.yield_trend')}
+                            </h3>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={yieldTrendData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
+                                        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Bar dataKey="kg" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
 
-                    {/* Plot Status Dist */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-50 dark:border-gray-700 space-y-6">
-                        <h3 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-amber-600 rounded-xl flex items-center justify-center">
-                                <Activity className="h-4 w-4 text-white" />
+                        {/* Harvest Quality Distribution */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4" />
+                                {t('analytics.harvest_quality')}
+                            </h3>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie data={yieldQualityData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                            {yieldQualityData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />)}
+                                        </Pie>
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Legend verticalAlign="bottom" height={36} formatter={(value) => <span className="text-[10px] font-bold text-gray-500">{value}</span>} />
+                                    </PieChart>
+                                </ResponsiveContainer>
                             </div>
-                            {t('analytics.plot_status_dist')}
-                        </h3>
-                        <div className="h-64">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie data={plotStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                                        {plotStatusData.map((_, index) => <Cell key={`cell-${index}`} fill={index === 0 ? '#10B981' : '#9CA3AF'} />)}
-                                    </Pie>
-                                    <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
-                                    <Legend formatter={(value) => <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{value}</span>} />
-                                </PieChart>
-                            </ResponsiveContainer>
                         </div>
+
+                        {/* Yield per Plot */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6 lg:col-span-2">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <TrendingUp className="h-4 w-4" />
+                                {t('analytics.yield_per_plot', { defaultValue: 'Yield per Plot (kg)' })}
+                            </h3>
+                            <div className="h-48">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={yieldPerPlotData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Bar dataKey="kg" fill="#10B981" radius={[6, 6, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                {/* Plant Health Section */}
+                <div className="space-y-6">
+                    <div className="flex items-center gap-3 px-2">
+                        <div className="w-1.5 h-6 bg-red-500 rounded-full" />
+                        <h2 className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('analytics.sections.health')}</h2>
                     </div>
-                </section>
+                    <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Disease Severity Distribution */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <Bug className="h-4 w-4" />
+                                {t('analytics.disease_severity')}
+                            </h3>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={diseaseSeverityData}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.1} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9CA3AF' }} />
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Bar dataKey="value" fill="#EF4444" radius={[8, 8, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Plot Status Distribution */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 space-y-6">
+                            <h3 className="text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <Activity className="h-4 w-4" />
+                                {t('analytics.plot_status_dist')}
+                            </h3>
+                            <div className="h-64">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie data={plotStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                                            {plotStatusData.map((_, index) => <Cell key={`cell-${index}`} fill={index === 0 ? '#10B981' : '#9CA3AF'} />)}
+                                        </Pie>
+                                        <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', background: 'rgba(31, 41, 55, 0.9)', color: '#fff' }} />
+                                        <Legend formatter={(value) => <span className="text-xs font-bold text-gray-500 dark:text-gray-400">{value}</span>} />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
 
                 {/* Recent Activities Table */}
                 <section className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-50 dark:border-gray-700 overflow-hidden">

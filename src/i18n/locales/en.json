@@ -35,7 +35,11 @@
         "last_op": "Last op",
         "ops_month": "ops this month",
         "no_plots": "No plots found matching your filters.",
-        "back_home": "Back to Home"
+        "back_home": "Back to Home",
+        "plot_gallery": "Photo Gallery",
+        "add_photo": "Add Photo",
+        "no_photos": "No photos yet",
+        "confirm_delete": "Delete this photo?"
     },
     "dashboard": {
         "title": "Farm Management",
@@ -56,7 +60,8 @@
         "no_plots": "No plots registered yet. Start by adding a new one!",
         "no_plots_desc": "Click the Add Plot button to start tracking your farm.",
         "no_results_desc": "Try changing your search terms or filters to find what you're looking for.",
-        "reset_btn": "Reset Filters"
+        "reset_btn": "Reset Filters",
+        "all_plots": "All Plots"
     },
     "add_plot": {
         "title": "Add New Plot",
@@ -74,6 +79,14 @@
             "central_axis": "Central Axis",
             "espalier": "Espalier"
         },
+        "irrigation_system": "Irrigation System",
+        "irrigation_types": {
+            "goutte_a_goutte": "Drip Irrigation",
+            "aspersion": "Sprinkler",
+            "gravitaire": "Furrow/Surface",
+            "micro_aspersion": "Micro-sprinkler"
+        },
+        "rootstock": "Rootstock",
         "planting_date": "Planting Date",
         "illustration": "Illustration",
         "select_image": "Select Plot Image",
@@ -107,7 +120,9 @@
         "plant_unit": "plant",
         "timeline": "Activity Log",
         "no_operations": "No operations recorded yet.",
-        "share_qr": "Share / QR"
+        "share_qr": "Share / QR",
+        "irrigation_system": "Irrigation",
+        "rootstock": "Rootstock"
     },
     "analytics": {
         "title": "Analytics Dashboard",
@@ -115,11 +130,22 @@
         "total_operations": "Total Operations",
         "avg_ops_per_plot": "Avg Ops / Plot",
         "last_operation": "Last Operation",
-        "ops_over_time": "Operations Over Time (30 days)",
+        "total_yield": "Total Harvest (kg)",
+        "disease_incidents": "Health Incidents",
+        "high_severity": "Critical/High Cases",
+        "ops_over_time": "Operations Over Time",
         "ops_by_type": "Operations by Type",
         "ops_per_plot": "Operations per Plot",
-        "plot_status_dist": "Plot Status Distribution",
+        "yield_trend": "Production Trend (kg)",
+        "harvest_quality": "Quality Distribution",
+        "disease_severity": "Issue Severity",
+        "plot_status_dist": "Status Distribution",
         "recent_activities": "Recent Activities",
+        "sections": {
+            "operations": "Operational Activity",
+            "production": "Production Analytics",
+            "health": "Health & Risks"
+        },
         "filters": {
             "date_range": "Date Range",
             "all_types": "All Types",
@@ -163,5 +189,69 @@
         "new_email": "New Email",
         "email_updated": "Email updated!",
         "confirm_sent": "A confirmation link has been sent to your new email!"
+    },
+    "yield": {
+        "title": "Record Harvest",
+        "harvest_date": "Harvest Date",
+        "quantity": "Quantity Harvested",
+        "quality": "Quality Grade",
+        "notes_placeholder": "Observations about the harvest...",
+        "photo": "Harvest Photo",
+        "submit": "Save Record",
+        "grades": {
+            "A": "Grade A (Premium)",
+            "B": "Grade B (Standard)",
+            "C": "Grade C (Processing)",
+            "export": "Export Quality",
+            "local": "Local Market"
+        },
+        "history": "Harvest History",
+        "total_yield": "Total Yield",
+        "no_records": "No harvest records yet"
+    },
+    "disease": {
+        "title": "Report a Health Issue",
+        "log_date": "Observation Date",
+        "type": "Type",
+        "types": {
+            "disease": "Disease",
+            "pest": "Pest",
+            "deficiency": "Deficiency"
+        },
+        "name": "Problem Name",
+        "name_placeholder": "Ex: Powdery mildew, Scab, Aphids...",
+        "severity": "Severity",
+        "severity_levels": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High",
+            "critical": "Critical"
+        },
+        "affected": "Affected Area",
+        "treatment": "Treatment Applied",
+        "treatment_placeholder": "Ex: Bordeaux mixture, Bacillus...",
+        "photo": "Photo of Issue",
+        "submit": "Save Record",
+        "history": "Health History",
+        "no_records": "No issues reported"
+    },
+    "weather": {
+        "title": "Weather",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "humidity": "Humidity",
+        "wind": "Wind",
+        "rain_chance": "Rain",
+        "forecast_7day": "7-Day Forecast",
+        "unavailable": "Weather unavailable",
+        "irrigation_advice": "Irrigation Advice",
+        "advice_rain": "Rain expected - Reduce irrigation today",
+        "advice_hot": "Hot weather - Increase irrigation early morning",
+        "advice_normal": "Normal conditions - Follow regular schedule",
+        "alerts": {
+            "frost": "⚠️ Frost risk - Protect young plants",
+            "heat": "🌡️ Heat wave - Extra irrigation recommended",
+            "rain": "🌧️ Heavy rain expected tomorrow"
+        }
     }
 }

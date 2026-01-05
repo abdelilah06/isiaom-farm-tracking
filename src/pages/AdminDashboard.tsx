@@ -275,15 +275,27 @@ export default function AdminDashboard() {
                     )}
                 </div>
 
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-8 gap-4">
-                    <h2 className="text-xl font-black flex items-center gap-2 shrink-0 dark:text-white">
-                        <div className="w-2 h-8 bg-green-600 rounded-full" />
-                        {t('dashboard.all_plots')}
-                    </h2>
+                <div className="flex flex-col gap-4 mb-8">
+                    {/* Header Row */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <h2 className="text-xl font-black flex items-center gap-2 shrink-0 dark:text-white">
+                            <div className="w-2 h-8 bg-green-600 rounded-full" />
+                            {t('dashboard.all_plots')}
+                        </h2>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="bg-green-600 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-green-700 transition-all shadow-xl shadow-green-100 dark:shadow-none font-bold text-sm active:scale-95 group w-full sm:w-auto justify-center"
+                            onClick={() => setShowAddPlotModal(true)}
+                        >
+                            <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform" />
+                            {t('dashboard.add_plot')}
+                        </motion.button>
+                    </div>
 
                     {/* Filters Bar */}
-                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-2xl">
-                        <div className="relative w-full">
+                    <div className="flex flex-col sm:flex-row items-stretch gap-3">
+                        <div className="relative flex-1">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <input
                                 type="text"
@@ -293,13 +305,13 @@ export default function AdminDashboard() {
                                 className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 dark:text-white rounded-2xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm min-h-[44px]"
                             />
                         </div>
-                        <div className="flex items-center gap-2 w-full sm:w-auto">
-                            <div className="relative shrink-0 w-full sm:w-auto">
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex-1 sm:flex-none">
                                 <Filter className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                                 <select
                                     value={statusFilter}
                                     onChange={(e) => setStatusFilter(e.target.value)}
-                                    className="appearance-none bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 dark:text-white rounded-2xl py-3 pl-11 pr-8 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm min-h-[44px] font-bold text-gray-600 dark:text-gray-300 cursor-pointer w-full"
+                                    className="appearance-none bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 dark:text-white rounded-2xl py-3 pl-11 pr-8 text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm min-h-[44px] font-bold text-gray-600 dark:text-gray-300 cursor-pointer w-full sm:w-auto"
                                 >
                                     <option value="all">{t('dashboard.filter_all')}</option>
                                     <option value="active">{t('dashboard.active')}</option>
@@ -317,15 +329,6 @@ export default function AdminDashboard() {
                                     <X className="h-4 w-4" />
                                 </motion.button>
                             )}
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="bg-green-600 text-white px-5 py-3 rounded-2xl flex items-center gap-2 hover:bg-green-700 transition-all shadow-xl shadow-green-100 dark:shadow-none font-bold text-sm active:scale-95 group shrink-0 min-h-[44px]"
-                                onClick={() => setShowAddPlotModal(true)}
-                            >
-                                <Plus className="h-5 w-5 group-hover:rotate-90 transition-transform" />
-                                <span className="hidden sm:inline">{t('dashboard.add_plot')}</span>
-                            </motion.button>
                         </div>
                     </div>
                 </div>

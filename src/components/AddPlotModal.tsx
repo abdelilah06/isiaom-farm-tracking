@@ -26,6 +26,8 @@ export default function AddPlotModal({ onClose, onPlotAdded }: AddPlotModalProps
         tree_spacing_between: '',
         plant_count: '',
         training_method: 'goblet',
+        irrigation_system: 'goutte_a_goutte',
+        rootstock: '',
         planting_date: new Date().toISOString().split('T')[0]
     })
 
@@ -52,23 +54,37 @@ export default function AddPlotModal({ onClose, onPlotAdded }: AddPlotModalProps
                 return isNaN(num) ? null : num
             }
 
-            const { error } = await supabase
+            const insertData = {
+                id: formData.id.trim().toUpperCase(),
+                name: formData.name,
+                crop_variety: formData.crop_variety,
+                area: toNum(formData.area) || 0,
+                planting_date: formData.planting_date,
+                tree_spacing_row: toNum(formData.tree_spacing_row),
+                tree_spacing_between: toNum(formData.tree_spacing_between),
+                plant_count: toNum(formData.plant_count),
+                training_method: formData.training_method || 'goblet',
+                irrigation_system: formData.irrigation_system || null,
+                rootstock: formData.rootstock || null,
+                image_url,
+                status: 'active'
+            }
+
+            console.log('Attempting to insert:', insertData)
+
+            const { data, error } = await supabase
                 .from('plots')
-                .insert({
-                    id: formData.id.toUpperCase(),
-                    name: formData.name,
-                    crop_variety: formData.crop_variety,
-                    area: toNum(formData.area) || 0,
-                    tree_spacing_row: toNum(formData.tree_spacing_row),
-                    tree_spacing_between: toNum(formData.tree_spacing_between),
-                    plant_count: toNum(formData.plant_count),
-                    training_method: formData.training_method,
-                    planting_date: formData.planting_date,
-                    image_url,
-                    status: 'active'
-                })
+                .insert(insertData)
+                .select()
+
+            console.log('Insert result - data:', data)
+            console.log('Insert result - error:', error)
 
             if (error) throw error
+
+            if (!data || data.length === 0) {
+                throw new Error('Insert succeeded but no data returned - check RLS policies in Supabase')
+            }
 
             setSuccess(true)
             onPlotAdded()
@@ -76,8 +92,12 @@ export default function AddPlotModal({ onClose, onPlotAdded }: AddPlotModalProps
                 onClose()
             }, 1500)
         } catch (error: any) {
-            console.error('Error adding plot:', error)
-            alert(`${t('common.error')}: ${error.message || error.error_description || 'Unknown error'}`)
+            console.error('Error adding plot - Full error object:', error)
+            console.error('Error message:', error.message)  // This contains the column name!
+            console.error('Error code:', error.code)
+            console.error('Error details:', error.details)
+            console.error('Error hint:', error.hint)
+            alert(`${t('common.error')}: ${error.message || 'Unknown error'}\n\nCode: ${error.code || 'N/A'}`)
         } finally {
             setLoading(false)
         }
@@ -224,6 +244,35 @@ export default function AddPlotModal({ onClose, onPlotAdded }: AddPlotModalProps
                                                     <option value="central_axis">{t('add_plot.methods.central_axis')}</option>
                                                     <option value="espalier">{t('add_plot.methods.espalier')}</option>
                                                 </select>
+                                            </div>
+                                        </div>
+
+                                        {/* Irrigation System & Rootstock */}
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">{t('add_plot.irrigation_system')}</label>
+                                                <select
+                                                    name="irrigation_system"
+                                                    value={formData.irrigation_system}
+                                                    onChange={handleChange}
+                                                    className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all text-sm font-bold appearance-none cursor-pointer"
+                                                >
+                                                    <option value="goutte_a_goutte">{t('add_plot.irrigation_types.goutte_a_goutte')}</option>
+                                                    <option value="aspersion">{t('add_plot.irrigation_types.aspersion')}</option>
+                                                    <option value="gravitaire">{t('add_plot.irrigation_types.gravitaire')}</option>
+                                                    <option value="micro_aspersion">{t('add_plot.irrigation_types.micro_aspersion')}</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">{t('add_plot.rootstock')}</label>
+                                                <input
+                                                    name="rootstock"
+                                                    type="text"
+                                                    value={formData.rootstock}
+                                                    onChange={handleChange}
+                                                    className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all text-sm font-bold placeholder:text-gray-300 dark:placeholder:text-gray-600"
+                                                    placeholder="Ex: MM106, M9, Franc..."
+                                                />
                                             </div>
                                         </div>
                                     </div>

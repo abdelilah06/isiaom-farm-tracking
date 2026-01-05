@@ -118,9 +118,6 @@ export default function HomePage() {
                                 {t('gallery.title')}
                                 <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
                             </Link>
-                            <Link to="/admin" className="px-10 py-5 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-100 dark:border-gray-800 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                                Documentation
-                            </Link>
                         </div>
                     </motion.div>
                 </div>

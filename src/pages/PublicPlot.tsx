@@ -6,6 +6,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import QuickLogModal from '../components/QuickLogModal';
 import QRCodeGenerator from '../components/QRCodeGenerator';
+import DiseasePestModal from '../components/DiseasePestModal';
+import PhotoGallery from '../components/PhotoGallery';
+import DiseaseLogTimeline from '../components/DiseaseLogTimeline';
+import WeatherWidget from '../components/WeatherWidget';
 import { Share2, ClipboardList, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft } from 'lucide-react';
 import { getCachedPlot, getCachedOperationsForPlot, cacheOperations } from '@/lib/db';
 
@@ -29,6 +33,7 @@ export default function PublicPlot() {
     const [loading, setLoading] = useState(true);
     const [showLogModal, setShowLogModal] = useState(false);
     const [showQRModal, setShowQRModal] = useState(false);
+    const [showDiseaseModal, setShowDiseaseModal] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
@@ -81,6 +86,20 @@ export default function PublicPlot() {
         checkAuth();
         fetchData();
     }, [id]);
+
+    // Refresh operations after adding a new one
+    const refreshOperations = async () => {
+        if (!id) return;
+        const { data: ops } = await supabase
+            .from('operations')
+            .select('*')
+            .eq('plot_id', id)
+            .order('date', { ascending: false });
+        if (ops) {
+            setOperations(ops);
+            await cacheOperations(ops);
+        }
+    };
 
     const handleShare = async () => {
         if (navigator.share) {
@@ -217,21 +236,30 @@ export default function PublicPlot() {
                         </div>
 
                         {/* Desktop Actions */}
-                        <div className="hidden md:flex items-center gap-4 mt-12">
+                        <div className="hidden md:flex flex-wrap items-center gap-4 mt-12">
                             {isAdmin && (
-                                <button
-                                    onClick={handleLogClick}
-                                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-5 rounded-[1.5rem] flex items-center justify-center gap-3 hover:shadow-2xl hover:shadow-green-500/20 transition-all font-black text-sm active:scale-95 shadow-xl"
-                                >
-                                    <ClipboardList className="h-5 w-5" />
-                                    {t('dashboard.log_operation')}
-                                </button>
+                                <>
+                                    <button
+                                        onClick={handleLogClick}
+                                        className="flex-1 min-w-[140px] bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-4 rounded-[1.5rem] flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-green-500/20 transition-all font-black text-xs active:scale-95 shadow-xl"
+                                    >
+                                        <ClipboardList className="h-4 w-4" />
+                                        {t('dashboard.log_operation')}
+                                    </button>
+                                    <button
+                                        onClick={() => setShowDiseaseModal(true)}
+                                        className="flex-1 min-w-[140px] bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-4 rounded-[1.5rem] flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-red-500/20 transition-all font-black text-xs active:scale-95 shadow-xl"
+                                    >
+                                        <Bug className="h-4 w-4" />
+                                        {t('disease.title')}
+                                    </button>
+                                </>
                             )}
                             <button
                                 onClick={handleShare}
-                                className={`flex-1 ${isAdmin ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-gray-700' : 'bg-gray-900 dark:bg-green-600 text-white shadow-xl shadow-gray-200 dark:shadow-green-500/10'} px-8 py-5 rounded-[1.5rem] flex items-center justify-center gap-3 hover:opacity-90 transition-all font-black text-sm active:scale-95`}
+                                className={`flex-1 min-w-[140px] ${isAdmin ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-gray-700' : 'bg-gray-900 dark:bg-green-600 text-white shadow-xl shadow-gray-200 dark:shadow-green-500/10'} px-6 py-4 rounded-[1.5rem] flex items-center justify-center gap-2 hover:opacity-90 transition-all font-black text-xs active:scale-95`}
                             >
-                                <Share2 className="h-5 w-5" />
+                                <Share2 className="h-4 w-4" />
                                 {t('public_plot.share_qr')}
                             </button>
                         </div>
@@ -259,7 +287,30 @@ export default function PublicPlot() {
                         value={plot.training_method ? t(`add_plot.methods.${plot.training_method}`) : '----'}
                         color="purple"
                     />
+                    <TechnicalCard
+                        icon={<Droplet className="h-7 w-7" />}
+                        label={t('public_plot.irrigation_system')}
+                        value={plot.irrigation_system ? t(`add_plot.irrigation_types.${plot.irrigation_system}`) : '----'}
+                        color="cyan"
+                    />
+                    {plot.rootstock && (
+                        <TechnicalCard
+                            icon={<Sprout className="h-7 w-7" />}
+                            label={t('public_plot.rootstock')}
+                            value={plot.rootstock}
+                            color="green"
+                        />
+                    )}
                 </section>
+
+                {/* Weather Widget */}
+                <WeatherWidget />
+
+                {/* Photo Gallery */}
+                <PhotoGallery plotId={plot.id} isAdmin={isAdmin} />
+
+                {/* Disease/Pest Log */}
+                <DiseaseLogTimeline plotId={plot.id} />
 
                 {/* Timeline */}
                 <section className="space-y-8">
@@ -325,10 +376,23 @@ export default function PublicPlot() {
 
             <AnimatePresence>
                 {showLogModal && (
-                    <QuickLogModal plotId={plot.id} onClose={() => setShowLogModal(false)} />
+                    <QuickLogModal
+                        plotId={plot.id}
+                        onClose={() => {
+                            setShowLogModal(false);
+                            refreshOperations();
+                        }}
+                    />
                 )}
                 {showQRModal && (
                     <QRCodeGenerator plotId={plot.id} onClose={() => setShowQRModal(false)} />
+                )}
+                {showDiseaseModal && (
+                    <DiseasePestModal
+                        plotId={plot.id}
+                        plotName={plot.name}
+                        onClose={() => setShowDiseaseModal(false)}
+                    />
                 )}
             </AnimatePresence>
         </motion.div>
@@ -339,7 +403,9 @@ function TechnicalCard({ icon, label, value, unit, color }: any) {
     const colors: any = {
         blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
         orange: 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400',
-        purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
+        purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+        cyan: 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600 dark:text-cyan-400',
+        green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
     }
     return (
         <div className="bg-white dark:bg-gray-900 p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-6 group hover:shadow-xl transition-all">
