@@ -3,13 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { Lock, ArrowLeft, Check, AlertCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
 
 export default function ChangePassword() {
-    const { t, i18n } = useTranslation()
-    const isRtl = i18n.language === 'ar'
     const navigate = useNavigate()
-    const [currentPassword, setCurrentPassword] = useState('')
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
@@ -43,7 +39,6 @@ export default function ChangePassword() {
             if (error) throw error
 
             setSuccess(true)
-            setCurrentPassword('')
             setNewPassword('')
             setConfirmPassword('')
 
@@ -63,7 +58,7 @@ export default function ChangePassword() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="min-h-screen bg-gradient-to-br from-green-50/30 via-white to-blue-50/30"
-            dir={isRtl ? 'rtl' : 'ltr'}
+            dir="rtl"
         >
             {/* Header */}
             <header className="glass sticky top-0 z-30 border-b border-white/20 shadow-lg">
@@ -73,7 +68,7 @@ export default function ChangePassword() {
                             onClick={() => navigate('/admin')}
                             className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all group"
                         >
-                            <ArrowLeft className={`h-6 w-6 text-white ${isRtl ? 'rotate-180' : ''} group-hover:scale-110 transition-transform`} />
+                            <ArrowLeft className="h-6 w-6 text-white rotate-180 group-hover:scale-110 transition-transform" />
                         </button>
                         <div>
                             <h1 className="text-2xl font-black text-gray-900 tracking-tight">تغيير كلمة المرور</h1>

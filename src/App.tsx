@@ -5,6 +5,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import HomePage from './pages/HomePage';
 import Analytics from './pages/Analytics';
 import PublicGallery from './pages/PublicGallery';
+import ChangePassword from './pages/ChangePassword';
 
 import { OfflineProvider } from './lib/OfflineContext';
 import { OfflineBanner } from './components/OfflineBanner';
@@ -35,6 +36,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Analytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/change-password"
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
                 </ProtectedRoute>
               }
             />

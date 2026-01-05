@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
     Grid, TrendingUp, Droplets, Plus, Search, Filter, X,
-    QrCode, BarChart3, User, LogOut, LayoutDashboard, ClipboardList, Leaf
+    QrCode, BarChart3, User, LogOut, LayoutDashboard, ClipboardList, Leaf, Settings
 } from 'lucide-react'
 import QuickLogModal from '@/components/QuickLogModal'
 import QRCodeGenerator from '@/components/QRCodeGenerator'
@@ -191,6 +191,13 @@ export default function AdminDashboard() {
                             <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white shadow-md">
                                 <User className="h-5 w-5" />
                             </div>
+                            <Link
+                                to="/admin/change-password"
+                                className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-blue-50 rounded-xl text-gray-400 hover:text-blue-600 transition-all"
+                                title="Change Password"
+                            >
+                                <Settings className="h-5 w-5" />
+                            </Link>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
