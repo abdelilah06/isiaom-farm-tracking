@@ -6,32 +6,30 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import QuickLogModal from '../components/QuickLogModal';
 import QRCodeGenerator from '../components/QRCodeGenerator';
-import { Share2, ClipboardList, MapPin, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info } from 'lucide-react';
+import { Share2, ClipboardList, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft } from 'lucide-react';
 import { getCachedPlot, getCachedOperationsForPlot, cacheOperations } from '@/lib/db';
 
 const operationStyles: Record<string, { bg: string, text: string, icon: any }> = {
-    irrigation: { bg: 'bg-blue-50', text: 'text-blue-600', icon: Droplet },
-    fertilization: { bg: 'bg-orange-50', text: 'text-orange-600', icon: Sprout },
-    pest_control: { bg: 'bg-red-50', text: 'text-red-600', icon: Bug },
-    pruning: { bg: 'bg-purple-50', text: 'text-purple-600', icon: Scissors },
-    harvest: { bg: 'bg-green-50', text: 'text-green-600', icon: Sprout },
-    observation: { bg: 'bg-emerald-50', text: 'text-emerald-600', icon: Thermometer },
-    planting: { bg: 'bg-lime-50', text: 'text-lime-600', icon: Sprout },
-    other: { bg: 'bg-gray-50', text: 'text-gray-600', icon: ClipboardList }
+    irrigation: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', icon: Droplet },
+    fertilization: { bg: 'bg-orange-50 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', icon: Sprout },
+    pest_control: { bg: 'bg-red-50 dark:bg-red-900/30', text: 'text-red-600 dark:text-red-400', icon: Bug },
+    pruning: { bg: 'bg-purple-50 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400', icon: Scissors },
+    harvest: { bg: 'bg-green-50 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', icon: Sprout },
+    observation: { bg: 'bg-emerald-50 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', icon: Thermometer },
+    planting: { bg: 'bg-lime-50 dark:bg-lime-900/30', text: 'text-lime-600 dark:text-lime-400', icon: Sprout },
+    other: { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', icon: ClipboardList }
 };
 
 export default function PublicPlot() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [plot, setPlot] = useState<any>(null);
     const [operations, setOperations] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showLogModal, setShowLogModal] = useState(false);
     const [showQRModal, setShowQRModal] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-
-    const isRtl = i18n.language === 'ar';
 
     useEffect(() => {
         async function checkAuth() {
@@ -54,7 +52,6 @@ export default function PublicPlot() {
                 if (plotData) {
                     setPlot(plotData);
 
-                    // Fetch Operations
                     const { data: ops, error: opsError } = await supabase
                         .from('operations')
                         .select('*')
@@ -111,23 +108,28 @@ export default function PublicPlot() {
     };
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB] gap-4">
-            <div className="w-12 h-12 border-4 border-green-100 border-t-green-600 rounded-full animate-spin" />
-            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">{t('common.loading')}</p>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-950 gap-6">
+            <div className="relative">
+                <div className="w-16 h-16 border-4 border-green-500/10 rounded-full" />
+                <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin absolute top-0" />
+            </div>
+            <p className="text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest text-[10px] animate-pulse">{t('common.loading')}</p>
         </div>
     );
 
     if (!plot) return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-[#F9FAFB]">
-            <div className="max-w-md w-full bg-white p-10 rounded-3xl shadow-xl text-center border border-gray-100">
-                <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-950">
+            <div className="max-w-md w-full bg-white dark:bg-gray-900 p-10 rounded-[2.5rem] shadow-2xl text-center border border-gray-100 dark:border-gray-800">
+                <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Info className="h-10 w-10" />
                 </div>
-                <h1 className="text-2xl font-black text-gray-900 mb-2">{t('public_plot.not_found')}</h1>
-                <p className="text-gray-400 text-sm mb-8">ID: {id?.slice(0, 8)}...</p>
+                <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">{t('public_plot.not_found')}</h1>
+                <p className="text-gray-400 dark:text-gray-500 text-xs font-bold mb-8 uppercase tracking-widest leading-loose">
+                    ID: {id?.slice(0, 8)}...
+                </p>
                 <button
-                    onClick={() => window.location.href = '/'}
-                    className="w-full bg-gray-900 text-white py-4 rounded-2xl font-black transition-transform active:scale-95 min-h-[44px]"
+                    onClick={() => navigate('/')}
+                    className="w-full bg-gray-900 dark:bg-green-600 text-white py-5 rounded-2xl font-black transition-all active:scale-95 shadow-xl hover:shadow-green-500/20"
                 >
                     {t('common.home')}
                 </button>
@@ -139,77 +141,87 @@ export default function PublicPlot() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-            className={`min-h-screen bg-gray-50 pb-20 ${isRtl ? 'font-arabic' : 'font-sans'}`}
-            dir={isRtl ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24"
         >
-            {/* Top Navigation Bar */}
-            <nav className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
-                <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+            {/* Nav */}
+            <nav className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 px-4 h-18">
+                <div className="max-w-4xl mx-auto h-full flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center text-white font-black italic shadow-lg shadow-green-100">
-                            I
+                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                            <ArrowLeft className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                        </button>
+                        <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+                                <Sprout className="h-5 w-5 text-white" />
+                            </div>
+                            <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">ISIAOM</span>
                         </div>
-                        <span className="font-black text-sm tracking-tighter">ISIAOM</span>
                     </div>
                     <LanguageSwitcher />
                 </div>
             </nav>
 
-            <main className="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
-                {/* Hero Section */}
-                <section className="bg-white rounded-[2.5rem] shadow-xl shadow-green-900/5 overflow-hidden border border-gray-100 flex flex-col md:flex-row-reverse">
-                    {/* Plot Image / Placeholder */}
-                    <div className="w-full md:w-1/2 h-64 md:h-auto relative bg-green-50 group overflow-hidden">
+            <main className="max-w-4xl mx-auto p-4 md:p-8 space-y-8 mt-4">
+                {/* Hero */}
+                <section className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-2xl shadow-green-900/5 overflow-hidden border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row relative">
+                    {/* Plot Image */}
+                    <div className="w-full md:w-1/2 h-80 md:h-[500px] relative bg-gray-100 dark:bg-gray-800 group overflow-hidden">
                         {plot.image_url ? (
                             <img
                                 src={plot.image_url}
                                 alt={plot.name}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-green-200">
-                                <Sprout className="h-32 w-32" />
+                            <div className="w-full h-full flex items-center justify-center text-gray-200 dark:text-gray-700">
+                                <Sprout className="h-40 w-40" />
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-black/20 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent md:hidden" />
                     </div>
 
-                    {/* Plot Basic Info */}
-                    <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center text-right">
-                        <div className={`inline-flex items-center gap-2 px-3 py-1 ${plot.status === 'active' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'} rounded-full text-[10px] font-black uppercase tracking-wider mb-4 w-fit`}>
-                            <MapPin className="h-3 w-3" />
-                            {plot.status === 'active' ? t('dashboard.active') : t('dashboard.harvested')}
+                    <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center">
+                        <div className="flex items-center gap-2 mb-6">
+                            <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${plot.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                                {plot.status === 'active' ? t('dashboard.active') : t('dashboard.harvested')}
+                            </div>
+                            <div className="w-px h-4 bg-gray-200 dark:bg-gray-700" />
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ID: {plot.id}</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-2 leading-tight uppercase tracking-tight">
+
+                        <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 leading-tight tracking-tight uppercase">
                             {plot.name}
                         </h1>
-                        <p className="text-lg font-bold text-green-600 mb-8 flex items-center gap-2">
-                            <Sprout className="h-5 w-5" />
-                            {plot.crop_variety || t('public_plot.crop')}
-                        </p>
 
-                        <div className="grid grid-cols-2 gap-8 py-8 border-t border-gray-50">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-1">{t('public_plot.area')}</span>
-                                <span className="text-xl font-black text-gray-900">
-                                    {plot.area} <span className="text-xs font-normal lowercase">{t('public_plot.area_unit', { defaultValue: 'م²' })}</span>
-                                </span>
+                        <div className="flex items-center gap-3 text-green-600 dark:text-green-400 text-lg font-black mb-10 group cursor-default">
+                            <div className="w-10 h-10 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
+                                <Sprout className="h-5 w-5" />
                             </div>
-                            <div className="flex flex-col">
-                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mb-1">{t('public_plot.date')}</span>
-                                <span className="text-xl font-black text-gray-900">
-                                    {plot.planting_date || '----'}
+                            {plot.crop_variety || t('public_plot.crop')}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-10 py-10 border-y border-gray-50 dark:border-gray-800/50">
+                            <div>
+                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2 block">{t('public_plot.area')}</span>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-2xl font-black text-gray-900 dark:text-white">{plot.area}</span>
+                                    <span className="text-xs font-bold text-gray-400">{t('public_plot.area_unit', { defaultValue: 'm²' })}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2 block">{t('public_plot.date')}</span>
+                                <span className="text-2xl font-black text-gray-900 dark:text-white">
+                                    {plot.planting_date ? new Date(plot.planting_date).getFullYear() : '----'}
                                 </span>
                             </div>
                         </div>
 
                         {/* Desktop Actions */}
-                        <div className={`hidden md:flex items-center gap-4 mt-8 pt-8 border-t border-gray-50 ${!isAdmin ? 'justify-center' : ''}`}>
+                        <div className="hidden md:flex items-center gap-4 mt-12">
                             {isAdmin && (
                                 <button
                                     onClick={handleLogClick}
-                                    className="bg-green-600 text-white px-8 py-4 rounded-2xl flex items-center gap-3 hover:bg-green-700 transition-all shadow-xl shadow-green-100 font-black active:scale-95"
+                                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-5 rounded-[1.5rem] flex items-center justify-center gap-3 hover:shadow-2xl hover:shadow-green-500/20 transition-all font-black text-sm active:scale-95 shadow-xl"
                                 >
                                     <ClipboardList className="h-5 w-5" />
                                     {t('dashboard.log_operation')}
@@ -217,7 +229,7 @@ export default function PublicPlot() {
                             )}
                             <button
                                 onClick={handleShare}
-                                className={`${isAdmin ? 'bg-white text-gray-900 border-2 border-gray-100' : 'bg-gray-900 text-white shadow-xl shadow-gray-200'} px-8 py-4 rounded-2xl flex items-center gap-3 hover:opacity-90 transition-all font-black active:scale-95 min-w-[200px] justify-center`}
+                                className={`flex-1 ${isAdmin ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-gray-700' : 'bg-gray-900 dark:bg-green-600 text-white shadow-xl shadow-gray-200 dark:shadow-green-500/10'} px-8 py-5 rounded-[1.5rem] flex items-center justify-center gap-3 hover:opacity-90 transition-all font-black text-sm active:scale-95`}
                             >
                                 <Share2 className="h-5 w-5" />
                                 {t('public_plot.share_qr')}
@@ -228,182 +240,176 @@ export default function PublicPlot() {
 
                 {/* Technical Grid */}
                 <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Spacing */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 flex items-center gap-5">
-                        <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                            <TreeDeciduous className="h-7 w-7" />
-                        </div>
-                        <div className="flex flex-col text-right">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">{t('public_plot.spacing')}</span>
-                            <span className="text-lg font-black text-gray-900" dir="ltr">
-                                {plot.tree_spacing_row || '?'} × {plot.tree_spacing_between || '?'} م
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Plant Count */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-50 flex items-center gap-5">
-                        <div className="w-14 h-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                            <Layout className="h-7 w-7" />
-                        </div>
-                        <div className="flex flex-col text-right">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">{t('public_plot.plant_count')}</span>
-                            <span className="text-lg font-black text-gray-900">
-                                {plot.plant_count || '0'} <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">{t('public_plot.plant_unit')}</span>
-                            </span>
-                        </div>
-                    </div>
-
-                    {/* Training Method */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5 sm:col-span-2 lg:col-span-1">
-                        <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                            <GitBranch className="h-7 w-7" />
-                        </div>
-                        <div className="flex flex-col text-right">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">{t('public_plot.training_method')}</span>
-                            <span className="text-lg font-black text-gray-900">
-                                {plot.training_method ? t(`add_plot.methods.${plot.training_method}`) : '----'}
-                            </span>
-                        </div>
-                    </div>
+                    <TechnicalCard
+                        icon={<TreeDeciduous className="h-7 w-7" />}
+                        label={t('public_plot.spacing')}
+                        value={`${plot.tree_spacing_row || '?'} × ${plot.tree_spacing_between || '?'} m`}
+                        color="blue"
+                    />
+                    <TechnicalCard
+                        icon={<Layout className="h-7 w-7" />}
+                        label={t('public_plot.plant_count')}
+                        value={plot.plant_count?.toString() || '0'}
+                        unit={t('public_plot.plant_unit')}
+                        color="orange"
+                    />
+                    <TechnicalCard
+                        icon={<GitBranch className="h-7 w-7" />}
+                        label={t('public_plot.training_method')}
+                        value={plot.training_method ? t(`add_plot.methods.${plot.training_method}`) : '----'}
+                        color="purple"
+                    />
                 </section>
 
-                {/* Operations Timeline */}
-                <section>
-                    <div className="flex items-center justify-between mb-6 px-2">
-                        <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                            <div className="w-2 h-8 bg-green-600 rounded-full" />
-                            {t('public_plot.timeline')}
-                        </h2>
-                        <span className="text-[10px] font-black bg-gray-100 text-gray-400 px-3 py-1 rounded-full uppercase tracking-[0.2em]">
-                            {operations.length} {t('quick_log.title').split(' ')[0]}
-                        </span>
+                {/* Timeline */}
+                <section className="space-y-8">
+                    <div className="flex items-center justify-between px-2">
+                        <div className="flex items-center gap-4">
+                            <div className="w-2 h-10 bg-gradient-primary rounded-full shadow-lg shadow-green-500/20" />
+                            <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                {t('public_plot.timeline')}
+                            </h2>
+                        </div>
+                        <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-2xl text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">
+                            {operations.length} {t('quick_log.title')?.split(' ')[0]}
+                        </div>
                     </div>
 
                     <div className="space-y-6">
                         {operations.length === 0 ? (
-                            <div className="bg-white p-16 rounded-[2.5rem] text-center border border-dashed border-gray-200">
-                                <div className="w-16 h-16 bg-gray-50 text-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Droplet className="h-8 w-8" />
+                            <div className="bg-white dark:bg-gray-900 p-20 rounded-[3rem] text-center border-2 border-dashed border-gray-100 dark:border-gray-800">
+                                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800/50 text-gray-200 dark:text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Droplet className="h-10 w-10" />
                                 </div>
-                                <p className="text-gray-400 font-bold">{t('public_plot.no_operations')}</p>
+                                <p className="text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest text-xs">{t('public_plot.no_operations')}</p>
                             </div>
                         ) : (
-                            <div className={`relative ${isRtl ? 'border-r-2 md:border-r-4 mr-6 md:mr-10 pr-10 md:pr-14' : 'border-l-2 md:border-l-4 ml-6 md:ml-10 pl-10 md:pl-14'} border-green-50 space-y-10 pb-10`}>
-                                {operations.map((op) => {
-                                    const style = operationStyles[op.type] || { bg: 'bg-gray-50', text: 'text-gray-600', icon: Droplet };
-                                    const Icon = style.icon;
-                                    return (
-                                        <motion.div
-                                            key={op.id}
-                                            initial={{ opacity: 0, y: 20 }}
-                                            whileInView={{ opacity: 1, y: 0 }}
-                                            viewport={{ once: true }}
-                                            className="relative"
-                                        >
-                                            {/* Timeline Node */}
-                                            <div className={`absolute ${isRtl ? '-right-[51px] md:-right-[74px]' : '-left-[51px] md:-left-[74px]'} top-1 w-5 h-5 md:w-8 md:h-8 bg-white border-4 border-green-500 rounded-full z-10 shadow-sm transition-colors hover:bg-green-500`} />
-
-                                            <div className="bg-white rounded-[2rem] p-6 md:p-8 shadow-sm border border-gray-50 flex flex-col md:flex-row gap-6 md:gap-10 transition-all hover:shadow-xl hover:shadow-green-900/5 group border-transparent hover:border-green-100">
-                                                <div className="flex-1 text-right">
-                                                    <div className="flex justify-between items-start mb-4">
-                                                        <div>
-                                                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-1 block">
-                                                                {new Date(op.date).toLocaleDateString(i18n.language === 'ar' ? 'ar-MA' : i18n.language === 'fr' ? 'fr-FR' : 'en-US', {
-                                                                    day: 'numeric',
-                                                                    month: 'long',
-                                                                    year: 'numeric'
-                                                                })}
-                                                            </span>
-                                                            <h3 className="text-xl font-black text-gray-900 group-hover:text-green-700 transition-colors">
-                                                                {t(`quick_log.types.${op.type}`, { defaultValue: op.type })}
-                                                            </h3>
-                                                        </div>
-                                                        <div className={`p-4 rounded-2xl ${style.bg} ${style.text} transition-transform group-hover:scale-110`}>
-                                                            <Icon className="h-6 w-6" />
-                                                        </div>
-                                                    </div>
-
-                                                    {op.notes && (
-                                                        <div className="mt-4 bg-gray-50/80 p-4 rounded-xl border border-gray-100 flex flex-col gap-2 relative">
-                                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('quick_log.notes')}</span>
-                                                            <p className="text-gray-600 text-sm md:text-base leading-relaxed font-medium">
-                                                                {op.notes}
-                                                            </p>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {op.image_url && (
-                                                    <div className="w-full md:w-48 h-48 rounded-[1.5rem] overflow-hidden flex-shrink-0 group/img relative shadow-lg shadow-black/5">
-                                                        <img
-                                                            src={op.image_url}
-                                                            alt="Operation"
-                                                            className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
-                                                        />
-                                                        <a
-                                                            href={op.image_url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity"
-                                                        >
-                                                            <ExternalLink className="text-white h-6 w-6" />
-                                                        </a>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })}
+                            <div className="relative pl-10 md:pl-16 border-l-4 border-gray-100 dark:border-gray-800/50 space-y-12 pb-10 ml-4 md:ml-8">
+                                {operations.map((op) => (
+                                    <TimelineItem key={op.id} op={op} t={t} />
+                                ))}
                             </div>
                         )}
                     </div>
                 </section>
             </main>
 
-            {/* Mobile Sticky Action Bar */}
-            <div className={`fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl border-t border-gray-100 flex gap-3 md:hidden z-40 pb-safe ${!isAdmin ? 'justify-center' : ''}`}>
+            {/* Mobile Actions */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl border-t border-gray-100 dark:border-gray-800 flex gap-4 md:hidden z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
                 {isAdmin && (
                     <motion.button
-                        whileTap={{ scale: 0.95 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={handleLogClick}
-                        className="flex-1 bg-green-600 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 h-14 shadow-lg shadow-green-100 active:scale-95 transition-transform"
+                        className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-[1.25rem] font-black text-xs flex items-center justify-center gap-2 h-16 shadow-xl shadow-green-500/20"
                     >
                         <ClipboardList className="h-5 w-5" />
                         {t('dashboard.log_operation')}
                     </motion.button>
                 )}
                 <motion.button
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={handleShare}
-                    className={`${isAdmin ? 'flex-1 bg-white text-gray-900 border-2 border-gray-100' : 'w-full max-w-xs bg-gray-900 text-white shadow-lg shadow-gray-200'} rounded-2xl font-black text-sm flex items-center justify-center gap-2 h-14 active:scale-95 transition-transform`}
+                    className={`${isAdmin ? 'flex-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-gray-700' : 'w-full bg-gray-900 dark:bg-green-600 text-white shadow-2xl shadow-green-500/10'} rounded-[1.25rem] font-black text-xs flex items-center justify-center gap-2 h-16 active:scale-95`}
                 >
                     <Share2 className="h-5 w-5" />
                     {t('public_plot.share_qr')}
                 </motion.button>
             </div>
 
-            <footer className="max-w-4xl mx-auto px-8 py-10 text-center">
-                <p className="text-[10px] text-gray-300 font-black uppercase tracking-[0.5em]">
-                    ISIAOM Model Farm Tracking v2.5
+            <footer className="max-w-4xl mx-auto px-8 py-16 text-center">
+                <p className="text-[10px] text-gray-300 dark:text-gray-700 font-black uppercase tracking-[0.5em] mb-4">
+                    ISIAOM Model Farm Tracking
                 </p>
+                <div className="w-10 h-1 bg-gray-100 dark:bg-gray-800 mx-auto rounded-full" />
             </footer>
 
-            {/* Modals */}
             <AnimatePresence>
-                {showLogModal && isAdmin && (
-                    <QuickLogModal
-                        plotId={plot.id}
-                        onClose={() => setShowLogModal(false)}
-                    />
+                {showLogModal && (
+                    <QuickLogModal plotId={plot.id} onClose={() => setShowLogModal(false)} />
                 )}
                 {showQRModal && (
-                    <QRCodeGenerator
-                        plotId={plot.id}
-                        onClose={() => setShowQRModal(false)}
-                    />
+                    <QRCodeGenerator plotId={plot.id} onClose={() => setShowQRModal(false)} />
                 )}
             </AnimatePresence>
         </motion.div>
     );
 }
+
+function TechnicalCard({ icon, label, value, unit, color }: any) {
+    const colors: any = {
+        blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+        orange: 'bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400',
+        purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
+    }
+    return (
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 flex items-center gap-6 group hover:shadow-xl transition-all">
+            <div className={`w-16 h-16 ${colors[color]} rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform`}>
+                {icon}
+            </div>
+            <div className="flex flex-col">
+                <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1.5">{label}</span>
+                <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-black text-gray-900 dark:text-white" dir="ltr">{value}</span>
+                    {unit && <span className="text-[10px] font-bold text-gray-400 uppercase">{unit}</span>}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function TimelineItem({ op, t }: any) {
+    const style = operationStyles[op.type] || { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', icon: ClipboardList };
+    const Icon = style.icon;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="relative"
+        >
+            <div className="absolute -left-[54px] top-1.5 w-8 h-8 bg-white dark:bg-gray-950 border-4 border-green-500 rounded-full z-10 shadow-lg shadow-green-500/20" />
+
+            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row gap-8 transition-all hover:shadow-2xl hover:shadow-green-900/5 group">
+                <div className="flex-1">
+                    <div className="flex justify-between items-start mb-6">
+                        <div>
+                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2 block">
+                                {new Date(op.date).toLocaleDateString('fr-FR', {
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric'
+                                })}
+                            </span>
+                            <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-green-600 transition-colors">
+                                {t(`quick_log.types.${op.type}`, { defaultValue: op.type })}
+                            </h3>
+                        </div>
+                        <div className={`p-5 rounded-[1.5rem] ${style.bg} ${style.text} shadow-sm group-hover:scale-110 transition-transform`}>
+                            <Icon className="h-7 w-7" />
+                        </div>
+                    </div>
+
+                    {op.notes && (
+                        <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-[1.5rem] border border-gray-100 dark:border-gray-700/50">
+                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest mb-2 block">{t('quick_log.notes')}</span>
+                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-bold">
+                                {op.notes}
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {op.image_url && (
+                    <div className="w-full md:w-56 h-56 rounded-[2rem] overflow-hidden flex-shrink-0 relative group/img shadow-2xl">
+                        <img src={op.image_url} alt="Operation" className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
+                        <a href={op.image_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
+                            <ExternalLink className="text-white h-7 w-7" />
+                        </a>
+                    </div>
+                )}
+            </div>
+        </motion.div>
+    );
+}
+

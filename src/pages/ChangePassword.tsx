@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Lock, ArrowLeft, Check, AlertCircle } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { Lock, ArrowLeft, Check, AlertCircle, ShieldEllipsis } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function ChangePassword() {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -20,13 +23,13 @@ export default function ChangePassword() {
 
         // Validation
         if (newPassword.length < 6) {
-            setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل')
+            setError(t('account.password_min_length'))
             setLoading(false)
             return
         }
 
         if (newPassword !== confirmPassword) {
-            setError('كلمات المرور غير متطابقة')
+            setError(t('account.passwords_dont_match'))
             setLoading(false)
             return
         }
@@ -44,10 +47,10 @@ export default function ChangePassword() {
 
             // Redirect after 2 seconds
             setTimeout(() => {
-                navigate('/admin')
+                navigate('/admin/settings')
             }, 2000)
         } catch (err: any) {
-            setError(err.message || 'حدث خطأ أثناء تغيير كلمة المرور')
+            setError(err.message || t('common.error'))
         } finally {
             setLoading(false)
         }
@@ -57,119 +60,113 @@ export default function ChangePassword() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="min-h-screen bg-gradient-to-br from-green-50/30 via-white to-blue-50/30"
-            dir="rtl"
+            className="min-h-screen bg-gray-50 dark:bg-gray-950"
         >
-            {/* Header */}
-            <header className="glass sticky top-0 z-30 border-b border-white/20 shadow-lg">
-                <div className="max-w-3xl mx-auto px-4 h-20 flex items-center justify-between">
+            {/* Nav */}
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 h-20">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
-                            onClick={() => navigate('/admin')}
-                            className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all group"
+                            onClick={() => navigate('/admin/settings')}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
                         >
-                            <ArrowLeft className="h-6 w-6 text-white rotate-180 group-hover:scale-110 transition-transform" />
+                            <ArrowLeft className="h-5 w-5 text-gray-500" />
                         </button>
-                        <div>
-                            <h1 className="text-2xl font-black text-gray-900 tracking-tight">تغيير كلمة المرور</h1>
-                            <p className="text-xs text-gray-500 font-medium">Change Password</p>
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-gray-950 font-black shadow-lg">
+                                <Lock className="h-4 w-4" />
+                            </div>
+                            <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">Sécurité</span>
                         </div>
                     </div>
+                    <LanguageSwitcher />
                 </div>
-            </header>
+            </nav>
 
-            <main className="max-w-2xl mx-auto px-4 py-12">
+            <main className="max-w-2xl mx-auto px-4 py-32">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
+                    initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 overflow-hidden"
                 >
-                    <div className="p-8 border-b border-gray-100 bg-gradient-to-r from-green-50 to-emerald-50">
-                        <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-                                <Lock className="h-8 w-8 text-white" />
+                    <div className="p-10 border-b border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02]">
+                        <div className="flex items-center gap-6">
+                            <div className="w-16 h-16 bg-gradient-primary rounded-[1.5rem] flex items-center justify-center shadow-lg">
+                                <ShieldEllipsis className="h-8 w-8 text-white" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-gray-900">تحديث كلمة المرور</h2>
-                                <p className="text-sm text-gray-600">قم بتغيير كلمة المرور الخاصة بك</p>
+                                <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('account.update_password')}</h2>
+                                <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">{t('account.password_subtitle')}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-8">
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-6 flex items-center gap-3"
-                            >
-                                <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                                <p className="text-sm font-bold">{error}</p>
-                            </motion.div>
-                        )}
+                    <div className="p-10">
+                        <AnimatePresence mode="wait">
+                            {(error || success) && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className={`p-6 rounded-2xl mb-8 flex items-center gap-4 text-[11px] font-black uppercase tracking-widest border ${success
+                                        ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-800/50'
+                                        : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800/50'}`}
+                                >
+                                    {success ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                                    {success ? t('account.password_updated') : error}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                        {success && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-2xl mb-6 flex items-center gap-3"
-                            >
-                                <Check className="h-5 w-5 flex-shrink-0" />
-                                <p className="text-sm font-bold">تم تغيير كلمة المرور بنجاح! جاري التحويل...</p>
-                            </motion.div>
-                        )}
-
-                        <form onSubmit={handleChangePassword} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    كلمة المرور الجديدة
+                        <form onSubmit={handleChangePassword} className="space-y-8">
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-4">
+                                    {t('account.new_password')}
                                 </label>
                                 <input
                                     type="password"
                                     required
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm"
-                                    placeholder="أدخل كلمة المرور الجديدة"
-                                    minLength={6}
+                                    className="w-full px-8 py-5 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all text-sm font-bold shadow-sm"
+                                    placeholder="••••••••"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">يجب أن تكون 6 أحرف على الأقل</p>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    تأكيد كلمة المرور
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-4">
+                                    {t('account.confirm_password')}
                                 </label>
                                 <input
                                     type="password"
                                     required
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm"
-                                    placeholder="أعد إدخال كلمة المرور"
-                                    minLength={6}
+                                    className="w-full px-8 py-5 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all text-sm font-bold shadow-sm"
+                                    placeholder="••••••••"
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => navigate('/admin')}
-                                    className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-2xl font-bold hover:bg-gray-200 transition-all"
-                                >
-                                    إلغاء
-                                </button>
-                                <button
+                            <div className="pt-4">
+                                <motion.button
+                                    whileHover={{ y: -4 }}
+                                    whileTap={{ scale: 0.98 }}
                                     type="submit"
                                     disabled={loading || success}
-                                    className="flex-1 px-6 py-3 bg-gradient-primary text-white rounded-2xl font-bold hover:shadow-xl transition-all disabled:opacity-50 shadow-md"
+                                    className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-950 h-16 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                                 >
-                                    {loading ? 'جاري التحديث...' : 'تحديث كلمة المرور'}
-                                </button>
+                                    {loading ? t('common.loading') : t('account.update_password')}
+                                </motion.button>
                             </div>
                         </form>
                     </div>
                 </motion.div>
+
+                <div className="text-center mt-12">
+                    <p className="text-[10px] font-black text-gray-300 dark:text-gray-700 uppercase tracking-[0.5em]">
+                        ISIAOM Agricultural Hub
+                    </p>
+                </div>
             </main>
         </motion.div>
     )

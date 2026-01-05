@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Sprout, MapPin, LayoutDashboard, Leaf, LayoutGrid } from 'lucide-react'
+import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { motion } from 'framer-motion'
@@ -43,13 +43,13 @@ export default function HomePage() {
     }
 
     if (loading) return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 gap-4">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-950 gap-6">
             <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-16 h-16 border-4 border-green-100 border-t-green-600 rounded-full"
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                className="w-12 h-12 border-4 border-gray-100 dark:border-gray-800 border-t-green-500 rounded-full"
             />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">{t('common.loading')}</p>
+            <p className="text-gray-400 dark:text-gray-500 font-black uppercase tracking-[0.2em] text-[10px]">{t('common.loading')}</p>
         </div>
     );
 
@@ -57,133 +57,145 @@ export default function HomePage() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="min-h-screen bg-gradient-to-br from-green-50/30 via-white to-blue-50/30"
+            className="min-h-screen bg-gray-50 dark:bg-gray-950"
         >
-            {/* Enhanced Header */}
-            <header className="glass sticky top-0 z-20 border-b border-white/20 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                    <motion.div
-                        className="flex items-center gap-3"
-                        whileHover={{ scale: 1.02 }}
-                    >
-                        <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg">
-                            <Leaf className="h-7 w-7 text-white" />
+            {/* Nav */}
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 h-20">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-black shadow-lg">
+                            <Leaf className="h-6 w-6" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-black text-gray-900 tracking-tight">ISIAOM Farm</h1>
-                            <p className="text-xs text-gray-500 font-medium">مزرعة نموذجية</p>
+                            <span className="block font-black text-sm tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
+                            <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">Model Farm</span>
                         </div>
-                    </motion.div>
-                    <div className="flex items-center gap-3">
-                        <Link
-                            to="/gallery"
-                            className="hidden md:flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-green-700 bg-green-50/80 hover:bg-green-100 rounded-xl transition-all border border-green-200/50 hover-lift"
-                        >
-                            <LayoutGrid className="h-4 w-4" />
-                            {t('gallery.title')}
-                        </Link>
-                        <LanguageSwitcher />
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="hidden sm:block">
+                            <LanguageSwitcher />
+                        </div>
                         {isAdmin ? (
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Link
-                                    to="/admin"
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-primary rounded-xl transition-all shadow-md hover:shadow-xl"
-                                >
-                                    <LayoutDashboard className="h-4 w-4" />
-                                    <span className="hidden sm:inline">{t('common.dashboard')}</span>
-                                </Link>
-                            </motion.div>
+                            <Link
+                                to="/admin"
+                                className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl"
+                            >
+                                <LayoutDashboard className="h-4 w-4" />
+                                {t('common.dashboard')}
+                            </Link>
                         ) : (
-                            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                <Link
-                                    to="/login"
-                                    className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-primary rounded-xl transition-all shadow-md hover:shadow-xl"
-                                >
-                                    <LayoutDashboard className="h-4 w-4" />
-                                    <span className="hidden sm:inline">تسجيل الدخول</span>
-                                </Link>
-                            </motion.div>
+                            <Link
+                                to="/login"
+                                className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-xl text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl"
+                            >
+                                {t('login.submit')}
+                            </Link>
                         )}
                     </div>
                 </div>
+            </nav>
+
+            {/* Hero Section */}
+            <header className="relative pt-40 pb-20 px-4 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/10 dark:from-green-950/20 dark:to-transparent pointer-events-none" />
+                <div className="max-w-5xl mx-auto relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-center"
+                    >
+                        <h1 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tighter leading-none">
+                            Système de <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">Suivi Digital</span>
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg md:text-2xl font-bold uppercase tracking-widest max-w-2xl mx-auto leading-relaxed">
+                            {t('common.model_farm')} & Gestion de Parcelles
+                        </p>
+
+                        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+                            <Link to="/gallery" className="px-10 py-5 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-green-500/20 transition-all flex items-center gap-3 group">
+                                {t('gallery.title')}
+                                <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                            <Link to="/admin" className="px-10 py-5 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border border-gray-100 dark:border-gray-800 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
+                                Documentation
+                            </Link>
+                        </div>
+                    </motion.div>
+                </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* Main Content */}
+            <main className="max-w-7xl mx-auto px-4 md:px-8 py-20">
+                <div className="flex items-center justify-between mb-12">
+                    <div>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Nos Parcelles</h2>
+                        <div className="h-1 w-20 bg-green-500 mt-2 rounded-full" />
+                    </div>
+                </div>
+
                 {plots.length === 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-center py-24 bg-white/60 backdrop-blur-sm rounded-3xl border border-gray-100 shadow-xl"
-                    >
-                        <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Sprout className="h-10 w-10 text-green-400" />
-                        </div>
-                        <h3 className="text-xl font-black text-gray-900 mb-2">{t('public_plot.no_operations')}</h3>
-                        <p className="text-gray-500 text-sm">لا توجد قطع مسجلة حالياً</p>
-                    </motion.div>
+                    <div className="text-center py-32 bg-white dark:bg-gray-900 rounded-[3rem] border-2 border-dashed border-gray-100 dark:border-gray-800">
+                        <Sprout className="h-16 w-16 text-gray-200 dark:text-gray-700 mx-auto mb-6" />
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white uppercase">{t('public_plot.no_operations')}</h3>
+                    </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {plots.map((plot, index) => (
                             <motion.div
                                 key={plot.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.1 }}
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                className="group"
+                                whileHover={{ y: -10 }}
+                                className="group bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden border border-gray-100 dark:border-gray-800 shadow-xl shadow-green-900/5 transition-all duration-500"
                             >
-                                <Link
-                                    to={`/plot/${plot.id}`}
-                                    className="block bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-md hover:shadow-2xl transition-all duration-500"
-                                >
-                                    <div className="h-56 bg-gradient-to-br from-green-100 to-blue-100 relative overflow-hidden">
+                                <Link to={`/plot/${plot.id}`} className="block">
+                                    <div className="h-64 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
                                         {plot.image_url ? (
                                             <img
                                                 src={plot.image_url}
                                                 alt={plot.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
-                                                <Sprout className="h-20 w-20 text-green-300" />
+                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900">
+                                                <Sprout className="h-16 w-16 text-green-200 dark:text-gray-700" />
                                             </div>
                                         )}
-                                        <div className="absolute top-4 left-4">
-                                            <span className={`px-4 py-1.5 rounded-full text-xs font-black shadow-lg backdrop-blur-md ${plot.status === 'active'
-                                                ? 'bg-emerald-500/90 text-white'
-                                                : plot.status === 'harvested'
-                                                    ? 'bg-orange-500/90 text-white'
-                                                    : 'bg-gray-500/90 text-white'
+                                        <div className="absolute top-6 left-6">
+                                            <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-2xl backdrop-blur-md ${plot.status === 'active'
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-orange-500 text-white'
                                                 }`}>
-                                                {plot.status === 'active'
-                                                    ? t('dashboard.active')
-                                                    : plot.status === 'harvested'
-                                                        ? t('dashboard.harvested')
-                                                        : plot.status}
+                                                {plot.status === 'active' ? t('dashboard.active') : t('dashboard.harvested')}
                                             </span>
                                         </div>
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                                     </div>
-                                    <div className="p-6">
-                                        <h3 className="text-2xl font-black text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+
+                                    <div className="p-10">
+                                        <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4 uppercase tracking-tighter group-hover:text-green-600 transition-colors">
                                             {plot.name}
                                         </h3>
-                                        <div className="grid grid-cols-2 gap-3 mb-4">
-                                            <div className="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-xl">
-                                                <Sprout className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                                <span className="text-sm font-bold text-gray-700 truncate">{plot.crop_variety}</span>
+
+                                        <div className="flex flex-wrap gap-3 mb-8">
+                                            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-xl border border-transparent group-hover:border-green-500/20 transition-all">
+                                                <Leaf className="h-4 w-4 text-green-500" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">{plot.crop_variety}</span>
                                             </div>
-                                            <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-xl">
-                                                <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                                                <span className="text-sm font-bold text-gray-700">{plot.area} {t('public_plot.area_unit', { defaultValue: 'm²' })}</span>
+                                            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-xl border border-transparent group-hover:border-blue-500/20 transition-all">
+                                                <MapPin className="h-4 w-4 text-blue-500" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">{plot.area} m²</span>
                                             </div>
                                         </div>
-                                        {plot.training_method && (
-                                            <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl text-xs font-black text-purple-700 border border-purple-100">
-                                                {t(`add_plot.methods.${plot.training_method}`)}
+
+                                        <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-gray-800/50">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Scanner QR Dispo</span>
+                                            <div className="w-10 h-10 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-all">
+                                                <ArrowRight className="h-5 w-5" />
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 </Link>
                             </motion.div>
@@ -191,6 +203,28 @@ export default function HomePage() {
                     </div>
                 )}
             </main>
+
+            {/* Footer */}
+            <footer className="py-20 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center">
+                    <div className="flex items-center gap-3 mb-10">
+                        <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white font-black shadow-lg">
+                            <Leaf className="h-6 w-6" />
+                        </div>
+                        <span className="font-black text-lg tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
+                    </div>
+
+                    <div className="flex gap-8 mb-10">
+                        {['Accueil', 'Galerie', 'Admin', 'Contact'].map(item => (
+                            <span key={item} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-green-500 cursor-pointer transition-colors">{item}</span>
+                        ))}
+                    </div>
+
+                    <div className="text-[10px] font-black text-gray-300 dark:text-gray-700 uppercase tracking-[0.5em]">
+                        &copy; 2026 Model Farm Tracking System
+                    </div>
+                </div>
+            </footer>
         </motion.div>
     )
 }

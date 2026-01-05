@@ -11,7 +11,8 @@
         "success": "Success!",
         "error": "An error occurred!",
         "analytics": "Analytics",
-        "days": "Days"
+        "days": "Days",
+        "model_farm": "Model Farm"
     },
     "offline": {
         "you_are_offline": "You are offline",
@@ -130,5 +131,37 @@
             "date": "Date",
             "notes": "Notes"
         }
+    },
+    "login": {
+        "title": "Admin Login",
+        "subtitle": "Enter your credentials to access the dashboard",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Login",
+        "logging_in": "Logging in...",
+        "error": "Invalid email or password"
+    },
+    "settings": {
+        "title": "Settings",
+        "tabs": {
+            "account": "Account",
+            "data": "Data",
+            "appearance": "Appearance"
+        }
+    },
+    "account": {
+        "change_password": "Change Password",
+        "update_password": "Update Password",
+        "password_subtitle": "Update your password to keep your account secure",
+        "current_password": "Current Password",
+        "new_password": "New Password",
+        "confirm_password": "Confirm New Password",
+        "password_min_length": "Password must be at least 6 characters",
+        "passwords_dont_match": "Passwords do not match",
+        "password_updated": "Password updated successfully!",
+        "update_email": "Update Email",
+        "new_email": "New Email",
+        "email_updated": "Email updated!",
+        "confirm_sent": "A confirmation link has been sent to your new email!"
     }
 }

@@ -149,31 +149,36 @@
 }
 
 body {
-  font-family: var(--font-arabic);
+  font-family: var(--font-latin);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Latin text */
-body:not([dir="rtl"]) {
-  font-family: var(--font-latin);
 }
 
 /* ===== Dark Mode ===== */
 .dark {
   /* Dark backgrounds */
-  --bg-primary: #111827;
-  --bg-secondary: #1F2937;
-  --bg-tertiary: #374151;
+  --bg-primary: #0f172a;
+  /* Slate 900 */
+  --bg-secondary: #1e293b;
+  /* Slate 800 */
+  --bg-tertiary: #334155;
+  /* Slate 700 */
 
   /* Dark text */
-  --text-primary: #F9FAFB;
-  --text-secondary: #D1D5DB;
-  --text-tertiary: #9CA3AF;
+  --text-primary: #f8fafc;
+  /* Slate 50 */
+  --text-secondary: #cbd5e1;
+  /* Slate 300 */
+  --text-tertiary: #94a3b8;
+  /* Slate 400 */
 
   /* Dark borders */
-  --border-primary: #374151;
-  --border-secondary: #4B5563;
+  --border-primary: #1e293b;
+  /* Slate 800 */
+  --border-secondary: #334155;
+  /* Slate 700 */
+
+  color-scheme: dark;
 }
 
 .dark body {
@@ -182,10 +187,37 @@ body:not([dir="rtl"]) {
 }
 
 .dark .glass {
-  background: rgba(31, 41, 55, 0.7);
+  background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dark .bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-gray-500 {
+  color: var(--text-tertiary) !important;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200 {
+  border-color: var(--border-secondary) !important;
+}
+
+.dark .bg-gray-50,
+.dark .bg-gray-100 {
+  background-color: var(--bg-tertiary) !important;
 }
 
 /* ===== Utility Classes ===== */

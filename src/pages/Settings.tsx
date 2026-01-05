@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import {
     ArrowLeft, Mail, Download, Moon, Sun, Check, AlertCircle,
-    FileSpreadsheet, FileText, Package
+    FileSpreadsheet, Package, Leaf, Lock, Shield, Settings as SettingsIcon, Loader2
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
 import { exportPlotsToExcel, exportOperationsToExcel, exportToCSV, exportFullReport } from '@/lib/export'
+import { useTranslation } from 'react-i18next'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function Settings() {
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
     const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance'>('account')
@@ -23,7 +25,7 @@ export default function Settings() {
 
     // Export state
     const [exportLoading, setExportLoading] = useState(false)
-    const [exportMessage, setExportMessage] = useState<string | null>(null)
+    const [exportMessage, setExportMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
     const handleUpdateEmail = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -42,7 +44,7 @@ export default function Settings() {
             setNewEmail('')
             setTimeout(() => setEmailSuccess(false), 5000)
         } catch (err: any) {
-            setEmailError(err.message || 'حدث خطأ أثناء تحديث البريد الإلكتروني')
+            setEmailError(err.message || t('common.error'))
         } finally {
             setEmailLoading(false)
         }
@@ -73,13 +75,13 @@ export default function Settings() {
             }
 
             if (result.success) {
-                setExportMessage('✅ تم التصدير بنجاح!')
+                setExportMessage({ type: 'success', text: '✅ ' + t('common.success') })
                 setTimeout(() => setExportMessage(null), 3000)
             } else {
-                setExportMessage('❌ فشل التصدير')
+                setExportMessage({ type: 'error', text: '❌ ' + t('common.error') })
             }
         } catch (error) {
-            setExportMessage('❌ حدث خطأ أثناء التصدير')
+            setExportMessage({ type: 'error', text: '❌ ' + t('common.error') })
         } finally {
             setExportLoading(false)
         }
@@ -89,285 +91,314 @@ export default function Settings() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="min-h-screen bg-gradient-to-br from-green-50/30 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
-            dir="rtl"
+            className="min-h-screen bg-gray-50 dark:bg-gray-950"
         >
-            {/* Header */}
-            <header className="glass sticky top-0 z-30 border-b border-white/20 dark:border-gray-700 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+            {/* Nav */}
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 h-20">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => navigate('/admin')}
-                            className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all group"
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
                         >
-                            <ArrowLeft className="h-6 w-6 text-white rotate-180 group-hover:scale-110 transition-transform" />
+                            <ArrowLeft className="h-5 w-5 text-gray-500" />
                         </button>
-                        <div>
-                            <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">الإعدادات</h1>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Settings</p>
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-gray-950 font-black shadow-lg">
+                                <SettingsIcon className="h-4 w-4" />
+                            </div>
+                            <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">{t('settings.title')}</span>
                         </div>
                     </div>
+                    <LanguageSwitcher />
                 </div>
-            </header>
+            </nav>
 
-            <main className="max-w-6xl mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    {/* Sidebar */}
+            <main className="max-w-7xl mx-auto px-4 py-32 md:px-8">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    {/* Sidebar Nav */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
-                            <nav className="p-2">
+                        <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 p-4 sticky top-32">
+                            <nav className="space-y-2">
                                 <button
                                     onClick={() => setActiveTab('account')}
-                                    className={`w-full text-right px-4 py-3 rounded-2xl font-bold transition-all mb-1 ${activeTab === 'account'
-                                            ? 'bg-gradient-primary text-white shadow-md'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'account'
+                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-950 shadow-2xl'
+                                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }`}
                                 >
-                                    <Mail className="h-5 w-5 inline ml-2" />
-                                    الحساب
+                                    <Mail className="h-4 w-4" />
+                                    {t('settings.tabs.account')}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('data')}
-                                    className={`w-full text-right px-4 py-3 rounded-2xl font-bold transition-all mb-1 ${activeTab === 'data'
-                                            ? 'bg-gradient-primary text-white shadow-md'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'data'
+                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-950 shadow-2xl'
+                                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }`}
                                 >
-                                    <Download className="h-5 w-5 inline ml-2" />
-                                    البيانات
+                                    <Download className="h-4 w-4" />
+                                    {t('settings.tabs.data')}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('appearance')}
-                                    className={`w-full text-right px-4 py-3 rounded-2xl font-bold transition-all ${activeTab === 'appearance'
-                                            ? 'bg-gradient-primary text-white shadow-md'
-                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'appearance'
+                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-950 shadow-2xl'
+                                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
                                         }`}
                                 >
-                                    {theme === 'dark' ? (
-                                        <Moon className="h-5 w-5 inline ml-2" />
-                                    ) : (
-                                        <Sun className="h-5 w-5 inline ml-2" />
-                                    )}
-                                    المظهر
+                                    {theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                                    {t('settings.tabs.appearance')}
                                 </button>
                             </nav>
                         </div>
                     </div>
 
-                    {/* Content */}
+                    {/* Content Area */}
                     <div className="lg:col-span-3">
-                        {/* Account Tab */}
-                        {activeTab === 'account' && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="space-y-6"
-                            >
-                                {/* Change Password */}
-                                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                                    <h3 className="text-lg font-black text-gray-900 dark:text-white mb-4">تغيير كلمة المرور</h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                        قم بتحديث كلمة المرور الخاصة بك للحفاظ على أمان حسابك
-                                    </p>
-                                    <Link
-                                        to="/admin/change-password"
-                                        className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-primary text-white rounded-2xl font-bold hover:shadow-xl transition-all shadow-md"
-                                    >
-                                        تغيير كلمة المرور
-                                        <ArrowLeft className="h-4 w-4" />
-                                    </Link>
-                                </div>
-
-                                {/* Update Email */}
-                                <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-                                    <h3 className="text-lg font-black text-gray-900 dark:text-white mb-4">تحديث البريد الإلكتروني</h3>
-
-                                    {emailError && (
-                                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-4 rounded-2xl mb-4 flex items-center gap-3">
-                                            <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                                            <p className="text-sm font-bold">{emailError}</p>
-                                        </div>
-                                    )}
-
-                                    {emailSuccess && (
-                                        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 p-4 rounded-2xl mb-4 flex items-center gap-3">
-                                            <Check className="h-5 w-5 flex-shrink-0" />
-                                            <p className="text-sm font-bold">تم إرسال رابط التأكيد إلى بريدك الجديد!</p>
-                                        </div>
-                                    )}
-
-                                    <form onSubmit={handleUpdateEmail} className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                                                البريد الإلكتروني الجديد
-                                            </label>
-                                            <input
-                                                type="email"
-                                                required
-                                                value={newEmail}
-                                                onChange={(e) => setNewEmail(e.target.value)}
-                                                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-2xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm"
-                                                placeholder="admin@example.com"
-                                            />
-                                        </div>
-                                        <button
-                                            type="submit"
-                                            disabled={emailLoading || emailSuccess}
-                                            className="px-6 py-3 bg-gradient-primary text-white rounded-2xl font-bold hover:shadow-xl transition-all disabled:opacity-50 shadow-md"
-                                        >
-                                            {emailLoading ? 'جاري التحديث...' : 'تحديث البريد'}
-                                        </button>
-                                    </form>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {/* Data Tab */}
-                        {activeTab === 'data' && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6"
-                            >
-                                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-4">تصدير البيانات</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                    قم بتصدير بياناتك إلى ملفات Excel أو CSV
-                                </p>
-
-                                {exportMessage && (
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 p-4 rounded-2xl mb-6">
-                                        <p className="text-sm font-bold">{exportMessage}</p>
-                                    </div>
-                                )}
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {/* Plots Export */}
-                                    <div className="border border-gray-200 dark:border-gray-600 rounded-2xl p-4">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                                                <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <AnimatePresence mode="wait">
+                            {/* Account Section */}
+                            {activeTab === 'account' && (
+                                <motion.div
+                                    key="account"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className="space-y-8"
+                                >
+                                    <div className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 overflow-hidden">
+                                        <div className="p-10 border-b border-gray-50 dark:border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-16 h-16 bg-gradient-primary rounded-[1.5rem] flex items-center justify-center shadow-lg">
+                                                    <Lock className="h-8 w-8 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('account.change_password')}</h3>
+                                                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">{t('account.password_subtitle')}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 dark:text-white">القطع</h4>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">Plots Data</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
                                             <button
-                                                onClick={() => handleExport('plots-excel')}
-                                                disabled={exportLoading}
-                                                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 transition-all disabled:opacity-50"
+                                                onClick={() => navigate('/admin/change-password')}
+                                                className="px-8 py-4 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-gray-100 dark:hover:bg-gray-750 transition-all border border-transparent dark:border-gray-700 shadow-sm"
                                             >
-                                                <FileSpreadsheet className="h-4 w-4 inline ml-1" />
-                                                Excel
-                                            </button>
-                                            <button
-                                                onClick={() => handleExport('plots-csv')}
-                                                disabled={exportLoading}
-                                                className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-xl text-sm font-bold hover:bg-gray-700 transition-all disabled:opacity-50"
-                                            >
-                                                <FileText className="h-4 w-4 inline ml-1" />
-                                                CSV
+                                                Mettre à jour
                                             </button>
                                         </div>
                                     </div>
 
-                                    {/* Operations Export */}
-                                    <div className="border border-gray-200 dark:border-gray-600 rounded-2xl p-4">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-                                                <Download className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                            </div>
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 dark:text-white">العمليات</h4>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">Operations Data</p>
-                                            </div>
+                                    <div className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 p-10">
+                                        <div className="flex items-center gap-4 mb-10">
+                                            <div className="w-1.5 h-8 bg-green-500 rounded-full" />
+                                            <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                                {t('account.update_email')}
+                                            </h3>
                                         </div>
-                                        <div className="flex gap-2">
+
+                                        <form onSubmit={handleUpdateEmail} className="space-y-8 max-w-xl">
+                                            <div className="space-y-3">
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest ml-4">
+                                                    {t('account.new_email')}
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    required
+                                                    value={newEmail}
+                                                    onChange={(e) => setNewEmail(e.target.value)}
+                                                    className="w-full px-8 py-5 bg-gray-50 dark:bg-gray-800/50 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all text-sm font-bold shadow-sm"
+                                                    placeholder="new-admin@isiaom.ma"
+                                                />
+                                            </div>
+
                                             <button
-                                                onClick={() => handleExport('ops-excel')}
-                                                disabled={exportLoading}
-                                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all disabled:opacity-50"
+                                                type="submit"
+                                                disabled={emailLoading || emailSuccess}
+                                                className="px-12 py-5 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl transition-all disabled:opacity-50"
                                             >
-                                                <FileSpreadsheet className="h-4 w-4 inline ml-1" />
-                                                Excel
+                                                {emailLoading ? t('common.loading') : 'Confirmer le Changement'}
                                             </button>
-                                            <button
-                                                onClick={() => handleExport('ops-csv')}
-                                                disabled={exportLoading}
-                                                className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-xl text-sm font-bold hover:bg-gray-700 transition-all disabled:opacity-50"
-                                            >
-                                                <FileText className="h-4 w-4 inline ml-1" />
-                                                CSV
-                                            </button>
-                                        </div>
+
+                                            <AnimatePresence>
+                                                {(emailError || emailSuccess) && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 10 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        className={`p-6 rounded-2xl flex items-center gap-4 text-[11px] font-black uppercase tracking-widest border ${emailSuccess
+                                                            ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-800/50'
+                                                            : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800/50'}`}
+                                                    >
+                                                        {emailSuccess ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                                                        {emailSuccess ? t('account.confirm_sent') : emailError}
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </form>
                                     </div>
+                                </motion.div>
+                            )}
 
-                                    {/* Full Report */}
-                                    <div className="md:col-span-2 border-2 border-purple-200 dark:border-purple-800 rounded-2xl p-4 bg-purple-50/50 dark:bg-purple-900/10">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                                                <FileSpreadsheet className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                                            </div>
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 dark:text-white">تقرير شامل</h4>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">Full Report (Plots + Operations)</p>
-                                            </div>
+                            {/* Data Section */}
+                            {activeTab === 'data' && (
+                                <motion.div
+                                    key="data"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className="space-y-8"
+                                >
+                                    <div className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 p-10">
+                                        <div className="mb-12">
+                                            <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">Centre d'Exportation</h3>
+                                            <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">Gérez vos données agricoles hors ligne</p>
                                         </div>
-                                        <button
-                                            onClick={() => handleExport('full')}
-                                            disabled={exportLoading}
-                                            className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold hover:shadow-xl transition-all disabled:opacity-50"
-                                        >
-                                            {exportLoading ? 'جاري التصدير...' : 'تصدير التقرير الشامل'}
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
 
-                        {/* Appearance Tab */}
-                        {activeTab === 'appearance' && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6"
-                            >
-                                <h3 className="text-lg font-black text-gray-900 dark:text-white mb-4">المظهر</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                                    اختر الوضع الليلي أو النهاري حسب تفضيلاتك
-                                </p>
-
-                                <div className="flex items-center justify-between p-6 border border-gray-200 dark:border-gray-600 rounded-2xl">
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${theme === 'dark' ? 'bg-gray-700' : 'bg-yellow-100'
-                                            }`}>
-                                            {theme === 'dark' ? (
-                                                <Moon className="h-6 w-6 text-blue-400" />
-                                            ) : (
-                                                <Sun className="h-6 w-6 text-yellow-600" />
+                                        <AnimatePresence>
+                                            {exportMessage && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className={`p-6 rounded-2xl mb-10 flex items-center gap-4 text-[11px] font-black uppercase tracking-widest border ${exportMessage.type === 'success'
+                                                        ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-100 dark:border-green-800/50'
+                                                        : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-800/50'
+                                                        }`}
+                                                >
+                                                    {exportMessage.text}
+                                                </motion.div>
                                             )}
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-gray-900 dark:text-white">
-                                                {theme === 'dark' ? 'الوضع الليلي' : 'الوضع النهاري'}
-                                            </h4>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                                                {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
-                                            </p>
+                                        </AnimatePresence>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                            {/* Plots Card */}
+                                            <div className="bg-gray-50/50 dark:bg-white/[0.02] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 group hover:border-green-500/30 transition-all duration-500">
+                                                <div className="flex items-center gap-5 mb-8">
+                                                    <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-md">
+                                                        <Package className="h-7 w-7 text-green-500" />
+                                                    </div>
+                                                    <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">Liste des Parcelles</h4>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        onClick={() => handleExport('plots-excel')}
+                                                        className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all shadow-sm"
+                                                    >
+                                                        Excel
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleExport('plots-csv')}
+                                                        className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-950 transition-all shadow-sm"
+                                                    >
+                                                        CSV
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Operations Card */}
+                                            <div className="bg-gray-50/50 dark:bg-white/[0.02] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 group hover:border-blue-500/30 transition-all duration-500">
+                                                <div className="flex items-center gap-5 mb-8">
+                                                    <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-md">
+                                                        <FileSpreadsheet className="h-7 w-7 text-blue-500" />
+                                                    </div>
+                                                    <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">Historique Logs</h4>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        onClick={() => handleExport('ops-excel')}
+                                                        className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all shadow-sm"
+                                                    >
+                                                        Excel
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleExport('ops-csv')}
+                                                        className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-gray-900 hover:text-white transition-all shadow-sm"
+                                                    >
+                                                        CSV
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Full Report Upgrade */}
+                                            <div className="md:col-span-2 relative overflow-hidden bg-gradient-to-br from-green-600 to-emerald-700 dark:from-green-900 dark:to-emerald-950 p-10 rounded-[3rem] text-white shadow-2xl">
+                                                <div className="absolute top-0 right-0 p-10 opacity-10 scale-150 rotate-12">
+                                                    <Leaf className="h-32 w-32" />
+                                                </div>
+                                                <div className="relative z-10">
+                                                    <h4 className="text-3xl font-black mb-4 uppercase tracking-tighter leading-tight">Générer le Rapport<br />Technique Intégral</h4>
+                                                    <p className="text-green-50/80 mb-10 font-bold max-w-lg text-sm leading-relaxed">Fusionnez toutes les parcelles et les opérations historiques dans un document maître optimisé pour l'analyse.</p>
+                                                    <button
+                                                        onClick={() => handleExport('full')}
+                                                        disabled={exportLoading}
+                                                        className="inline-flex items-center gap-4 px-10 py-5 bg-white text-green-600 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:bg-green-50 transition-all disabled:opacity-50"
+                                                    >
+                                                        {exportLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Shield className="h-5 w-5" />}
+                                                        Exporter Tout le Projet
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={toggleTheme}
-                                        className={`relative w-16 h-8 rounded-full transition-all ${theme === 'dark' ? 'bg-blue-600' : 'bg-gray-300'
-                                            }`}
-                                    >
-                                        <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${theme === 'dark' ? 'right-1' : 'right-9'
-                                            }`} />
-                                    </button>
-                                </div>
-                            </motion.div>
-                        )}
+                                </motion.div>
+                            )}
+
+                            {/* Appearance Section */}
+                            {activeTab === 'appearance' && (
+                                <motion.div
+                                    key="appearance"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 p-10"
+                                >
+                                    <div className="mb-12">
+                                        <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">Design & Vision</h3>
+                                        <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">Optimisez votre confort de lecture</p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <button
+                                            onClick={() => theme !== 'light' && toggleTheme()}
+                                            className={`group relative overflow-hidden rounded-[2.5rem] p-10 border-2 transition-all text-left ${theme === 'light'
+                                                ? 'border-green-500 bg-green-50/30 shadow-2xl shadow-green-900/10'
+                                                : 'border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02] hover:border-green-500/50'
+                                                }`}
+                                        >
+                                            <div className="flex items-center justify-between mb-16">
+                                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-all ${theme === 'light' ? 'bg-white text-yellow-500' : 'bg-gray-800 text-gray-400'}`}>
+                                                    <Sun className="h-8 w-8" />
+                                                </div>
+                                                {theme === 'light' && (
+                                                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                                                        <Check className="h-6 w-6" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h4 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tight mb-2">Clair</h4>
+                                            <p className="text-sm text-gray-400 font-bold uppercase tracking-widest leading-none">High Clarity</p>
+                                        </button>
+
+                                        <button
+                                            onClick={() => theme !== 'dark' && toggleTheme()}
+                                            className={`group relative overflow-hidden rounded-[2.5rem] p-10 border-2 transition-all text-left ${theme === 'dark'
+                                                ? 'border-green-500 bg-gray-950 shadow-2xl shadow-green-900/40'
+                                                : 'border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02] hover:border-green-500/50'
+                                                }`}
+                                        >
+                                            <div className="flex items-center justify-between mb-16">
+                                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transition-all ${theme === 'dark' ? 'bg-gray-800 text-blue-400' : 'bg-white text-gray-400'}`}>
+                                                    <Moon className="h-8 w-8" />
+                                                </div>
+                                                {theme === 'dark' && (
+                                                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                                                        <Check className="h-6 w-6" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <h4 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tight mb-2">Sombre</h4>
+                                            <p className="text-sm text-gray-400 font-bold uppercase tracking-widest leading-none">Deep Focus</p>
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </main>

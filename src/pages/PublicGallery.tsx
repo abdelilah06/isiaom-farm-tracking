@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, SortAsc, MapPin, Calendar, Clock, ChevronRight, LayoutGrid, Leaf, ArrowLeft } from 'lucide-react'
+import { Search, SortAsc, Calendar, Clock, ChevronRight, LayoutGrid, Leaf, ArrowLeft } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getCachedPlots } from '@/lib/db'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
@@ -13,12 +13,11 @@ interface PlotExtraStats {
 }
 
 export default function PublicGallery() {
-    const { t, i18n } = useTranslation()
+    const { t } = useTranslation()
     const navigate = useNavigate()
     const [plots, setPlots] = useState<any[]>([])
     const [extraStats, setExtraStats] = useState<Record<string, PlotExtraStats>>({})
     const [loading, setLoading] = useState(true)
-    const isRtl = i18n.language === 'ar'
 
     // Filters
     const [searchQuery, setSearchQuery] = useState('')
@@ -33,7 +32,6 @@ export default function PublicGallery() {
     async function fetchData() {
         setLoading(true)
         try {
-            // Fetch Plots
             const { data: plotData, error: plotError } = await supabase
                 .from('plots')
                 .select('*')
@@ -43,7 +41,6 @@ export default function PublicGallery() {
             const plotsList = plotData || []
             setPlots(plotsList)
 
-            // Fetch Extra Stats for each plot (optimized)
             const firstDayOfMonth = new Date()
             firstDayOfMonth.setDate(1)
             firstDayOfMonth.setHours(0, 0, 0, 0)
@@ -65,7 +62,6 @@ export default function PublicGallery() {
                 })
                 setExtraStats(stats)
             }
-
         } catch (error) {
             console.error('Error fetching gallery data:', error)
             const cachedPlots = await getCachedPlots()
@@ -95,10 +91,7 @@ export default function PublicGallery() {
     }, [plots, searchQuery, cropFilter, statusFilter, sortBy])
 
     const cropTypes = useMemo(() => {
-        const types = new Set(plots.map(p => {
-            // Extract core crop type if possible, otherwise use full variety
-            return p.crop_variety.split('-')[0].trim()
-        }))
+        const types = new Set(plots.map(p => p.crop_variety.split('-')[0].trim()))
         return Array.from(types)
     }, [plots])
 
@@ -106,53 +99,70 @@ export default function PublicGallery() {
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="min-h-screen bg-[#f8f9fa] font-sans"
-            dir={isRtl ? 'rtl' : 'ltr'}
+            className="min-h-screen bg-gray-50 dark:bg-gray-950"
         >
-            {/* Hero Header */}
-            <header className="relative h-[35vh] md:h-[40vh] min-h-[280px] max-h-[400px] flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-emerald-800" />
-                <div className="absolute inset-0 opacity-20 pointer-events-none">
-                    <div className="absolute top-0 left-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+            {/* Nav */}
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 h-16">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <Link to="/" className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
+                            <ArrowLeft className="h-5 w-5 text-gray-500" />
+                        </Link>
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center text-white font-black shadow-lg">
+                                <Leaf className="h-5 w-5" />
+                            </div>
+                            <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">Explorer</span>
+                        </div>
+                    </div>
+                    <LanguageSwitcher />
                 </div>
+            </nav>
 
-                <div className="relative z-10 text-center px-4 max-w-4xl w-full">
-                    <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 font-bold text-sm transition-colors decoration-none">
-                        <ArrowLeft className={`h-4 w-4 ${isRtl ? 'rotate-180' : ''}`} />
-                        {t('gallery.back_home')}
-                    </Link>
-                    <h1 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+            {/* Hero Header */}
+            <header className="relative pt-32 pb-20 px-4 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-emerald-800/20 dark:from-green-900/20 dark:to-black pointer-events-none" />
+                <div className="max-w-4xl mx-auto relative z-10 text-center">
+                    <motion.h1
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tight"
+                    >
                         {t('gallery.title')}
-                    </h1>
-                    <p className="text-green-50 text-lg md:text-xl font-medium opacity-90">
+                    </motion.h1>
+                    <motion.p
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-gray-500 dark:text-gray-400 text-lg md:text-xl font-bold uppercase tracking-widest leading-loose"
+                    >
                         {t('gallery.subtitle')}
-                    </p>
+                    </motion.p>
 
                     {/* Search Bar */}
-                    <div className="mt-8 max-w-xl mx-auto relative group">
-                        <Search className={`absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-green-500 transition-colors pointer-events-none`} />
+                    <div className="mt-12 max-w-2xl mx-auto relative group">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-green-500 transition-colors pointer-events-none" />
                         <input
                             type="text"
                             placeholder={t('gallery.search_placeholder')}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className={`w-full ${isRtl ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-4 bg-white rounded-2xl shadow-xl shadow-green-900/10 border-none focus:ring-2 focus:ring-green-400 outline-none transition-all text-gray-900 font-medium`}
+                            className="w-full pl-16 pr-6 py-6 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl shadow-green-900/5 border border-transparent focus:border-green-500 dark:border-gray-800 outline-none transition-all text-gray-900 dark:text-white font-bold text-lg"
                         />
                     </div>
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 py-6 md:py-12 md:px-8">
+            <main className="max-w-7xl mx-auto px-4 py-8 md:px-8">
                 {/* Filters */}
-                <div className="flex flex-col md:flex-row items-center justify-between mb-6 md:mb-10 gap-4">
-                    <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex-grow sm:flex-grow-0">
+                <div className="flex flex-col lg:flex-row items-center justify-between mb-12 gap-6 bg-white dark:bg-gray-900 p-6 rounded-[2.5rem] shadow-sm border border-gray-100 dark:border-gray-800">
+                    <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 px-5 py-3 rounded-2xl border border-transparent focus-within:border-green-500 transition-all flex-grow sm:flex-grow-0">
                             <Leaf className="h-4 w-4 text-green-500" />
                             <select
                                 value={cropFilter}
                                 onChange={(e) => setCropFilter(e.target.value)}
-                                className="bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-700 outline-none cursor-pointer"
+                                className="bg-transparent border-none focus:ring-0 text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 outline-none cursor-pointer"
                             >
                                 <option value="all">{t('gallery.filter_crop')}</option>
                                 {cropTypes.map(type => (
@@ -161,12 +171,12 @@ export default function PublicGallery() {
                             </select>
                         </div>
 
-                        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex-grow sm:flex-grow-0">
+                        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 px-5 py-3 rounded-2xl border border-transparent focus-within:border-green-500 transition-all flex-grow sm:flex-grow-0">
                             <Clock className="h-4 w-4 text-blue-500" />
                             <select
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-700 outline-none cursor-pointer"
+                                className="bg-transparent border-none focus:ring-0 text-xs font-black uppercase tracking-widest text-gray-700 dark:text-gray-300 outline-none cursor-pointer"
                             >
                                 <option value="all">{t('gallery.filter_status')}</option>
                                 <option value="active">{t('dashboard.active')}</option>
@@ -175,13 +185,13 @@ export default function PublicGallery() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 w-full md:w-auto overflow-hidden">
+                    <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-800 px-5 py-3 rounded-2xl border border-transparent focus-within:border-green-500 transition-all w-full lg:w-auto overflow-hidden">
                         <SortAsc className="h-4 w-4 text-purple-500 shrink-0" />
-                        <span className="text-xs font-black text-gray-400 uppercase hidden sm:inline">{t('gallery.sort_by')}:</span>
+                        <span className="text-[10px] font-black text-gray-400 uppercase hidden sm:inline">{t('gallery.sort_by')}</span>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            className="bg-transparent border-none focus:ring-0 text-sm font-black text-gray-800 outline-none cursor-pointer w-full md:w-auto"
+                            className="bg-transparent border-none focus:ring-0 text-xs font-black uppercase tracking-widest text-gray-800 dark:text-white outline-none cursor-pointer w-full lg:w-auto"
                         >
                             <option value="name">{t('gallery.sort_name')}</option>
                             <option value="area">{t('gallery.sort_area')}</option>
@@ -194,131 +204,108 @@ export default function PublicGallery() {
                 {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[1, 2, 3, 4, 5, 6].map(i => (
-                            <div key={i} className="bg-white rounded-[2rem] aspect-[4/5] animate-pulse shadow-sm border border-gray-100" />
+                            <div key={i} className="bg-white dark:bg-gray-900 rounded-[3rem] aspect-[4/5] animate-pulse shadow-sm border border-gray-100 dark:border-gray-800" />
                         ))}
                     </div>
                 ) : filteredPlots.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         <AnimatePresence mode="popLayout">
                             {filteredPlots.map((plot) => (
                                 <motion.div
                                     key={plot.id}
                                     layout
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    whileHover={{ y: -10, scale: 1.02 }}
-                                    className="group bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden cursor-pointer flex flex-col transition-all duration-300"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    whileHover={{ y: -8 }}
+                                    className="group bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 overflow-hidden cursor-pointer flex flex-col transition-all duration-500"
                                     onClick={() => navigate(`/plot/${plot.id}`)}
                                 >
-                                    {/* Image Section */}
-                                    <div className="relative h-56 w-full bg-gray-100 overflow-hidden">
+                                    <div className="relative h-64 w-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
                                         {plot.image_url ? (
                                             <img
                                                 src={plot.image_url}
                                                 alt={plot.name}
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                             />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50 text-green-300">
+                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 text-green-200 dark:text-gray-700">
                                                 <LayoutGrid className="h-16 w-16" />
                                             </div>
                                         )}
 
-                                        {/* Status & ID */}
-                                        <div className={`absolute top-4 ${isRtl ? 'right-4' : 'left-4'} flex flex-col gap-2`}>
-                                            <div className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black text-gray-500 shadow-sm border border-white/20">
-                                                #{plot.id.slice(0, 8)}
+                                        <div className="absolute top-6 left-6 flex flex-col gap-2">
+                                            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-black text-gray-500 dark:text-gray-400 shadow-sm border border-white/20 dark:border-gray-700/50 uppercase tracking-widest">
+                                                ID: {plot.id}
                                             </div>
-                                            <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg ${plot.status === 'active'
+                                            <div className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg ${plot.status === 'active'
                                                 ? 'bg-green-500 text-white'
-                                                : 'bg-gray-500 text-white'
+                                                : 'bg-gray-500 dark:bg-gray-700 text-white'
                                                 }`}>
                                                 {plot.status === 'active' ? t('dashboard.active') : t('dashboard.harvested')}
                                             </div>
                                         </div>
-
-                                        <div className={`absolute top-4 ${isRtl ? 'left-4' : 'right-4'}`}>
-                                            <div className="bg-white/90 backdrop-blur-md p-2 rounded-xl text-gray-600 shadow-sm border border-white/20">
-                                                <MapPin className="h-4 w-4" />
-                                            </div>
-                                        </div>
                                     </div>
 
-                                    {/* Content Section */}
-                                    <div className="p-8 flex flex-col flex-grow">
-                                        <div className="mb-4">
-                                            <h3 className="text-2xl font-black text-gray-900 mb-1 group-hover:text-green-600 transition-colors uppercase tracking-tight">
+                                    <div className="p-10 flex flex-col flex-grow">
+                                        <div className="mb-6">
+                                            <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-2 group-hover:text-green-600 transition-colors uppercase tracking-tight">
                                                 {plot.name}
                                             </h3>
-                                            <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
-                                                <Leaf className="h-4 w-4 text-green-400" />
+                                            <div className="flex items-center gap-3 text-sm font-black text-green-600 dark:text-green-400 uppercase tracking-widest">
+                                                <div className="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                                                    <Leaf className="h-4 w-4" />
+                                                </div>
                                                 {plot.crop_variety}
                                             </div>
                                         </div>
 
-                                        <div className="mt-auto grid grid-cols-2 gap-4 pt-6 border-t border-gray-50">
-                                            <div className="space-y-1">
-                                                <span className="block text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none">{t('add_plot.area')}</span>
-                                                <span className="block text-lg font-black text-gray-800">{plot.area} <span className="text-[10px] text-gray-400 font-normal">m²</span></span>
+                                        <div className="mt-auto grid grid-cols-2 gap-6 pt-8 border-t border-gray-50 dark:border-gray-800/50">
+                                            <div>
+                                                <span className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">{t('add_plot.area')}</span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-xl font-black text-gray-900 dark:text-white">{plot.area}</span>
+                                                    <span className="text-[10px] font-bold text-gray-400 uppercase">m²</span>
+                                                </div>
                                             </div>
-                                            {plot.plant_count && (
-                                                <div className="space-y-1">
-                                                    <span className="block text-[10px] font-black text-gray-300 uppercase tracking-widest leading-none whitespace-nowrap">{t('add_plot.plant_count')}</span>
-                                                    <span className="block text-lg font-black text-gray-800">{plot.plant_count}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="mt-6 flex flex-col gap-3">
-                                            <div className="flex items-center justify-between text-[11px] font-bold">
-                                                <div className="flex items-center gap-2 text-gray-400">
-                                                    <Calendar className="h-3.5 w-3.5" />
-                                                    <span>{t('gallery.last_op')}:</span>
-                                                </div>
-                                                <span className="text-gray-900">
-                                                    {extraStats[plot.id]?.lastOpDate
-                                                        ? new Date(extraStats[plot.id]?.lastOpDate!).toLocaleDateString(i18n.language)
-                                                        : '---'}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-[11px] font-bold">
-                                                <div className="flex items-center gap-2 text-gray-400">
-                                                    <LayoutGrid className="h-3.5 w-3.5" />
-                                                    <span>{t('gallery.ops_month')}:</span>
-                                                </div>
-                                                <span className="text-gray-900">{extraStats[plot.id]?.opsThisMonth || 0}</span>
+                                            <div>
+                                                <span className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">{t('gallery.ops_month')}</span>
+                                                <span className="text-xl font-black text-gray-900 dark:text-white">{extraStats[plot.id]?.opsThisMonth || 0}</span>
                                             </div>
                                         </div>
 
-                                        <button className="mt-8 w-full bg-green-50 text-green-700 py-4 rounded-2xl font-black text-sm group-hover:bg-green-600 group-hover:text-white transition-all flex items-center justify-center gap-2 shadow-sm shadow-green-100">
-                                            {t('gallery.view_details')}
-                                            <ChevronRight className={`h-4 w-4 transition-transform group-hover:translate-x-1 ${isRtl ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
-                                        </button>
+                                        <div className="mt-8 flex items-center justify-between">
+                                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                <Calendar className="h-3.5 w-3.5" />
+                                                {extraStats[plot.id]?.lastOpDate
+                                                    ? new Date(extraStats[plot.id]?.lastOpDate!).toLocaleDateString('fr-FR')
+                                                    : '---'}
+                                            </div>
+                                            <ChevronRight className="h-5 w-5 text-green-500 transform group-hover:translate-x-1 transition-transform" />
+                                        </div>
                                     </div>
                                 </motion.div>
                             ))}
                         </AnimatePresence>
                     </div>
                 ) : (
-                    <div className="p-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-gray-100">
-                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-200">
-                            <Search className="h-10 w-10" />
+                    <div className="p-32 text-center bg-white dark:bg-gray-900 rounded-[3rem] border-2 border-dashed border-gray-100 dark:border-gray-800 shadow-2xl shadow-green-900/5">
+                        <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-8 text-gray-200 dark:text-gray-700">
+                            <Search className="h-12 w-12" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-950 mb-2">{t('gallery.no_plots')}</h3>
-                        <p className="text-gray-400 font-medium">{t('dashboard.no_results_desc')}</p>
+                        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">{t('gallery.no_plots')}</h3>
+                        <p className="text-gray-400 dark:text-gray-500 font-bold uppercase tracking-widest text-xs">{t('dashboard.no_results_desc')}</p>
                     </div>
                 )}
             </main>
 
-            <footer className="py-20 text-center">
-                <div className="mb-8">
-                    <LanguageSwitcher />
+            <footer className="py-24 text-center">
+                <div className="text-[10px] font-black text-gray-300 dark:text-gray-800 uppercase tracking-[0.5em] mb-6">
+                    ISIAOM Model Farm Tracking
                 </div>
-                <div className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">
-                    &copy; ISIAOM Agricultural Management v2.5
-                </div>
+                <div className="w-12 h-1 bg-gray-100 dark:bg-gray-800 mx-auto rounded-full" />
             </footer>
         </motion.div>
     )
 }
+
