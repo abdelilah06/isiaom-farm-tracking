@@ -22,15 +22,40 @@ export default function Analytics() {
     const [plots, setPlots] = useState<any[]>([])
     const [operations, setOperations] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [authChecking, setAuthChecking] = useState(true)
 
     // Filters state
     const [dateRange, setDateRange] = useState('30') // Last 30 days
     const [selectedType, setSelectedType] = useState('all')
     const [selectedPlot, setSelectedPlot] = useState('all')
 
+    // SECURITY: Check authentication on mount
     useEffect(() => {
-        fetchData()
+        const checkAuth = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+
+                if (!user || user.user_metadata?.role !== 'admin') {
+                    console.warn('Unauthorized access attempt to /admin/analytics')
+                    window.location.href = '/'
+                    return
+                }
+
+                setAuthChecking(false)
+            } catch (error) {
+                console.error('Auth check failed:', error)
+                window.location.href = '/'
+            }
+        }
+
+        checkAuth()
     }, [])
+
+    useEffect(() => {
+        if (!authChecking) {
+            fetchData()
+        }
+    }, [authChecking])
 
     async function fetchData() {
         setLoading(true)
