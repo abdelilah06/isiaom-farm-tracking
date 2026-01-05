@@ -110,7 +110,7 @@ export default function PublicGallery() {
             dir={isRtl ? 'rtl' : 'ltr'}
         >
             {/* Hero Header */}
-            <header className="relative h-[40vh] min-h-[300px] flex items-center justify-center overflow-hidden">
+            <header className="relative h-[35vh] md:h-[40vh] min-h-[280px] max-h-[400px] flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-emerald-800" />
                 <div className="absolute inset-0 opacity-20 pointer-events-none">
                     <div className="absolute top-0 left-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -143,9 +143,9 @@ export default function PublicGallery() {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-4 py-12 md:px-8">
+            <main className="max-w-7xl mx-auto px-4 py-6 md:py-12 md:px-8">
                 {/* Filters */}
-                <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+                <div className="flex flex-col md:flex-row items-center justify-between mb-6 md:mb-10 gap-4">
                     <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex-grow sm:flex-grow-0">
                             <Leaf className="h-4 w-4 text-green-500" />
@@ -198,7 +198,7 @@ export default function PublicGallery() {
                         ))}
                     </div>
                 ) : filteredPlots.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         <AnimatePresence mode="popLayout">
                             {filteredPlots.map((plot) => (
                                 <motion.div

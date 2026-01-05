@@ -157,19 +157,19 @@ export default function Analytics() {
             className="min-h-screen bg-gray-50 font-sans"
             dir={isRtl ? 'rtl' : 'ltr'}
         >
-            {/* Header */}
-            <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+            {/* Enhanced Header with Glassmorphism */}
+            <header className="glass sticky top-0 z-30 border-b border-white/20 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link
                             to="/admin"
-                            className="p-2 hover:bg-gray-100 rounded-xl text-gray-400 hover:text-green-600 transition-all"
+                            className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all group"
                         >
-                            <ArrowLeft className={`h-6 w-6 ${isRtl ? 'rotate-180' : ''}`} />
+                            <ArrowLeft className={`h-6 w-6 text-white ${isRtl ? 'rotate-180' : ''} group-hover:scale-110 transition-transform`} />
                         </Link>
                         <div>
-                            <h1 className="text-xl font-black text-gray-900 tracking-tight">{t('analytics.title')}</h1>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('dashboard.subtitle')}</p>
+                            <h1 className="text-2xl font-black text-gray-900 tracking-tight">{t('analytics.title')}</h1>
+                            <p className="text-xs text-gray-500 font-medium">{t('dashboard.subtitle')}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -180,98 +180,131 @@ export default function Analytics() {
 
             <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-                {/* Filters */}
-                <section className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-100">
-                        <Calendar className="h-4 w-4 text-gray-400" />
-                        <select
-                            value={dateRange}
-                            onChange={(e) => setDateRange(e.target.value)}
-                            className="bg-transparent text-sm font-bold text-gray-700 focus:outline-none px-2 cursor-pointer"
-                        >
-                            <option value="7">7 {t('common.days')}</option>
-                            <option value="30">30 {t('common.days')}</option>
-                            <option value="90">90 {t('common.days')}</option>
-                            <option value="all">{t('dashboard.filter_all')}</option>
-                        </select>
-                    </div>
+                {/* Enhanced Filters */}
+                <section className="bg-white p-6 rounded-3xl shadow-md border border-gray-50">
+                    <div className="flex flex-wrap items-center gap-4">
+                        <div className="flex items-center gap-2 bg-gradient-to-br from-green-50 to-emerald-50 px-4 py-3 rounded-2xl border border-green-100 shadow-sm">
+                            <Calendar className="h-5 w-5 text-green-600" />
+                            <select
+                                value={dateRange}
+                                onChange={(e) => setDateRange(e.target.value)}
+                                className="bg-transparent text-sm font-bold text-gray-700 focus:outline-none cursor-pointer min-w-[120px]"
+                            >
+                                <option value="7">7 {t('common.days')}</option>
+                                <option value="30">30 {t('common.days')}</option>
+                                <option value="90">90 {t('common.days')}</option>
+                                <option value="all">{t('dashboard.filter_all')}</option>
+                            </select>
+                        </div>
 
-                    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-100">
-                        <Filter className="h-4 w-4 text-gray-400" />
-                        <select
-                            value={selectedType}
-                            onChange={(e) => setSelectedType(e.target.value)}
-                            className="bg-transparent text-sm font-bold text-gray-700 focus:outline-none px-2 cursor-pointer"
-                        >
-                            <option value="all">{t('analytics.filters.all_types')}</option>
-                            {Object.keys(t('quick_log.types', { returnObjects: true })).map(type => (
-                                <option key={type} value={type}>{t(`quick_log.types.${type}`)}</option>
-                            ))}
-                        </select>
-                    </div>
+                        <div className="flex items-center gap-2 bg-gradient-to-br from-blue-50 to-indigo-50 px-4 py-3 rounded-2xl border border-blue-100 shadow-sm">
+                            <Filter className="h-5 w-5 text-blue-600" />
+                            <select
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.target.value)}
+                                className="bg-transparent text-sm font-bold text-gray-700 focus:outline-none cursor-pointer min-w-[140px]"
+                            >
+                                <option value="all">{t('analytics.filters.all_types')}</option>
+                                {Object.keys(t('quick_log.types', { returnObjects: true })).map(type => (
+                                    <option key={type} value={type}>{t(`quick_log.types.${type}`)}</option>
+                                ))}
+                            </select>
+                        </div>
 
-                    <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-2xl border border-gray-100">
-                        <Search className="h-4 w-4 text-gray-400" />
-                        <select
-                            value={selectedPlot}
-                            onChange={(e) => setSelectedPlot(e.target.value)}
-                            className="bg-transparent text-sm font-bold text-gray-700 focus:outline-none px-2 cursor-pointer"
-                        >
-                            <option value="all">{t('analytics.filters.all_plots')}</option>
-                            {plots.map(p => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                            ))}
-                        </select>
+                        <div className="flex items-center gap-2 bg-gradient-to-br from-purple-50 to-violet-50 px-4 py-3 rounded-2xl border border-purple-100 shadow-sm">
+                            <Search className="h-5 w-5 text-purple-600" />
+                            <select
+                                value={selectedPlot}
+                                onChange={(e) => setSelectedPlot(e.target.value)}
+                                className="bg-transparent text-sm font-bold text-gray-700 focus:outline-none cursor-pointer min-w-[140px]"
+                            >
+                                <option value="all">{t('analytics.filters.all_plots')}</option>
+                                {plots.map(p => (
+                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </section>
 
-                {/* Summary Cards */}
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
-                            <Grid className="h-6 w-6" />
+                {/* Enhanced Summary Cards */}
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                        className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
+                    >
+                        <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                            <Grid className="h-7 w-7" />
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('analytics.total_plots')}</p>
-                            <p className="text-2xl font-black">{stats.totalPlots}</p>
+                            <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">{t('analytics.total_plots')}</p>
+                            <p className="text-3xl font-black text-gray-900">{stats.totalPlots}</p>
                         </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                            <Activity className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('analytics.total_operations')}</p>
-                            <p className="text-2xl font-black">{stats.totalOps}</p>
-                        </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
-                            <TrendingUp className="h-6 w-6" />
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                        className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
+                    >
+                        <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                            <Activity className="h-7 w-7" />
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('analytics.avg_ops_per_plot')}</p>
-                            <p className="text-2xl font-black">{stats.avgOps}</p>
+                            <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">{t('analytics.total_operations')}</p>
+                            <p className="text-3xl font-black text-gray-900">{stats.totalOps}</p>
                         </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
-                            <Calendar className="h-6 w-6" />
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                        className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
+                    >
+                        <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-violet-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                            <TrendingUp className="h-7 w-7" />
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{t('analytics.last_operation')}</p>
-                            <p className="text-sm font-black">{stats.lastOp !== '---' ? new Date(stats.lastOp).toLocaleDateString(i18n.language) : '---'}</p>
+                            <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">{t('analytics.avg_ops_per_plot')}</p>
+                            <p className="text-3xl font-black text-gray-900">{stats.avgOps}</p>
                         </div>
-                    </div>
+                    </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        whileHover={{ y: -4, scale: 1.02 }}
+                        className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
+                    >
+                        <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-amber-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                            <Calendar className="h-7 w-7" />
+                        </div>
+                        <div>
+                            <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">{t('analytics.last_operation')}</p>
+                            <p className="text-sm font-black text-gray-900">{stats.lastOp !== '---' ? new Date(stats.lastOp).toLocaleDateString(i18n.language) : '---'}</p>
+                        </div>
+                    </motion.div>
                 </section>
 
                 {/* Charts Grid */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
                     {/* Operations Over Time */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl border border-gray-50 space-y-6 transition-all duration-300"
+                    >
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                            <TrendingUp className="h-4 w-4 text-green-600" />
+                            <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                                <TrendingUp className="h-4 w-4 text-white" />
+                            </div>
                             {t('analytics.ops_over_time')}
                         </h3>
                         <div className="h-64">
@@ -303,12 +336,19 @@ export default function Analytics() {
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Operations by Type */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl border border-gray-50 space-y-6 transition-all duration-300"
+                    >
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                            <Grid className="h-4 w-4 text-blue-600" />
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl flex items-center justify-center">
+                                <Grid className="h-4 w-4 text-white" />
+                            </div>
                             {t('analytics.ops_by_type')}
                         </h3>
                         <div className="h-64">
@@ -337,12 +377,19 @@ export default function Analytics() {
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Operations per Plot */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.7 }}
+                        className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl border border-gray-50 space-y-6 transition-all duration-300"
+                    >
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                            <ClipboardList className="h-4 w-4 text-purple-600" />
+                            <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-violet-600 rounded-xl flex items-center justify-center">
+                                <ClipboardList className="h-4 w-4 text-white" />
+                            </div>
                             {t('analytics.ops_per_plot')}
                         </h3>
                         <div className="h-64">
@@ -365,12 +412,19 @@ export default function Analytics() {
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Plot Status Distribution */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 space-y-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.8 }}
+                        className="bg-white p-6 rounded-3xl shadow-lg hover:shadow-2xl border border-gray-50 space-y-6 transition-all duration-300"
+                    >
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-orange-600" />
+                            <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-amber-600 rounded-xl flex items-center justify-center">
+                                <Activity className="h-4 w-4 text-white" />
+                            </div>
                             {t('analytics.plot_status_dist')}
                         </h3>
                         <div className="h-64">
@@ -400,52 +454,59 @@ export default function Analytics() {
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
-                    </div>
+                    </motion.div>
                 </section>
 
-                {/* Recent Activities Table */}
-                <section className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-50">
+                {/* Enhanced Recent Activities Table */}
+                <motion.section
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="bg-white rounded-3xl shadow-lg border border-gray-50 overflow-hidden"
+                >
+                    <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-emerald-50">
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
-                            <Activity className="h-4 w-4 text-green-600" />
+                            <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
+                                <Activity className="h-4 w-4 text-white" />
+                            </div>
                             {t('analytics.recent_activities')}
                         </h3>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-right" dir={isRtl ? 'rtl' : 'ltr'}>
-                            <thead className="bg-gray-50 border-b border-gray-100">
+                            <thead className="bg-[#F9FAFB] border-b border-gray-50">
                                 <tr>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-wider">{t('analytics.table.plot')}</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-wider">{t('analytics.table.type')}</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-wider">{t('analytics.table.date')}</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-gray-400 uppercase tracking-wider">{t('analytics.table.notes')}</th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('analytics.table.plot')}</th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('analytics.table.type')}</th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('analytics.table.date')}</th>
+                                    <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('analytics.table.notes')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {filteredOps.slice(0, 10).map((op) => (
-                                    <tr key={op.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="text-sm font-bold text-gray-900">{op.plots?.name || '---'}</span>
+                                    <tr key={op.id} className="hover:bg-green-50/30 transition-colors group">
+                                        <td className="px-8 py-5 whitespace-nowrap">
+                                            <span className="text-sm font-black text-gray-900 group-hover:text-green-700 transition-colors">{op.plots?.name || '---'}</span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-black uppercase">
+                                        <td className="px-8 py-5 whitespace-nowrap">
+                                            <span className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm">
                                                 {t(`quick_log.types.${op.type}`)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="text-sm text-gray-500 font-medium">
+                                        <td className="px-8 py-5 whitespace-nowrap">
+                                            <span className="text-sm text-gray-600 font-bold">
                                                 {new Date(op.date).toLocaleDateString(i18n.language)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <p className="text-sm text-gray-400 truncate max-w-xs">{op.notes || '---'}</p>
+                                        <td className="px-8 py-5">
+                                            <p className="text-sm text-gray-500 truncate max-w-xs font-medium">{op.notes || '---'}</p>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                </section>
+                </motion.section>
             </main>
         </motion.div>
     )

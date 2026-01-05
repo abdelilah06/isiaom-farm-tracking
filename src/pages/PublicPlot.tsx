@@ -35,8 +35,8 @@ export default function PublicPlot() {
 
     useEffect(() => {
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            setIsAdmin(!!session);
+            const { data: { user } } = await supabase.auth.getUser();
+            setIsAdmin(user?.user_metadata?.role === 'admin');
         }
 
         async function fetchData() {

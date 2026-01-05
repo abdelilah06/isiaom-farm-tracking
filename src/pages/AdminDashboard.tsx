@@ -1,6 +1,9 @@
 import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Plus, QrCode, ClipboardList, TrendingUp, Droplets, Grid, LogOut, User, Search, Filter, X, Leaf, BarChart3 } from 'lucide-react'
+import {
+    Grid, TrendingUp, Droplets, Plus, Search, Filter, X,
+    QrCode, BarChart3, User, LogOut, LayoutDashboard, ClipboardList, Leaf
+} from 'lucide-react'
 import QuickLogModal from '@/components/QuickLogModal'
 import QRCodeGenerator from '@/components/QRCodeGenerator'
 import AddPlotModal from '@/components/AddPlotModal'
@@ -14,6 +17,7 @@ export default function AdminDashboard() {
     const { t, i18n } = useTranslation()
     const [plots, setPlots] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const [authChecking, setAuthChecking] = useState(true)
     const [selectedPlotForLog, setSelectedPlotForLog] = useState<string | null>(null)
     const [selectedPlotForQR, setSelectedPlotForQR] = useState<string | null>(null)
     const [showAddPlotModal, setShowAddPlotModal] = useState(false)
@@ -29,9 +33,33 @@ export default function AdminDashboard() {
 
     const isRtl = i18n.language === 'ar'
 
+    // SECURITY: Check authentication on mount
     useEffect(() => {
-        fetchData()
+        const checkAuth = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+
+                if (!user || user.user_metadata?.role !== 'admin') {
+                    console.warn('Unauthorized access attempt to /admin')
+                    window.location.href = '/'
+                    return
+                }
+
+                setAuthChecking(false)
+            } catch (error) {
+                console.error('Auth check failed:', error)
+                window.location.href = '/'
+            }
+        }
+
+        checkAuth()
     }, [])
+
+    useEffect(() => {
+        if (!authChecking) {
+            fetchData()
+        }
+    }, [authChecking])
 
     async function fetchData() {
         setLoading(true)
@@ -134,35 +162,40 @@ export default function AdminDashboard() {
             className="min-h-screen bg-gray-50 font-sans"
             dir={isRtl ? 'rtl' : 'ltr'}
         >
-            {/* Sticky Header */}
-            <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
+            {/* Enhanced Sticky Header */}
+            <header className="glass sticky top-0 z-30 border-b border-white/20 shadow-lg">
                 <div className="max-w-5xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                            {t('common.dashboard')}
-                        </h1>
-                        <p className="text-[10px] md:text-xs text-gray-500 font-medium">{t('dashboard.subtitle')}</p>
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg">
+                            <LayoutDashboard className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-black text-gray-900 tracking-tight">
+                                {t('common.dashboard')}
+                            </h1>
+                            <p className="text-xs text-gray-500 font-medium">{t('dashboard.subtitle')}</p>
+                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2 md:gap-4">
+                    <div className="flex items-center gap-3">
                         <Link
                             to="/admin/analytics"
-                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gray-50 text-gray-600 rounded-xl hover:bg-green-50 hover:text-green-700 transition-all font-bold text-sm border border-gray-100"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-secondary text-white rounded-xl hover:shadow-xl transition-all font-bold text-sm shadow-md"
                         >
                             <BarChart3 className="h-4 w-4" />
-                            {t('common.analytics')}
+                            <span className="hidden sm:inline">{t('common.analytics')}</span>
                         </Link>
                         <LanguageSwitcher />
-                        <div className="h-8 w-px bg-gray-100 hidden sm:block" />
+                        <div className="h-8 w-px bg-gray-200 hidden sm:block" />
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700">
-                                <User className="h-4 w-4" />
+                            <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white shadow-md">
+                                <User className="h-5 w-5" />
                             </div>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleLogout}
-                                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-gray-100 rounded-lg text-gray-400 hover:text-red-500 transition-colors"
+                                className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-red-50 rounded-xl text-gray-400 hover:text-red-500 transition-all"
                                 title="Logout"
                             >
                                 <LogOut className="h-5 w-5" />
@@ -172,9 +205,9 @@ export default function AdminDashboard() {
                 </div>
             </header>
 
-            <main className="max-w-5xl mx-auto px-4 py-8">
-                {/* Metrics Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <main className="max-w-5xl mx-auto px-4 py-10">
+                {/* Enhanced Metrics Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
                     {loading ? (
                         <>
                             <StatSkeleton />
@@ -185,39 +218,48 @@ export default function AdminDashboard() {
                         <>
                             {/* Total Plots */}
                             <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 transition-transform"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                                className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
                             >
-                                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 flex-shrink-0">
-                                    <Grid className="h-6 w-6" />
+                                <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                                    <Grid className="h-7 w-7" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{t('dashboard.total_plots')}</p>
-                                    <p className="text-2xl font-black">{stats.totalPlots}</p>
+                                    <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">{t('dashboard.total_plots')}</p>
+                                    <p className="text-3xl font-black text-gray-900">{stats.totalPlots}</p>
                                 </div>
                             </motion.div>
 
                             {/* Ops Monthly */}
                             <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 transition-transform"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                                className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
                             >
-                                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 flex-shrink-0">
-                                    <TrendingUp className="h-6 w-6" />
+                                <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                                    <TrendingUp className="h-7 w-7" />
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{t('dashboard.ops_this_month')}</p>
-                                    <p className="text-2xl font-black">{stats.opsThisMonth}</p>
+                                    <p className="text-xs text-gray-500 font-black uppercase tracking-wider mb-1">{t('dashboard.ops_this_month')}</p>
+                                    <p className="text-3xl font-black text-gray-900">{stats.opsThisMonth}</p>
                                 </div>
                             </motion.div>
 
                             {/* Irrigation 7d */}
                             <motion.div
-                                whileHover={{ scale: 1.02 }}
-                                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 transition-transform"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                whileHover={{ y: -4, scale: 1.02 }}
+                                className="bg-white p-6 rounded-3xl shadow-md hover:shadow-2xl border border-gray-50 flex items-center gap-4 transition-all duration-300"
                             >
-                                <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 flex-shrink-0">
-                                    <Droplets className="h-6 w-6" />
+                                <div className="w-14 h-14 bg-gradient-to-br from-cyan-400 to-teal-600 rounded-2xl flex items-center justify-center text-white flex-shrink-0 shadow-lg">
+                                    <Droplets className="h-7 w-7" />
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{t('dashboard.irrigation_7d')}</p>
@@ -237,22 +279,22 @@ export default function AdminDashboard() {
                     {/* Filters Bar */}
                     <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-2xl">
                         <div className="relative w-full">
-                            <Search className={`absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400`} />
+                            <Search className={`absolute ${isRtl ? 'right-4' : 'left-4'} top - 1 / 2 - translate - y - 1 / 2 h - 4 w - 4 text - gray - 400`} />
                             <input
                                 type="text"
                                 placeholder={t('dashboard.search_placeholder')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className={`w-full ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm min-h-[44px]`}
+                                className={`w - full ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} py - 3 bg - white border border - gray - 100 rounded - 2xl text - sm focus: ring - 2 focus: ring - green - 500 / 20 focus: border - green - 500 outline - none transition - all shadow - sm min - h - [44px]`}
                             />
                         </div>
                         <div className="flex items-center gap-2 w-full sm:w-auto">
                             <div className="relative shrink-0 w-full sm:w-auto">
-                                <Filter className={`absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none`} />
+                                <Filter className={`absolute ${isRtl ? 'right-4' : 'left-4'} top - 1 / 2 - translate - y - 1 / 2 h - 4 w - 4 text - gray - 400 pointer - events - none`} />
                                 <select
                                     value={statusFilter}
                                     onChange={(e) => setStatusFilter(e.target.value)}
-                                    className={`appearance-none bg-white border border-gray-100 rounded-2xl py-3 ${isRtl ? 'pr-11 pl-8' : 'pl-11 pr-8'} text-sm focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none transition-all shadow-sm min-h-[44px] font-bold text-gray-600 cursor-pointer w-full`}
+                                    className={`appearance - none bg - white border border - gray - 100 rounded - 2xl py - 3 ${isRtl ? 'pr-11 pl-8' : 'pl-11 pr-8'} text - sm focus: ring - 2 focus: ring - green - 500 / 20 focus: border - green - 500 outline - none transition - all shadow - sm min - h - [44px] font - bold text - gray - 600 cursor - pointer w - full`}
                                 >
                                     <option value="all">{t('dashboard.filter_all')}</option>
                                     <option value="active">{t('dashboard.active')}</option>
@@ -339,8 +381,8 @@ export default function AdminDashboard() {
                                                 <span className="text-sm font-black text-gray-900">{plot.area} <span className="text-[10px] text-gray-400 uppercase">m²</span></span>
                                             </td>
                                             <td className="px-8 py-6 whitespace-nowrap">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${plot.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                                                    }`}>
+                                                <span className={`px - 3 py - 1 rounded - full text - [10px] font - black uppercase tracking - wider ${plot.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                                                    } `}>
                                                     {plot.status === 'active' ? t('dashboard.active') : t('dashboard.harvested')}
                                                 </span>
                                             </td>
@@ -384,8 +426,8 @@ export default function AdminDashboard() {
                                                 <span className="text-sm font-bold text-gray-500">{plot.crop_variety}</span>
                                             </div>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${plot.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                                            }`}>
+                                        <span className={`px - 3 py - 1 rounded - full text - [10px] font - black uppercase tracking - wider ${plot.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                                            } `}>
                                             {plot.status === 'active' ? t('dashboard.active') : t('dashboard.harvested')}
                                         </span>
                                     </div>

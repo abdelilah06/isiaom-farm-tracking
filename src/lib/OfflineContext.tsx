@@ -24,28 +24,6 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncSuccess, setSyncSuccess] = useState(false);
 
-    useEffect(() => {
-        const handleOnline = () => {
-            setIsOnline(true);
-            syncQueue();
-        };
-        const handleOffline = () => {
-            setIsOnline(false);
-            setSyncSuccess(false);
-        };
-
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
-
-        // Initial sync time load
-        getLastSyncTime().then(setLastSyncTimeState);
-
-        return () => {
-            window.removeEventListener('online', handleOnline);
-            window.removeEventListener('offline', handleOffline);
-        };
-    }, []);
-
     const syncQueue = useCallback(async () => {
         if (!navigator.onLine || isSyncing) return;
 
@@ -106,6 +84,28 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setTimeout(() => setSyncSuccess(false), 5000);
         console.log('Sync completed.');
     }, [isSyncing]);
+
+    useEffect(() => {
+        const handleOnline = () => {
+            setIsOnline(true);
+            syncQueue();
+        };
+        const handleOffline = () => {
+            setIsOnline(false);
+            setSyncSuccess(false);
+        };
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        // Initial sync time load
+        getLastSyncTime().then(setLastSyncTimeState);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, [syncQueue]);
 
     return (
         <OfflineContext.Provider value={{ isOnline, lastSyncTime, isSyncing, syncSuccess, syncQueue }}>

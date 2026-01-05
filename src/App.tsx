@@ -8,24 +8,47 @@ import PublicGallery from './pages/PublicGallery';
 
 import { OfflineProvider } from './lib/OfflineContext';
 import { OfflineBanner } from './components/OfflineBanner';
+import ErrorBoundary from './components/ErrorBoundary';
+
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    <OfflineProvider>
-      <Router>
-        <OfflineBanner />
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/analytics" element={<Analytics />} />
-          <Route path="/gallery" element={<PublicGallery />} />
-          <Route path="/plot/:id" element={<PublicPlot />} />
-          <Route path="/" element={<HomePage />} />
+    <ErrorBoundary>
+      <OfflineProvider>
+        <Router>
+          <OfflineBanner />
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
 
-          <Route path="*" element={<div className="p-12 text-center text-gray-500 font-sans" dir="rtl">الصفحة غير موجودة (404)</div>} />
-        </Routes>
-      </Router>
-    </OfflineProvider>
+            {/* Protected Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Public Routes */}
+            <Route path="/gallery" element={<PublicGallery />} />
+            <Route path="/plot/:id" element={<PublicPlot />} />
+            <Route path="/" element={<HomePage />} />
+
+            <Route path="*" element={<div className="p-12 text-center text-gray-500 font-sans" dir="rtl">الصفحة غير موجودة (404)</div>} />
+          </Routes>
+        </Router>
+      </OfflineProvider>
+    </ErrorBoundary>
   );
 }
 
