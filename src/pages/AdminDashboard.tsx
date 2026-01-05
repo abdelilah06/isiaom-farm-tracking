@@ -192,9 +192,9 @@ export default function AdminDashboard() {
                                 <User className="h-5 w-5" />
                             </div>
                             <Link
-                                to="/admin/change-password"
+                                to="/admin/settings"
                                 className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-blue-50 rounded-xl text-gray-400 hover:text-blue-600 transition-all"
-                                title="Change Password"
+                                title="Settings"
                             >
                                 <Settings className="h-5 w-5" />
                             </Link>

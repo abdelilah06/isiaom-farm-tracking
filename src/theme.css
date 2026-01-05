@@ -159,6 +159,35 @@ body:not([dir="rtl"]) {
   font-family: var(--font-latin);
 }
 
+/* ===== Dark Mode ===== */
+.dark {
+  /* Dark backgrounds */
+  --bg-primary: #111827;
+  --bg-secondary: #1F2937;
+  --bg-tertiary: #374151;
+
+  /* Dark text */
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+
+  /* Dark borders */
+  --border-primary: #374151;
+  --border-secondary: #4B5563;
+}
+
+.dark body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark .glass {
+  background: rgba(31, 41, 55, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 /* ===== Utility Classes ===== */
 
 /* Glassmorphism */
