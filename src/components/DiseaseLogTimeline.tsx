@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Bug, Leaf, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react'
+import { Bug, Leaf, AlertTriangle, CheckCircle, Loader2, LayoutGrid, EyeOff } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface DiseaseLogTimelineProps {
     plotId: string
@@ -27,16 +27,17 @@ const typeIcons: Record<string, any> = {
 }
 
 const severityColors: Record<string, string> = {
-    low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800',
-    medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800',
-    high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200 dark:border-orange-800',
-    critical: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800'
+    low: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800 shadow-green-500/10',
+    medium: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800 shadow-yellow-500/10',
+    high: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-orange-200 dark:border-orange-800 shadow-orange-500/10',
+    critical: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800 shadow-red-500/10'
 }
 
 export default function DiseaseLogTimeline({ plotId }: DiseaseLogTimelineProps) {
     const { t } = useTranslation()
     const [logs, setLogs] = useState<DiseaseLog[]>([])
     const [loading, setLoading] = useState(true)
+    const [isVisible, setIsVisible] = useState(false)
 
     useEffect(() => {
         fetchLogs()
@@ -68,7 +69,7 @@ export default function DiseaseLogTimeline({ plotId }: DiseaseLogTimelineProps) 
     }
 
     if (logs.length === 0) {
-        return null // Don't show section if no logs
+        return null
     }
 
     return (
@@ -81,94 +82,111 @@ export default function DiseaseLogTimeline({ plotId }: DiseaseLogTimelineProps) 
                         {t('disease.history')}
                     </h2>
                 </div>
-                <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 rounded-2xl text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest">
-                    {logs.length} {logs.length === 1 ? 'Issue' : 'Issues'}
+                <div className="flex items-center gap-3">
+                    <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 rounded-2xl text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest hidden sm:block">
+                        {logs.length} {logs.length === 1 ? 'Issue' : 'Issues'}
+                    </div>
+                    <button
+                        onClick={() => setIsVisible(!isVisible)}
+                        className={`p-3 rounded-2xl transition-all shadow-lg ${isVisible ? 'bg-red-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-400'}`}
+                    >
+                        {isVisible ? <EyeOff className="h-5 w-5" /> : <LayoutGrid className="h-5 w-5" />}
+                    </button>
                 </div>
             </div>
 
-            {/* Logs */}
-            <div className="space-y-4">
-                {logs.map((log, index) => {
-                    const Icon = typeIcons[log.type] || Bug
+            {/* Horizontal Deck */}
+            <AnimatePresence mode="wait">
+                {isVisible && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                    >
+                        <div className="flex gap-6 overflow-x-auto pb-8 pt-2 px-2 snap-x no-scrollbar">
+                            {logs.map((log, index) => {
+                                const Icon = typeIcons[log.type] || Bug
 
-                    return (
-                        <motion.div
-                            key={log.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            className={`bg-white dark:bg-gray-900 rounded-2xl p-6 border ${log.resolved_at ? 'border-green-200 dark:border-green-800' : 'border-gray-100 dark:border-gray-800'} shadow-sm hover:shadow-lg transition-all`}
-                        >
-                            <div className="flex items-start gap-4">
-                                {/* Icon */}
-                                <div className={`p-3 rounded-xl ${severityColors[log.severity] || severityColors.medium}`}>
-                                    <Icon className="h-5 w-5" />
-                                </div>
+                                return (
+                                    <motion.div
+                                        key={log.id}
+                                        initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="flex-shrink-0 w-[320px] sm:w-[380px] snap-center"
+                                    >
+                                        <div className={`h-full bg-white dark:bg-gray-900 rounded-[2.5rem] p-6 border-2 ${log.resolved_at ? 'border-green-100 dark:border-green-900/50' : 'border-gray-50 dark:border-gray-800'} shadow-xl shadow-gray-200/50 dark:shadow-black/20 flex flex-col gap-5`}>
+                                            <div className="flex items-start justify-between">
+                                                <div className={`p-4 rounded-2xl ${severityColors[log.severity] || severityColors.medium} shadow-xl`}>
+                                                    <Icon className="h-6 w-6" />
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest block">
+                                                        {new Date(log.log_date).toLocaleDateString('fr-FR', {
+                                                            day: 'numeric',
+                                                            month: 'short',
+                                                            year: 'numeric'
+                                                        })}
+                                                    </span>
+                                                    {log.resolved_at ? (
+                                                        <span className="inline-flex items-center gap-1.5 mt-1 px-3 py-1 bg-green-500 text-white text-[9px] font-black uppercase tracking-widest rounded-full">
+                                                            <CheckCircle className="h-3 w-3" />
+                                                            Résolu
+                                                        </span>
+                                                    ) : (
+                                                        <span className={`inline-block mt-1 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${severityColors[log.severity]}`}>
+                                                            {t(`disease.severity_levels.${log.severity}`)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
 
-                                {/* Content */}
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-4 mb-2">
-                                        <h3 className="font-black text-gray-900 dark:text-white uppercase tracking-tight truncate">
-                                            {log.name}
-                                        </h3>
-                                        {log.resolved_at ? (
-                                            <span className="flex items-center gap-1 text-[10px] font-black text-green-600 dark:text-green-400 uppercase tracking-widest">
-                                                <CheckCircle className="h-3 w-3" />
-                                                Résolu
-                                            </span>
-                                        ) : (
-                                            <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${severityColors[log.severity] || ''}`}>
-                                                {t(`disease.severity_levels.${log.severity}`)}
-                                            </span>
-                                        )}
-                                    </div>
+                                            <div>
+                                                <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2 truncate">
+                                                    {log.name}
+                                                </h3>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <span className="px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-xl text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest border border-gray-100 dark:border-gray-700">
+                                                        {t(`disease.types.${log.type}`)}
+                                                    </span>
+                                                    {log.affected_percentage && (
+                                                        <span className="px-3 py-1.5 bg-red-50 dark:bg-red-900/20 rounded-xl text-[10px] font-black text-red-600 dark:text-red-400 uppercase tracking-widest border border-red-100 dark:border-red-900/30 flex items-center gap-1.5">
+                                                            <AlertTriangle className="h-3 w-3" />
+                                                            {log.affected_percentage}%
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
 
-                                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                                        <span className="font-bold">
-                                            {new Date(log.log_date).toLocaleDateString('fr-FR', {
-                                                day: 'numeric',
-                                                month: 'short',
-                                                year: 'numeric'
-                                            })}
-                                        </span>
-                                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded-lg font-bold">
-                                            {t(`disease.types.${log.type}`)}
-                                        </span>
-                                        {log.affected_percentage && (
-                                            <span className="flex items-center gap-1 font-bold">
-                                                <AlertTriangle className="h-3 w-3" />
-                                                {log.affected_percentage}% {t('disease.affected')}
-                                            </span>
-                                        )}
-                                    </div>
+                                            {log.image_url && (
+                                                <div className="relative aspect-video rounded-3xl overflow-hidden group">
+                                                    <img
+                                                        src={log.image_url}
+                                                        alt={log.name}
+                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                    />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                                                </div>
+                                            )}
 
-                                    {log.treatment && (
-                                        <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
-                                            <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest block mb-1">
-                                                {t('disease.treatment')}
-                                            </span>
-                                            <p className="text-sm text-blue-800 dark:text-blue-300 font-bold">
-                                                {log.treatment}
-                                            </p>
+                                            {log.treatment && (
+                                                <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-3xl border border-blue-100/50 dark:border-blue-900/30">
+                                                    <span className="text-[9px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-[0.2em] block mb-2">Traitement</span>
+                                                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300">
+                                                        {log.treatment}
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-
-                                {/* Image */}
-                                {log.image_url && (
-                                    <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                                        <img
-                                            src={log.image_url}
-                                            alt={log.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    )
-                })}
-            </div>
+                                    </motion.div>
+                                )
+                            })}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     )
 }

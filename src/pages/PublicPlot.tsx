@@ -10,7 +10,7 @@ import DiseasePestModal from '../components/DiseasePestModal';
 import PhotoGallery from '../components/PhotoGallery';
 import DiseaseLogTimeline from '../components/DiseaseLogTimeline';
 import WeatherWidget from '../components/WeatherWidget';
-import { Share2, ClipboardList, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft, Trash2, Camera } from 'lucide-react';
+import { Share2, ClipboardList, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft, Trash2, Camera, EyeOff, LayoutGrid } from 'lucide-react';
 import { getCachedPlot, getCachedOperationsForPlot, cacheOperations } from '@/lib/db';
 import { uploadImage } from '@/lib/upload';
 
@@ -36,6 +36,7 @@ export default function PublicPlot() {
     const [showQRModal, setShowQRModal] = useState(false);
     const [showDiseaseModal, setShowDiseaseModal] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showOpsDetail, setShowOpsDetail] = useState(false);
 
     useEffect(() => {
         async function checkAuth() {
@@ -289,38 +290,49 @@ export default function PublicPlot() {
                             <div>
                                 <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2 block">{t('public_plot.date')}</span>
                                 <span className="text-2xl font-black text-gray-900 dark:text-white">
-                                    {plot.planting_date ? new Date(plot.planting_date).getFullYear() : '----'}
+                                    {plot.planting_date ? new Date(plot.planting_date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '----'}
                                 </span>
                             </div>
                         </div>
 
-                        {/* Desktop Actions */}
-                        <div className="hidden md:flex flex-wrap items-center gap-4 mt-12">
+                        <div className="hidden md:flex items-center gap-4 mt-10 px-2">
                             {isAdmin && (
                                 <>
-                                    <button
+                                    <motion.button
+                                        whileHover={{ y: -4, scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={handleLogClick}
-                                        className="flex-1 min-w-[140px] bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-4 rounded-[1.5rem] flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-green-500/20 transition-all font-black text-xs active:scale-95 shadow-xl"
+                                        title={t('dashboard.log_operation')}
+                                        className="w-16 h-16 flex items-center justify-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[1.5rem] border border-white/20 dark:border-white/10 shadow-xl shadow-gray-200/50 dark:shadow-black/20 hover:bg-white/80 dark:hover:bg-white/10 transition-all group"
                                     >
-                                        <ClipboardList className="h-4 w-4" />
-                                        {t('dashboard.log_operation')}
-                                    </button>
-                                    <button
+                                        <div className="w-11 h-11 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl flex items-center justify-center border border-green-500/20 dark:border-green-400/10 group-hover:scale-110 transition-transform">
+                                            <ClipboardList className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                        </div>
+                                    </motion.button>
+
+                                    <motion.button
+                                        whileHover={{ y: -4, scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
                                         onClick={() => setShowDiseaseModal(true)}
-                                        className="flex-1 min-w-[140px] bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-4 rounded-[1.5rem] flex items-center justify-center gap-2 hover:shadow-2xl hover:shadow-red-500/20 transition-all font-black text-xs active:scale-95 shadow-xl"
+                                        title={t('disease.title')}
+                                        className="w-16 h-16 flex items-center justify-center bg-white/50 dark:bg-white/5 backdrop-blur-xl rounded-[1.5rem] border border-white/20 dark:border-white/10 shadow-xl shadow-gray-200/50 dark:shadow-black/20 hover:bg-white/80 dark:hover:bg-white/10 transition-all group"
                                     >
-                                        <Bug className="h-4 w-4" />
-                                        {t('disease.title')}
-                                    </button>
+                                        <div className="w-11 h-11 bg-gradient-to-br from-rose-500/10 to-red-500/10 rounded-2xl flex items-center justify-center border border-rose-500/20 dark:border-rose-400/10 group-hover:scale-110 transition-transform">
+                                            <Bug className="h-6 w-6 text-rose-600 dark:text-rose-400" />
+                                        </div>
+                                    </motion.button>
                                 </>
                             )}
-                            <button
+
+                            <motion.button
+                                whileHover={{ y: -4, scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={handleShare}
-                                className={`flex-1 min-w-[140px] ${isAdmin ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-gray-700' : 'bg-gray-900 dark:bg-green-600 text-white shadow-xl shadow-gray-200 dark:shadow-green-500/10'} px-6 py-4 rounded-[1.5rem] flex items-center justify-center gap-2 hover:opacity-90 transition-all font-black text-xs active:scale-95`}
+                                title={t('public_plot.share_qr')}
+                                className={`w-16 h-16 flex items-center justify-center rounded-[1.5rem] transition-all shadow-xl ${isAdmin ? 'bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-gray-900/20 dark:shadow-white/10' : 'bg-gradient-primary text-white shadow-green-500/20'}`}
                             >
-                                <Share2 className="h-4 w-4" />
-                                {t('public_plot.share_qr')}
-                            </button>
+                                <Share2 className="h-6 w-6 text-current" />
+                            </motion.button>
                         </div>
                     </div>
                 </section>
@@ -371,62 +383,90 @@ export default function PublicPlot() {
                 {/* Disease/Pest Log */}
                 <DiseaseLogTimeline plotId={plot.id} />
 
-                {/* Timeline */}
-                <section className="space-y-8">
+                {/* Operations Timeline */}
+                <section className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-4">
                             <div className="w-2 h-10 bg-gradient-primary rounded-full shadow-lg shadow-green-500/20" />
-                            <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                            <h2 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight">
                                 {t('public_plot.timeline')}
                             </h2>
                         </div>
-                        <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-2xl text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                            {operations.length} {t('quick_log.title')?.split(' ')[0]}
+                        <div className="flex items-center gap-3">
+                            <div className="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-2xl text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest hidden sm:block">
+                                {operations.length} {t('quick_log.title')?.split(' ')[0]}
+                            </div>
+                            <button
+                                onClick={() => setShowOpsDetail(!showOpsDetail)}
+                                className={`p-3 rounded-2xl transition-all shadow-lg ${showOpsDetail ? 'bg-green-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-400'}`}
+                            >
+                                {showOpsDetail ? <EyeOff className="h-5 w-5" /> : <LayoutGrid className="h-5 w-5" />}
+                            </button>
                         </div>
                     </div>
 
-                    <div className="space-y-6">
-                        {operations.length === 0 ? (
-                            <div className="bg-white dark:bg-gray-900 p-20 rounded-[3rem] text-center border-2 border-dashed border-gray-100 dark:border-gray-800">
-                                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800/50 text-gray-200 dark:text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Droplet className="h-10 w-10" />
-                                </div>
-                                <p className="text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest text-xs">{t('public_plot.no_operations')}</p>
-                            </div>
-                        ) : (
-                            <div className="relative pl-10 md:pl-16 border-l-4 border-gray-100 dark:border-gray-800/50 space-y-12 pb-10 ml-4 md:ml-8">
-                                {operations.map((op) => (
-                                    <TimelineItem
-                                        key={op.id}
-                                        op={op}
-                                        t={t}
-                                        isAdmin={isAdmin}
-                                        onDelete={() => handleDeleteOperation(op.id)}
-                                        onUpdateImage={(file: File) => handleUpdateImage(op.id, 'operations', file)}
-                                    />
-                                ))}
-                            </div>
+                    <AnimatePresence mode="wait">
+                        {showOpsDetail && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="overflow-hidden"
+                            >
+                                {operations.length === 0 ? (
+                                    <div className="bg-white dark:bg-gray-900 p-16 rounded-[2.5rem] text-center border-2 border-dashed border-gray-100 dark:border-gray-800 mx-2">
+                                        <div className="w-16 h-16 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <ClipboardList className="h-8 w-8 text-gray-200 dark:text-gray-700" />
+                                        </div>
+                                        <p className="text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest text-[10px]">{t('public_plot.no_operations')}</p>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-6 overflow-x-auto pb-8 pt-2 px-2 snap-x no-scrollbar">
+                                        {operations.map((op) => (
+                                            <div key={op.id} className="flex-shrink-0 w-[300px] sm:w-[350px] snap-center">
+                                                <HistoryCard
+                                                    op={op}
+                                                    t={t}
+                                                    isAdmin={isAdmin}
+                                                    onDelete={() => handleDeleteOperation(op.id)}
+                                                    onUpdateImage={(file: File) => handleUpdateImage(op.id, 'operations', file)}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </motion.div>
                         )}
-                    </div>
+                    </AnimatePresence>
                 </section>
             </main>
 
-            {/* Mobile Actions */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl border-t border-gray-100 dark:border-gray-800 flex gap-4 md:hidden z-40 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+            {/* Mobile Actions - Enhanced Liquid Design */}
+            <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 dark:bg-gray-950/90 backdrop-blur-3xl border-t border-gray-100/50 dark:border-gray-800/50 flex flex-col gap-3 md:hidden z-40 pb-safe-bottom shadow-[0_-20px_50px_rgba(0,0,0,0.1)]">
                 {isAdmin && (
-                    <motion.button
-                        whileTap={{ scale: 0.98 }}
-                        onClick={handleLogClick}
-                        className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-[1.25rem] font-black text-xs flex items-center justify-center gap-2 h-16 shadow-xl shadow-green-500/20"
-                    >
-                        <ClipboardList className="h-5 w-5" />
-                        {t('dashboard.log_operation')}
-                    </motion.button>
+                    <div className="grid grid-cols-2 gap-3">
+                        <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleLogClick}
+                            className="bg-gradient-to-br from-green-600 to-emerald-700 text-white rounded-[2rem] font-black text-[11px] flex items-center justify-center gap-2 h-16 shadow-lg shadow-green-500/20 uppercase tracking-widest"
+                        >
+                            <ClipboardList className="h-5 w-5" />
+                            {t('dashboard.log_operation')?.split(' ')[0]}
+                        </motion.button>
+                        <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setShowDiseaseModal(true)}
+                            className="bg-gradient-to-br from-red-500 to-rose-700 text-white rounded-[2rem] font-black text-[11px] flex items-center justify-center gap-2 h-16 shadow-lg shadow-red-500/20 uppercase tracking-widest"
+                        >
+                            <Bug className="h-5 w-5" />
+                            {t('disease.title')?.split(' ')[0]}
+                        </motion.button>
+                    </div>
                 )}
                 <motion.button
-                    whileTap={{ scale: 0.98 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleShare}
-                    className={`${isAdmin ? 'flex-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-100 dark:border-gray-700' : 'w-full bg-gray-900 dark:bg-green-600 text-white shadow-2xl shadow-green-500/10'} rounded-[1.25rem] font-black text-xs flex items-center justify-center gap-2 h-16 active:scale-95`}
+                    className={`w-full ${isAdmin ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-950' : 'bg-gradient-primary text-white shadow-xl shadow-green-500/20'} rounded-[2rem] font-black text-xs flex items-center justify-center gap-3 h-16 uppercase tracking-[0.2em] shadow-2xl`}
                 >
                     <Share2 className="h-5 w-5" />
                     {t('public_plot.share_qr')}
@@ -461,7 +501,7 @@ export default function PublicPlot() {
                     />
                 )}
             </AnimatePresence>
-        </motion.div>
+        </motion.div >
     );
 }
 
@@ -489,86 +529,76 @@ function TechnicalCard({ icon, label, value, unit, color }: any) {
     )
 }
 
-function TimelineItem({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
+function HistoryCard({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
     const style = operationStyles[op.type] || { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', icon: ClipboardList };
     const Icon = style.icon;
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="h-full bg-white dark:bg-gray-900 rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 dark:shadow-black/20 border border-gray-50 dark:border-gray-800 flex flex-col gap-5 group hover:border-green-500/30 transition-all"
         >
-            <div className="absolute -left-[54px] top-1.5 w-8 h-8 bg-white dark:bg-gray-950 border-4 border-green-500 rounded-full z-10 shadow-lg shadow-green-500/20" />
-
-            <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row gap-8 transition-all hover:shadow-2xl hover:shadow-green-900/5 group">
-                <div className="flex-1">
-                    <div className="flex justify-between items-start mb-6">
-                        <div>
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] mb-2 block">
-                                {new Date(op.date).toLocaleDateString('fr-FR', {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric'
-                                })}
-                            </span>
-                            <div className="flex items-center gap-3">
-                                <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-green-600 transition-colors">
-                                    {t(`quick_log.types.${op.type}`, { defaultValue: op.type })}
-                                </h3>
-                                {isAdmin && (
-                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={onDelete}
-                                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
-                                            title={t('common.delete')}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                        <label className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors cursor-pointer">
-                                            <Camera className="h-4 w-4" />
-                                            <input
-                                                type="file"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={(e) => {
-                                                    const file = e.target.files?.[0];
-                                                    if (file) onUpdateImage(file);
-                                                }}
-                                            />
-                                        </label>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className={`p-5 rounded-[1.5rem] ${style.bg} ${style.text} shadow-sm group-hover:scale-110 transition-transform`}>
-                            <Icon className="h-7 w-7" />
-                        </div>
-                    </div>
-
-                    {op.notes && (
-                        <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-[1.5rem] border border-gray-100 dark:border-gray-700/50">
-                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest mb-2 block">{t('quick_log.notes')}</span>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-bold">
-                                {op.notes}
-                            </p>
+            <div className="flex items-start justify-between">
+                <div className={`p-4 rounded-2xl ${style.bg} ${style.text} shadow-lg transition-transform group-hover:scale-110`}>
+                    <Icon className="h-6 w-6" />
+                </div>
+                <div className="flex flex-col items-end">
+                    <span className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">
+                        {new Date(op.date).toLocaleDateString('fr-FR', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                        })}
+                    </span>
+                    {isAdmin && (
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={onDelete}
+                                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-300 hover:text-red-500 rounded-xl transition-all"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </button>
+                            <label className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-300 hover:text-blue-500 rounded-xl transition-all cursor-pointer">
+                                <Camera className="h-4 w-4" />
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) onUpdateImage(file);
+                                    }}
+                                />
+                            </label>
                         </div>
                     )}
                 </div>
+            </div>
 
-                {op.image_url && (
-                    <div className="w-full md:w-56 h-56 rounded-[2rem] overflow-hidden flex-shrink-0 relative group/img shadow-2xl">
-                        <img src={op.image_url} alt="Operation" className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center gap-4 transition-opacity backdrop-blur-sm">
-                            <a href={op.image_url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/20 hover:bg-white/40 rounded-2xl transition-all">
-                                <ExternalLink className="text-white h-7 w-7" />
-                            </a>
-                        </div>
+            <div className="flex-1">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-3 group-hover:text-green-600 transition-colors">
+                    {t(`quick_log.types.${op.type}`, { defaultValue: op.type })}
+                </h3>
+                {op.notes && (
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed font-bold line-clamp-3">
+                            {op.notes}
+                        </p>
                     </div>
                 )}
             </div>
+
+            {op.image_url && (
+                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-inner bg-gray-100 dark:bg-gray-800">
+                    <img
+                        src={op.image_url}
+                        alt={op.type}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                </div>
+            )}
         </motion.div>
     );
 }
-

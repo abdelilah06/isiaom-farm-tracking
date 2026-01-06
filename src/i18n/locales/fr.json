@@ -68,6 +68,7 @@
     "add_plot": {
         "title": "Ajouter une nouvelle parcelle",
         "basic_info": "Informations de base",
+        "tree_info": "Configuration de plantation",
         "plot_id": "ID de la parcelle",
         "plot_name": "Nom de la parcelle",
         "crop_variety": "Cultivar",
@@ -115,7 +116,7 @@
         "not_found": "Désolé ! Parcelle non trouvée",
         "crop": "Culture",
         "area": "Surface",
-        "date": "Date",
+        "date": "Date de plantation",
         "spacing": "Écartement",
         "plant_count": "Densité",
         "training_method": "Système de conduite",

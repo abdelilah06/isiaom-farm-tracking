@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { uploadImage } from '../lib/upload'
 import ImageUpload from './ImageUpload'
@@ -30,6 +30,20 @@ export default function AddPlotModal({ onClose, onPlotAdded }: AddPlotModalProps
         rootstock: '',
         planting_date: new Date().toISOString().split('T')[0]
     })
+
+    // Auto-calculate density
+    useEffect(() => {
+        const row = parseFloat(formData.tree_spacing_row)
+        const between = parseFloat(formData.tree_spacing_between)
+
+        if (row > 0 && between > 0) {
+            const density = Math.round(10000 / (row * between))
+            setFormData(prev => ({
+                ...prev,
+                plant_count: density.toString()
+            }))
+        }
+    }, [formData.tree_spacing_row, formData.tree_spacing_between])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(prev => ({
