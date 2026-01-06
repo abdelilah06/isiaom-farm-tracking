@@ -130,5 +130,78 @@
             "date": "التاريخ",
             "notes": "ملاحظات"
         }
+    },
+    "settings": {
+        "title": "الإعدادات",
+        "tabs": {
+            "account": "الحساب",
+            "data": "البيانات",
+            "appearance": "المظهر",
+            "notifications": "التنبيهات"
+        }
+    },
+    "notifications": {
+        "title": "تفضيلات التنبيهات",
+        "subtitle": "اختر كيف تريد تلقي الإشعارات",
+        "irrigation_alerts": "تنبيهات الري",
+        "pest_alerts": "تنبيهات الآفات",
+        "harvest_reminders": "تذكيرات الحصاد",
+        "system_updates": "تحديثات النظام",
+        "email": "تنبيهات البريد الإلكتروني",
+        "push": "إشعارات الهاتف",
+        "save_success": "تم حفظ التفضيلات بنجاح!"
+    },
+    "tasks": {
+        "title": "المهام والتذكيرات",
+        "subtitle": "إدارة أنشطتك المجدولة",
+        "create_task": "إنشاء مهمة",
+        "no_tasks": "لا توجد مهام مجدولة",
+        "priority": "الأولوية",
+        "due_date": "تاريخ الاستحقاق",
+        "status": "الحالة",
+        "plot": "الحقل",
+        "filters": {
+            "all": "الكل",
+            "pending": "قيد الانتظار",
+            "completed": "مكتملة",
+            "high_priority": "أولوية عالية"
+        },
+        "priorities": {
+            "low": "منخفضة",
+            "medium": "متوسطة",
+            "high": "عالية",
+            "critical": "حرجة"
+        },
+        "types": {
+            "irrigation": "الري",
+            "fertilization": "التسميد",
+            "pest_control": "المكافحة",
+            "pruning": "التقليم",
+            "harvest": "الحصاد",
+            "other": "أخرى"
+        },
+        "create_title": "جدولة مهمة جديدة",
+        "title_label": "عنوان المهمة",
+        "desc_label": "الوصف",
+        "type_label": "نوع المهمة",
+        "due_label": "التاريخ والوقت",
+        "priority_label": "مستوى الأولوية",
+        "plot_label": "الحقل المرتبط",
+        "submit_task": "جدولة المهمة"
+    },
+    "account": {
+        "change_password": "تغيير كلمة المرور",
+        "update_password": "تحديث كلمة المرور",
+        "password_subtitle": "قم بتحديث كلمة المرور الخاصة بك لتأمين حسابك",
+        "current_password": "كلمة المرور الحالية",
+        "new_password": "كلمة المرور الجديدة",
+        "confirm_password": "تأكيد كلمة المرور الجديدة",
+        "password_min_length": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+        "passwords_dont_match": "كلمات المرور غير متطابقة",
+        "password_updated": "تم تحديث كلمة المرور بنجاح!",
+        "update_email": "تحديث البريد الإلكتروني",
+        "new_email": "البريد الإلكتروني الجديد",
+        "email_updated": "تم تحديث البريد الإلكتروني!",
+        "confirm_sent": "تم إرسال رابط تأكيد إلى بريدك الإلكتروني الجديد!"
     }
 }

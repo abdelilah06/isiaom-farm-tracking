@@ -209,6 +209,14 @@ export default function AdminDashboard() {
                             <BarChart3 className="h-5 w-5 sm:h-4 sm:w-4" />
                             <span className="hidden md:inline ml-2">{t('common.analytics')}</span>
                         </Link>
+                        <Link
+                            to="/admin/tasks"
+                            className="flex items-center justify-center p-2.5 sm:px-4 sm:py-2.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all font-bold text-sm shadow-md"
+                            title={t('tasks.title')}
+                        >
+                            <ClipboardList className="h-5 w-5 sm:h-4 sm:w-4" />
+                            <span className="hidden md:inline ml-2">{t('tasks.title')}</span>
+                        </Link>
                         <LanguageSwitcher />
                         <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden lg:block" />
                         <div className="flex items-center gap-1 sm:gap-2">

@@ -174,8 +174,58 @@
         "tabs": {
             "account": "Account",
             "data": "Data",
-            "appearance": "Appearance"
+            "appearance": "Appearance",
+            "notifications": "Notifications"
         }
+    },
+    "notifications": {
+        "title": "Notification Preferences",
+        "subtitle": "Choose how you want to be notified",
+        "irrigation_alerts": "Irrigation Alerts",
+        "pest_alerts": "Pest Alerts",
+        "harvest_reminders": "Harvest Reminders",
+        "system_updates": "System Updates",
+        "email": "Email Notifications",
+        "push": "Push Notifications",
+        "save_success": "Preferences saved successfully!"
+    },
+    "tasks": {
+        "title": "Tasks & Reminders",
+        "subtitle": "Manage your scheduled activities",
+        "create_task": "Create Task",
+        "no_tasks": "No tasks scheduled",
+        "priority": "Priority",
+        "due_date": "Due Date",
+        "status": "Status",
+        "plot": "Plot",
+        "filters": {
+            "all": "All",
+            "pending": "Pending",
+            "completed": "Completed",
+            "high_priority": "High Priority"
+        },
+        "priorities": {
+            "low": "Low",
+            "medium": "Medium",
+            "high": "High",
+            "critical": "Critical"
+        },
+        "types": {
+            "irrigation": "Irrigation",
+            "fertilization": "Fertilization",
+            "pest_control": "Pest Control",
+            "pruning": "Pruning",
+            "harvest": "Harvest",
+            "other": "Other"
+        },
+        "create_title": "Schedule New Task",
+        "title_label": "Task Title",
+        "desc_label": "Description",
+        "type_label": "Task Type",
+        "due_label": "Due Date & Time",
+        "priority_label": "Priority Level",
+        "plot_label": "Associated Plot",
+        "submit_task": "Schedule Task"
     },
     "account": {
         "change_password": "Change Password",

@@ -12,6 +12,7 @@ import DiseaseLogTimeline from '../components/DiseaseLogTimeline';
 import WeatherWidget from '../components/WeatherWidget';
 import { Share2, ClipboardList, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft, Trash2, Camera } from 'lucide-react';
 import { getCachedPlot, getCachedOperationsForPlot, cacheOperations } from '@/lib/db';
+import { uploadImage } from '@/lib/upload';
 
 const operationStyles: Record<string, { bg: string, text: string, icon: any }> = {
     irrigation: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', icon: Droplet },
@@ -145,19 +146,8 @@ export default function PublicPlot() {
 
     const handleUpdateImage = async (id: string, table: 'plots' | 'operations', file: File) => {
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random()}.${fileExt}`;
-            const filePath = `${table}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('plot-images')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('plot-images')
-                .getPublicUrl(filePath);
+            const bucket = table === 'plots' ? 'plots-images' : 'operations-images';
+            const publicUrl = await uploadImage(file, bucket);
 
             const { error: updateError } = await supabase
                 .from(table)

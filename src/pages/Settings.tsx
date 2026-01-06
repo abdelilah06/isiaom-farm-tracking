@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import {
     ArrowLeft, Mail, Download, Moon, Sun, Check, AlertCircle,
-    FileSpreadsheet, Package, Leaf, Lock, Shield, Settings as SettingsIcon, Loader2
+    FileSpreadsheet, Package, Leaf, Lock, Shield, Settings as SettingsIcon, Loader2,
+    Bell, Smartphone, ToggleLeft, ToggleRight, Droplets
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -15,7 +16,7 @@ export default function Settings() {
     const { t } = useTranslation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
-    const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance'>('account')
+    const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance' | 'notifications'>('account')
 
     // Email update state
     const [newEmail, setNewEmail] = useState('')
@@ -26,6 +27,17 @@ export default function Settings() {
     // Export state
     const [exportLoading, setExportLoading] = useState(false)
     const [exportMessage, setExportMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+
+    // Notifications state
+    const [notificationPrefs, setNotificationPrefs] = useState({
+        irrigation_alerts: true,
+        pest_alerts: true,
+        harvest_reminders: true,
+        system_updates: true,
+        email_notifications: true,
+        push_notifications: false
+    })
+    const [prefsLoading, setPrefsLoading] = useState(false)
 
     const handleUpdateEmail = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -149,6 +161,16 @@ export default function Settings() {
                                 >
                                     {theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                                     {t('settings.tabs.appearance')}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('notifications')}
+                                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'notifications'
+                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-950 shadow-2xl'
+                                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                        }`}
+                                >
+                                    <Bell className="h-4 w-4" />
+                                    {t('settings.tabs.notifications')}
                                 </button>
                             </nav>
                         </div>
@@ -395,6 +417,79 @@ export default function Settings() {
                                             <h4 className="font-black text-2xl text-gray-900 dark:text-white uppercase tracking-tight mb-2">Sombre</h4>
                                             <p className="text-sm text-gray-400 font-bold uppercase tracking-widest leading-none">Deep Focus</p>
                                         </button>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Notifications Section */}
+                            {activeTab === 'notifications' && (
+                                <motion.div
+                                    key="notifications"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className="space-y-8"
+                                >
+                                    <div className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 p-10">
+                                        <div className="mb-12">
+                                            <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">{t('notifications.title')}</h3>
+                                            <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">{t('notifications.subtitle')}</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            {[
+                                                { id: 'irrigation_alerts', label: t('notifications.irrigation_alerts'), icon: <Droplets className="h-5 w-5" /> },
+                                                { id: 'pest_alerts', label: t('notifications.pest_alerts'), icon: <AlertCircle className="h-5 w-5" /> },
+                                                { id: 'harvest_reminders', label: t('notifications.harvest_reminders'), icon: <Package className="h-5 w-5" /> },
+                                                { id: 'system_updates', label: t('notifications.system_updates'), icon: <SettingsIcon className="h-5 w-5" /> },
+                                                { id: 'email_notifications', label: t('notifications.email'), icon: <Mail className="h-5 w-5" /> },
+                                                { id: 'push_notifications', label: t('notifications.push'), icon: <Smartphone className="h-5 w-5" /> }
+                                            ].map((pref) => (
+                                                <button
+                                                    key={pref.id}
+                                                    onClick={() => setNotificationPrefs(prev => ({
+                                                        ...prev,
+                                                        [pref.id]: !prev[pref.id as keyof typeof notificationPrefs]
+                                                    }))}
+                                                    className={`flex items-center justify-between p-6 rounded-3xl border-2 transition-all group ${notificationPrefs[pref.id as keyof typeof notificationPrefs]
+                                                        ? 'border-green-500 bg-green-50/30 dark:bg-green-500/10'
+                                                        : 'border-gray-50 dark:border-gray-800 bg-gray-50/50 dark:bg-white/[0.02] hover:border-gray-200 dark:hover:border-gray-700'
+                                                        }`}
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={`p-3 rounded-xl transition-colors ${notificationPrefs[pref.id as keyof typeof notificationPrefs] ? 'bg-green-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 group-hover:text-gray-600'}`}>
+                                                            {pref.icon}
+                                                        </div>
+                                                        <span className="font-black text-[10px] uppercase tracking-widest text-gray-900 dark:text-white">
+                                                            {pref.label}
+                                                        </span>
+                                                    </div>
+                                                    {notificationPrefs[pref.id as keyof typeof notificationPrefs] ? (
+                                                        <ToggleRight className="h-8 w-8 text-green-500" />
+                                                    ) : (
+                                                        <ToggleLeft className="h-8 w-8 text-gray-300 dark:text-gray-600" />
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className="mt-12 pt-8 border-t border-gray-50 dark:border-gray-800">
+                                            <button
+                                                onClick={async () => {
+                                                    setPrefsLoading(true)
+                                                    // Mock save delay
+                                                    await new Promise(r => setTimeout(r, 1000))
+                                                    setPrefsLoading(false)
+                                                    setExportMessage({ type: 'success', text: t('notifications.save_success') })
+                                                    setTimeout(() => setExportMessage(null), 3000)
+                                                }}
+                                                disabled={prefsLoading}
+                                                className="w-full md:w-auto px-12 py-5 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-4"
+                                            >
+                                                {prefsLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                                                {t('common.save')}
+                                            </button>
+                                        </div>
                                     </div>
                                 </motion.div>
                             )}

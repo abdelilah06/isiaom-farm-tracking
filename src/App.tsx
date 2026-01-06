@@ -7,6 +7,7 @@ import Analytics from './pages/Analytics';
 import PublicGallery from './pages/PublicGallery';
 import ChangePassword from './pages/ChangePassword';
 import Settings from './pages/Settings';
+import Tasks from './pages/Tasks';
 
 import { OfflineProvider } from './lib/OfflineContext';
 import { OfflineBanner } from './components/OfflineBanner';
@@ -47,6 +48,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ChangePassword />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/tasks"
+                element={
+                  <ProtectedRoute>
+                    <Tasks />
                   </ProtectedRoute>
                 }
               />

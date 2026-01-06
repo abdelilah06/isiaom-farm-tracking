@@ -174,8 +174,58 @@
         "tabs": {
             "account": "Compte",
             "data": "Données",
-            "appearance": "Apparence"
+            "appearance": "Apparence",
+            "notifications": "Notifications"
         }
+    },
+    "notifications": {
+        "title": "Préférences de Notification",
+        "subtitle": "Choisissez comment vous souhaitez être informé",
+        "irrigation_alerts": "Alertes d'irrigation",
+        "pest_alerts": "Alertes phytosanitaires",
+        "harvest_reminders": "Rappels de récolte",
+        "system_updates": "Mises à jour du système",
+        "email": "Notifications par Email",
+        "push": "Notifications Push",
+        "save_success": "Préférences enregistrées avec succès !"
+    },
+    "tasks": {
+        "title": "Tâches & Rappels",
+        "subtitle": "Gérez vos activités planifiées",
+        "create_task": "Créer une tâche",
+        "no_tasks": "Aucune tâche planifiée",
+        "priority": "Priorité",
+        "due_date": "Date d'échéance",
+        "status": "Statut",
+        "plot": "Parcelle",
+        "filters": {
+            "all": "Toutes",
+            "pending": "En attente",
+            "completed": "Terminées",
+            "high_priority": "Priorité haute"
+        },
+        "priorities": {
+            "low": "Faible",
+            "medium": "Moyenne",
+            "high": "Haute",
+            "critical": "Critique"
+        },
+        "types": {
+            "irrigation": "Irrigation",
+            "fertilization": "Fertilisation",
+            "pest_control": "Traitement",
+            "pruning": "Taille",
+            "harvest": "Récolte",
+            "other": "Autre"
+        },
+        "create_title": "Planifier une tâche",
+        "title_label": "Titre de la tâche",
+        "desc_label": "Description",
+        "type_label": "Type de tâche",
+        "due_label": "Date et heure d'échéance",
+        "priority_label": "Niveau de priorité",
+        "plot_label": "Parcelle associée",
+        "submit_task": "Planifier la tâche"
     },
     "account": {
         "change_password": "Changer le mot de passe",
