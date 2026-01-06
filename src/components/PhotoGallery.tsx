@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { uploadImage } from '../lib/upload'
-import { X, Plus, Loader2, Image as ImageIcon, Trash2, ExternalLink } from 'lucide-react'
+import { X, Plus, Loader2, Image as ImageIcon, Trash2, ExternalLink, EyeOff, LayoutGrid } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -24,6 +24,7 @@ export default function PhotoGallery({ plotId, isAdmin }: PhotoGalleryProps) {
     const [loading, setLoading] = useState(true)
     const [uploading, setUploading] = useState(false)
     const [selectedPhoto, setSelectedPhoto] = useState<PlotPhoto | null>(null)
+    const [showGallery, setShowGallery] = useState(false)
 
     useEffect(() => {
         fetchPhotos()
@@ -64,6 +65,7 @@ export default function PhotoGallery({ plotId, isAdmin }: PhotoGalleryProps) {
 
             if (error) throw error
             fetchPhotos()
+            setShowGallery(true) // Automatically show gallery after upload
         } catch (error) {
             console.error('Error uploading photo:', error)
             alert(t('common.error'))
@@ -107,61 +109,80 @@ export default function PhotoGallery({ plotId, isAdmin }: PhotoGalleryProps) {
                         {t('gallery.plot_gallery')}
                     </h2>
                 </div>
-                {isAdmin && (
-                    <label className="cursor-pointer">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleUpload}
-                            className="hidden"
-                            disabled={uploading}
-                        />
-                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold text-xs hover:shadow-lg transition-all">
-                            {uploading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <Plus className="h-4 w-4" />
-                            )}
-                            {t('gallery.add_photo')}
-                        </div>
-                    </label>
-                )}
+                <div className="flex items-center gap-3">
+                    {isAdmin && (
+                        <label className="cursor-pointer">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleUpload}
+                                className="hidden"
+                                disabled={uploading}
+                            />
+                            <div className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded-2xl font-bold text-xs hover:shadow-lg transition-all">
+                                {uploading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Plus className="h-4 w-4" />
+                                )}
+                            </div>
+                        </label>
+                    )}
+                    <button
+                        onClick={() => setShowGallery(!showGallery)}
+                        className={`p-3 rounded-2xl transition-all shadow-lg ${showGallery ? 'bg-purple-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-400'}`}
+                    >
+                        {showGallery ? <EyeOff className="h-5 w-5" /> : <LayoutGrid className="h-5 w-5" />}
+                    </button>
+                </div>
             </div>
 
             {/* Gallery Grid */}
-            {photos.length === 0 ? (
-                <div className="bg-white dark:bg-gray-900 p-16 rounded-[2rem] text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <ImageIcon className="h-8 w-8 text-gray-300 dark:text-gray-600" />
-                    </div>
-                    <p className="text-gray-400 dark:text-gray-500 font-bold text-sm">{t('gallery.no_photos')}</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {photos.map((photo, index) => (
-                        <motion.div
-                            key={photo.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05 }}
-                            onClick={() => setSelectedPhoto(photo)}
-                            className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all"
-                        >
-                            <img
-                                src={photo.image_url}
-                                alt={photo.caption || 'Plot photo'}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="absolute bottom-0 left-0 right-0 p-3 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                                <p className="text-[10px] font-bold uppercase tracking-widest">
-                                    {new Date(photo.photo_date).toLocaleDateString('fr-FR')}
-                                </p>
+            <AnimatePresence mode="wait">
+                {showGallery && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                    >
+                        {photos.length === 0 ? (
+                            <div className="bg-white dark:bg-gray-900 p-16 rounded-[2rem] text-center border-2 border-dashed border-gray-200 dark:border-gray-700 mx-2">
+                                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <ImageIcon className="h-8 w-8 text-gray-300 dark:text-gray-600" />
+                                </div>
+                                <p className="text-gray-400 dark:text-gray-500 font-bold text-sm">{t('gallery.no_photos')}</p>
                             </div>
-                        </motion.div>
-                    ))}
-                </div>
-            )}
+                        ) : (
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2">
+                                {photos.map((photo, index) => (
+                                    <motion.div
+                                        key={photo.id}
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        onClick={() => setSelectedPhoto(photo)}
+                                        className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-2xl transition-all"
+                                    >
+                                        <img
+                                            src={photo.image_url}
+                                            alt={photo.caption || 'Plot photo'}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="absolute bottom-0 left-0 right-0 p-3 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest">
+                                                {new Date(photo.photo_date).toLocaleDateString('fr-FR')}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Lightbox */}
             <AnimatePresence>
