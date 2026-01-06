@@ -12,7 +12,9 @@
         "error": "Une erreur est survenue!",
         "analytics": "Analyses",
         "days": "Jours",
-        "model_farm": "Ferme Modèle"
+        "model_farm": "Ferme Modèle",
+        "update_image": "Changer l'image",
+        "confirm_delete": "Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible."
     },
     "offline": {
         "you_are_offline": "Vous êtes hors ligne",

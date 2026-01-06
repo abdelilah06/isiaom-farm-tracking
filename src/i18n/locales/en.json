@@ -12,7 +12,9 @@
         "error": "An error occurred!",
         "analytics": "Analytics",
         "days": "Days",
-        "model_farm": "Model Farm"
+        "model_farm": "Model Farm",
+        "update_image": "Update Image",
+        "confirm_delete": "Are you sure you want to delete this item? This action is irreversible."
     },
     "offline": {
         "you_are_offline": "You are offline",

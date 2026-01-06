@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
     Grid, TrendingUp, Droplets, Plus, Search, Filter, X,
-    QrCode, BarChart3, User, LogOut, LayoutDashboard, ClipboardList, Leaf, Settings as SettingsIcon
+    QrCode, BarChart3, User, LogOut, LayoutDashboard, ClipboardList, Leaf, Settings as SettingsIcon,
+    Trash2
 } from 'lucide-react'
 import QuickLogModal from '@/components/QuickLogModal'
 import QRCodeGenerator from '@/components/QRCodeGenerator'
@@ -116,6 +117,30 @@ export default function AdminDashboard() {
     const handleLogout = async () => {
         await supabase.auth.signOut()
         navigate('/login')
+    }
+
+    const handleDeletePlot = async (plotId: string, plotName: string) => {
+        if (!confirm(`${t('common.confirm_delete')}\n\n${plotName}`)) return
+
+        try {
+            // Delete related records first to avoid FK errors (if cascades not set)
+            await supabase.from('operations').delete().eq('plot_id', plotId)
+            await supabase.from('disease_logs').delete().eq('plot_id', plotId)
+            await supabase.from('yield_records').delete().eq('plot_id', plotId)
+            await supabase.from('plot_photos').delete().eq('plot_id', plotId)
+
+            const { error } = await supabase
+                .from('plots')
+                .delete()
+                .eq('id', plotId)
+
+            if (error) throw error
+
+            setPlots(prev => prev.filter(p => p.id !== plotId))
+        } catch (error) {
+            console.error('Error deleting plot:', error)
+            alert(t('common.error'))
+        }
     }
 
     const filteredPlots = useMemo(() => {
@@ -417,6 +442,15 @@ export default function AdminDashboard() {
                                                     >
                                                         <QrCode className="h-5 w-5" />
                                                     </motion.button>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                        onClick={() => handleDeletePlot(plot.id, plot.name)}
+                                                        className="p-3 min-h-[44px] min-w-[44px] bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm flex items-center justify-center"
+                                                        title={t('common.delete')}
+                                                    >
+                                                        <Trash2 className="h-5 w-5" />
+                                                    </motion.button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -476,6 +510,15 @@ export default function AdminDashboard() {
                                         >
                                             <QrCode className="h-4 w-4" />
                                             {t('dashboard.qr_code')}
+                                        </motion.button>
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            onClick={() => handleDeletePlot(plot.id, plot.name)}
+                                            className="flex items-center justify-center gap-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 py-4 rounded-2xl font-black text-xs active:bg-red-100 dark:active:bg-red-900/50 transition-colors shadow-sm min-h-[44px] col-span-2"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                            {t('common.delete')}
                                         </motion.button>
                                     </div>
                                 </div>

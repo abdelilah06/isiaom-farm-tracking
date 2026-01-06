@@ -10,7 +10,7 @@ import DiseasePestModal from '../components/DiseasePestModal';
 import PhotoGallery from '../components/PhotoGallery';
 import DiseaseLogTimeline from '../components/DiseaseLogTimeline';
 import WeatherWidget from '../components/WeatherWidget';
-import { Share2, ClipboardList, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft } from 'lucide-react';
+import { Share2, ClipboardList, ExternalLink, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft, Trash2, Camera } from 'lucide-react';
 import { getCachedPlot, getCachedOperationsForPlot, cacheOperations } from '@/lib/db';
 
 const operationStyles: Record<string, { bg: string, text: string, icon: any }> = {
@@ -126,6 +126,57 @@ export default function PublicPlot() {
         setShowLogModal(true);
     };
 
+    const handleDeleteOperation = async (opId: string) => {
+        if (!confirm(t('common.confirm_delete'))) return;
+
+        try {
+            const { error } = await supabase
+                .from('operations')
+                .delete()
+                .eq('id', opId);
+
+            if (error) throw error;
+            setOperations(prev => prev.filter(op => op.id !== opId));
+        } catch (error) {
+            console.error('Error deleting operation:', error);
+            alert(t('common.error'));
+        }
+    };
+
+    const handleUpdateImage = async (id: string, table: 'plots' | 'operations', file: File) => {
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `${table}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('plot-images')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('plot-images')
+                .getPublicUrl(filePath);
+
+            const { error: updateError } = await supabase
+                .from(table)
+                .update({ image_url: publicUrl })
+                .eq('id', id);
+
+            if (updateError) throw updateError;
+
+            if (table === 'plots') {
+                setPlot({ ...plot, image_url: publicUrl });
+            } else {
+                setOperations(prev => prev.map(op => op.id === id ? { ...op, image_url: publicUrl } : op));
+            }
+        } catch (error) {
+            console.error('Error updating image:', error);
+            alert(t('common.error'));
+        }
+    };
+
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-950 gap-6">
             <div className="relative">
@@ -197,6 +248,24 @@ export default function PublicPlot() {
                             </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent md:hidden" />
+
+                        {isAdmin && (
+                            <div className="absolute top-4 right-4 z-10">
+                                <label className="cursor-pointer bg-white/90 dark:bg-gray-950/90 p-3 rounded-2xl shadow-xl flex items-center gap-2 hover:bg-white dark:hover:bg-gray-900 transition-all border border-white/20 backdrop-blur-md group/cam">
+                                    <Camera className="h-5 w-5 text-green-600" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 dark:text-white max-w-0 overflow-hidden group-hover/cam:max-w-xs transition-all duration-500 whitespace-nowrap">{t('common.update_image')}</span>
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleUpdateImage(plot.id, 'plots', file);
+                                        }}
+                                    />
+                                </label>
+                            </div>
+                        )}
                     </div>
 
                     <div className="w-full md:w-1/2 p-8 md:p-14 flex flex-col justify-center">
@@ -337,7 +406,14 @@ export default function PublicPlot() {
                         ) : (
                             <div className="relative pl-10 md:pl-16 border-l-4 border-gray-100 dark:border-gray-800/50 space-y-12 pb-10 ml-4 md:ml-8">
                                 {operations.map((op) => (
-                                    <TimelineItem key={op.id} op={op} t={t} />
+                                    <TimelineItem
+                                        key={op.id}
+                                        op={op}
+                                        t={t}
+                                        isAdmin={isAdmin}
+                                        onDelete={() => handleDeleteOperation(op.id)}
+                                        onUpdateImage={(file: File) => handleUpdateImage(op.id, 'operations', file)}
+                                    />
                                 ))}
                             </div>
                         )}
@@ -423,7 +499,7 @@ function TechnicalCard({ icon, label, value, unit, color }: any) {
     )
 }
 
-function TimelineItem({ op, t }: any) {
+function TimelineItem({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
     const style = operationStyles[op.type] || { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', icon: ClipboardList };
     const Icon = style.icon;
 
@@ -447,9 +523,34 @@ function TimelineItem({ op, t }: any) {
                                     year: 'numeric'
                                 })}
                             </span>
-                            <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-green-600 transition-colors">
-                                {t(`quick_log.types.${op.type}`, { defaultValue: op.type })}
-                            </h3>
+                            <div className="flex items-center gap-3">
+                                <h3 className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tight group-hover:text-green-600 transition-colors">
+                                    {t(`quick_log.types.${op.type}`, { defaultValue: op.type })}
+                                </h3>
+                                {isAdmin && (
+                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={onDelete}
+                                            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-600 rounded-lg transition-colors"
+                                            title={t('common.delete')}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </button>
+                                        <label className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-400 hover:text-blue-600 rounded-lg transition-colors cursor-pointer">
+                                            <Camera className="h-4 w-4" />
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) onUpdateImage(file);
+                                                }}
+                                            />
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className={`p-5 rounded-[1.5rem] ${style.bg} ${style.text} shadow-sm group-hover:scale-110 transition-transform`}>
                             <Icon className="h-7 w-7" />
@@ -469,9 +570,11 @@ function TimelineItem({ op, t }: any) {
                 {op.image_url && (
                     <div className="w-full md:w-56 h-56 rounded-[2rem] overflow-hidden flex-shrink-0 relative group/img shadow-2xl">
                         <img src={op.image_url} alt="Operation" className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110" />
-                        <a href={op.image_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity backdrop-blur-sm">
-                            <ExternalLink className="text-white h-7 w-7" />
-                        </a>
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 flex items-center justify-center gap-4 transition-opacity backdrop-blur-sm">
+                            <a href={op.image_url} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/20 hover:bg-white/40 rounded-2xl transition-all">
+                                <ExternalLink className="text-white h-7 w-7" />
+                            </a>
+                        </div>
                     </div>
                 )}
             </div>
