@@ -175,8 +175,14 @@
             "account": "Account",
             "data": "Data",
             "appearance": "Appearance",
-            "notifications": "Notifications"
-        }
+            "notifications": "Notifications",
+            "general": "General"
+        },
+        "general_subtitle": "Global application configuration",
+        "language_title": "Interface Language",
+        "language_subtitle": "Change system language",
+        "session_title": "Session",
+        "session_subtitle": "Log out from administration"
     },
     "notifications": {
         "title": "Notification Preferences",

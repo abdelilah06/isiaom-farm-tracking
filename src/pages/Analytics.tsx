@@ -11,7 +11,6 @@ import {
     Search, ArrowLeft, Bug, AlertTriangle
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 const COLORS = ['#059669', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#10B981', '#6366F1'];
 
@@ -266,9 +265,6 @@ export default function Analytics() {
                             <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">{t('analytics.title')}</h1>
                             <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.subtitle')}</p>
                         </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <LanguageSwitcher />
                     </div>
                 </div>
             </header>

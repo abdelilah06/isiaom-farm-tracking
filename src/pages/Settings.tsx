@@ -4,7 +4,8 @@ import { supabase } from '@/lib/supabase'
 import {
     ArrowLeft, Mail, Download, Moon, Sun, Check, AlertCircle,
     FileSpreadsheet, Package, Leaf, Lock, Shield, Settings as SettingsIcon, Loader2,
-    Bell, Smartphone, ToggleLeft, ToggleRight, Droplets
+    Bell, Smartphone, ToggleLeft, ToggleRight, Droplets,
+    Globe, LogOut
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
@@ -16,7 +17,7 @@ export default function Settings() {
     const { t } = useTranslation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
-    const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance' | 'notifications'>('account')
+    const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance' | 'notifications' | 'general'>('account')
 
     // Email update state
     const [newEmail, setNewEmail] = useState('')
@@ -59,6 +60,16 @@ export default function Settings() {
             setEmailError(err.message || t('common.error'))
         } finally {
             setEmailLoading(false)
+        }
+    }
+
+    const handleLogout = async () => {
+        try {
+            const { error } = await supabase.auth.signOut()
+            if (error) throw error
+            navigate('/login')
+        } catch (error) {
+            console.error('Error logging out:', error)
         }
     }
 
@@ -171,6 +182,16 @@ export default function Settings() {
                                 >
                                     <Bell className="h-4 w-4" />
                                     {t('settings.tabs.notifications')}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab('general')}
+                                    className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'general'
+                                        ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-950 shadow-2xl'
+                                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                        }`}
+                                >
+                                    <Globe className="h-4 w-4" />
+                                    {t('settings.tabs.general')}
                                 </button>
                             </nav>
                         </div>
@@ -493,10 +514,64 @@ export default function Settings() {
                                     </div>
                                 </motion.div>
                             )}
+                            {/* General Section */}
+                            {activeTab === 'general' && (
+                                <motion.div
+                                    key="general"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    className="space-y-8"
+                                >
+                                    <div className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-xl shadow-green-900/5 border border-gray-100 dark:border-gray-800 p-10">
+                                        <div className="mb-12">
+                                            <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">{t('settings.tabs.general')}</h3>
+                                            <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest">{t('settings.general_subtitle')}</p>
+                                        </div>
+
+                                        <div className="space-y-12">
+                                            {/* Language Section */}
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8 bg-gray-50/50 dark:bg-white/[0.02] rounded-[2rem] border border-gray-100 dark:border-gray-800">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-md">
+                                                        <Globe className="h-6 w-6 text-blue-500" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('settings.language_title')}</h4>
+                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{t('settings.language_subtitle')}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="scale-110 origin-right">
+                                                    <LanguageSwitcher />
+                                                </div>
+                                            </div>
+
+                                            {/* Logout Section */}
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8 bg-red-50/30 dark:bg-red-900/10 rounded-[2rem] border border-red-100/50 dark:border-red-900/20">
+                                                <div className="flex items-center gap-5">
+                                                    <div className="w-12 h-12 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center shadow-md">
+                                                        <LogOut className="h-6 w-6 text-red-500" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('settings.session_title')}</h4>
+                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{t('settings.session_subtitle')}</p>
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="px-10 py-4 bg-red-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-red-500/20 hover:scale-105 active:scale-95 transition-all"
+                                                >
+                                                    {t('common.logout')}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
                         </AnimatePresence>
                     </div>
                 </div>
             </main>
-        </motion.div>
+        </motion.div >
     )
 }

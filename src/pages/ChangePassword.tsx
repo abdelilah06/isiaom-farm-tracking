@@ -4,7 +4,6 @@ import { supabase } from '@/lib/supabase'
 import { Lock, ArrowLeft, Check, AlertCircle, ShieldEllipsis } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function ChangePassword() {
     const { t } = useTranslation()
@@ -79,7 +78,6 @@ export default function ChangePassword() {
                             <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">Sécurité</span>
                         </div>
                     </div>
-                    <LanguageSwitcher />
                 </div>
             </nav>
 

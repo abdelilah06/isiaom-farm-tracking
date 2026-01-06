@@ -137,8 +137,14 @@
             "account": "الحساب",
             "data": "البيانات",
             "appearance": "المظهر",
-            "notifications": "التنبيهات"
-        }
+            "notifications": "التنبيهات",
+            "general": "عام"
+        },
+        "general_subtitle": "إعدادات التطبيق العامة",
+        "language_title": "لغة الواجهة",
+        "language_subtitle": "تغيير لغة النظام",
+        "session_title": "الجلسة",
+        "session_subtitle": "تسجيل الخروج من الإدارة"
     },
     "notifications": {
         "title": "تفضيلات التنبيهات",

@@ -2,14 +2,13 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
     Grid, TrendingUp, Droplets, Plus, Search, Filter, X,
-    QrCode, BarChart3, User, LogOut, LayoutDashboard, ClipboardList, Leaf, Settings as SettingsIcon,
+    QrCode, BarChart3, User, LayoutDashboard, ClipboardList, Leaf, Settings as SettingsIcon,
     Trash2
 } from 'lucide-react'
 import QuickLogModal from '@/components/QuickLogModal'
 import QRCodeGenerator from '@/components/QRCodeGenerator'
 import AddPlotModal from '@/components/AddPlotModal'
 import { useTranslation } from 'react-i18next'
-import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { cachePlots, getCachedPlots } from '@/lib/db'
@@ -114,10 +113,6 @@ export default function AdminDashboard() {
         }
     }
 
-    const handleLogout = async () => {
-        await supabase.auth.signOut()
-        navigate('/login')
-    }
 
     const handleDeletePlot = async (plotId: string, plotName: string) => {
         if (!confirm(`${t('common.confirm_delete')}\n\n${plotName}`)) return
@@ -217,8 +212,6 @@ export default function AdminDashboard() {
                             <ClipboardList className="h-5 w-5 sm:h-4 sm:w-4" />
                             <span className="hidden md:inline ml-2">{t('tasks.title')}</span>
                         </Link>
-                        <LanguageSwitcher />
-                        <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden lg:block" />
                         <div className="flex items-center gap-1 sm:gap-2">
                             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-primary hidden xs:flex items-center justify-center text-white shadow-md shrink-0">
                                 <User className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -230,15 +223,6 @@ export default function AdminDashboard() {
                             >
                                 <SettingsIcon className="h-5 w-5" />
                             </Link>
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={handleLogout}
-                                className="p-2 sm:p-2.5 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl text-gray-400 hover:text-red-500 transition-all"
-                                title="Logout"
-                            >
-                                <LogOut className="h-5 w-5" />
-                            </motion.button>
                         </div>
                     </div>
                 </div>
