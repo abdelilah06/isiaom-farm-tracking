@@ -162,36 +162,37 @@ export default function AdminDashboard() {
         >
             {/* Enhanced Sticky Header */}
             <header className="glass sticky top-0 z-30 border-b border-white/20 dark:border-gray-800 shadow-lg">
-                <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-lg">
-                            <LayoutDashboard className="h-6 w-6 text-white" />
+                <div className="max-w-6xl mx-auto px-4 py-3 sm:h-20 flex items-center justify-between gap-2 overflow-hidden">
+                    <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-primary rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shrink-0">
+                            <LayoutDashboard className="h-5 w-5 sm:h-6 sm:h-6 text-white" />
                         </div>
-                        <div>
-                            <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
+                        <div className="min-w-0">
+                            <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight truncate">
                                 {t('common.dashboard')}
                             </h1>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('dashboard.subtitle')}</p>
+                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium truncate hidden xs:block">{t('dashboard.subtitle')}</p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
                         <Link
                             to="/admin/analytics"
-                            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-secondary text-white rounded-xl hover:shadow-xl transition-all font-bold text-sm shadow-md"
+                            className="flex items-center justify-center p-2.5 sm:px-4 sm:py-2.5 bg-gradient-secondary text-white rounded-xl hover:shadow-xl transition-all font-bold text-sm shadow-md"
+                            title={t('common.analytics')}
                         >
-                            <BarChart3 className="h-4 w-4" />
-                            <span className="hidden sm:inline">{t('common.analytics')}</span>
+                            <BarChart3 className="h-5 w-5 sm:h-4 sm:w-4" />
+                            <span className="hidden md:inline ml-2">{t('common.analytics')}</span>
                         </Link>
                         <LanguageSwitcher />
-                        <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden sm:block" />
-                        <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center text-white shadow-md">
-                                <User className="h-5 w-5" />
+                        <div className="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden lg:block" />
+                        <div className="flex items-center gap-1 sm:gap-2">
+                            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-primary hidden xs:flex items-center justify-center text-white shadow-md shrink-0">
+                                <User className="h-4 w-4 sm:h-5 sm:w-5" />
                             </div>
                             <Link
                                 to="/admin/settings"
-                                className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl text-gray-400 hover:text-blue-600 transition-all"
+                                className="p-2 sm:p-2.5 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl text-gray-400 hover:text-blue-600 transition-all"
                                 title="Settings"
                             >
                                 <SettingsIcon className="h-5 w-5" />
@@ -200,7 +201,7 @@ export default function AdminDashboard() {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleLogout}
-                                className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl text-gray-400 hover:text-red-500 transition-all"
+                                className="p-2 sm:p-2.5 min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl text-gray-400 hover:text-red-500 transition-all"
                                 title="Logout"
                             >
                                 <LogOut className="h-5 w-5" />
