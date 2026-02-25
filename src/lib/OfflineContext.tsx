@@ -31,7 +31,7 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (queue.length === 0) return;
 
         setIsSyncing(true);
-        console.log(`Starting sync for ${queue.length} items...`);
+        if (import.meta.env.DEV) console.log(`Starting sync for ${queue.length} items...`);
 
         for (const op of queue) {
             try {
@@ -82,7 +82,7 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsSyncing(false);
         setSyncSuccess(true);
         setTimeout(() => setSyncSuccess(false), 5000);
-        console.log('Sync completed.');
+        if (import.meta.env.DEV) console.log('Sync completed.');
     }, [isSyncing]);
 
     useEffect(() => {

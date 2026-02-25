@@ -312,5 +312,22 @@
             "heat": "🌡️ Canicule - Irrigation supplémentaire recommandée",
             "rain": "🌧️ Fortes pluies prévues demain"
         }
+    },
+    "home": {
+        "hero_title_1": "Système de",
+        "hero_title_2": "Suivi Digital",
+        "hero_subtitle": "Ferme Modèle & Gestion de Parcelles",
+        "our_plots": "Nos Parcelles",
+        "qr_available": "Scanner QR Dispo",
+        "footer_home": "Accueil",
+        "footer_gallery": "Galerie",
+        "footer_admin": "Admin",
+        "footer_contact": "Contact"
+    },
+    "not_found": {
+        "title": "Page Non Trouvée",
+        "description": "La page que vous cherchez n'existe pas ou a été déplacée",
+        "go_home": "Page d'accueil",
+        "go_back": "Retour"
     }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase' // تغيير من @ إلى مسار نسبي لضمان التوافق
+import { supabase } from '../lib/supabase'
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const [status, setStatus] = useState<'loading' | 'authorized' | 'unauthorized'>('loading')
@@ -8,19 +8,26 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                // Get current session
                 const { data: { session } } = await supabase.auth.getSession()
 
-                // Double check user metadata for admin role
-                if (session?.user?.user_metadata?.role === 'admin') {
-                    console.log("Auth: Access Granted");
-                    setStatus('authorized')
-                } else {
-                    console.warn("Auth: Access Denied. Role:", session?.user?.user_metadata?.role);
+                if (!session?.user) {
                     setStatus('unauthorized')
+                    return
                 }
-            } catch (err) {
-                console.error("Auth Exception:", err);
+
+                // Verify role from profiles table (secured by RLS)
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single()
+
+                if (error || !profile || profile.role !== 'admin') {
+                    setStatus('unauthorized')
+                } else {
+                    setStatus('authorized')
+                }
+            } catch {
                 setStatus('unauthorized')
             }
         }

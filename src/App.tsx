@@ -8,6 +8,7 @@ import PublicGallery from './pages/PublicGallery';
 import ChangePassword from './pages/ChangePassword';
 import Settings from './pages/Settings';
 import Tasks from './pages/Tasks';
+import NotFoundPage from './pages/NotFoundPage';
 
 import { OfflineProvider } from './lib/OfflineContext';
 import { OfflineBanner } from './components/OfflineBanner';
@@ -73,7 +74,7 @@ function App() {
               <Route path="/plot/:id" element={<PublicPlot />} />
               <Route path="/" element={<HomePage />} />
 
-              <Route path="*" element={<div className="p-12 text-center text-gray-500 font-sans" dir="rtl">الصفحة غير موجودة (404)</div>} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Router>
         </OfflineProvider>

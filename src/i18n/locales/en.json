@@ -311,5 +311,22 @@
             "heat": "🌡️ Heat wave - Extra irrigation recommended",
             "rain": "🌧️ Heavy rain expected tomorrow"
         }
+    },
+    "home": {
+        "hero_title_1": "Digital",
+        "hero_title_2": "Tracking System",
+        "hero_subtitle": "Model Farm & Plot Management",
+        "our_plots": "Our Plots",
+        "qr_available": "QR Scanner Available",
+        "footer_home": "Home",
+        "footer_gallery": "Gallery",
+        "footer_admin": "Admin",
+        "footer_contact": "Contact"
+    },
+    "not_found": {
+        "title": "Page Not Found",
+        "description": "The page you are looking for does not exist or has been moved",
+        "go_home": "Go Home",
+        "go_back": "Go Back"
     }
 }

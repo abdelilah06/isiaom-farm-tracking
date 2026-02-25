@@ -5,10 +5,11 @@ import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { motion } from 'framer-motion'
+import type { Plot } from '../types'
 
 export default function HomePage() {
     const { t } = useTranslation()
-    const [plots, setPlots] = useState<any[]>([])
+    const [plots, setPlots] = useState<Plot[]>([])
     const [loading, setLoading] = useState(true)
     const [isAdmin, setIsAdmin] = useState(false)
 
@@ -106,11 +107,11 @@ export default function HomePage() {
                         className="text-center"
                     >
                         <h1 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tighter leading-none">
-                            Système de <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">Suivi Digital</span>
+                            {t('home.hero_title_1')} <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">{t('home.hero_title_2')}</span>
                         </h1>
                         <p className="text-gray-500 dark:text-gray-400 text-lg md:text-2xl font-bold uppercase tracking-widest max-w-2xl mx-auto leading-relaxed">
-                            {t('common.model_farm')} & Gestion de Parcelles
+                            {t('home.hero_subtitle')}
                         </p>
 
                         <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
@@ -127,7 +128,7 @@ export default function HomePage() {
             <main className="max-w-7xl mx-auto px-4 md:px-8 py-20">
                 <div className="flex items-center justify-between mb-12">
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Nos Parcelles</h2>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('home.our_plots')}</h2>
                         <div className="h-1 w-20 bg-green-500 mt-2 rounded-full" />
                     </div>
                 </div>
@@ -188,7 +189,7 @@ export default function HomePage() {
                                         </div>
 
                                         <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-gray-800/50">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Scanner QR Dispo</span>
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('home.qr_available')}</span>
                                             <div className="w-10 h-10 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-all">
                                                 <ArrowRight className="h-5 w-5" />
                                             </div>
@@ -212,7 +213,7 @@ export default function HomePage() {
                     </div>
 
                     <div className="flex gap-8 mb-10">
-                        {['Accueil', 'Galerie', 'Admin', 'Contact'].map(item => (
+                        {[t('home.footer_home'), t('home.footer_gallery'), t('home.footer_admin'), t('home.footer_contact')].map(item => (
                             <span key={item} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-green-500 cursor-pointer transition-colors">{item}</span>
                         ))}
                     </div>
