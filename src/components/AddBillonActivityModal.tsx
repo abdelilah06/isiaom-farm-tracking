@@ -210,21 +210,24 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
 
                                         <div>
                                             <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">{t('treatment.category')}</label>
-                                            <select
-                                                value={treatmentCategory}
-                                                onChange={(e) => setTreatmentCategory(e.target.value)}
-                                                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-xl text-xs font-bold outline-none cursor-pointer"
-                                            >
-                                                <option value="biocontrol">{t('treatment.categories.biocontrol')}</option>
-                                                <option value="natural_pesticide">{t('treatment.categories.natural_pesticide')}</option>
-                                                <option value="fungicide">{t('treatment.categories.fungicide')}</option>
-                                                <option value="insecticide">{t('treatment.categories.insecticide')}</option>
-                                                <option value="herbicide">{t('treatment.categories.herbicide')}</option>
-                                                <option value="acaricide">{t('treatment.categories.acaricide')}</option>
-                                                <option value="foliar_fertilizer">{t('treatment.categories.foliar_fertilizer')}</option>
-                                                <option value="biostimulant">{t('treatment.categories.biostimulant')}</option>
-                                                <option value="other">{t('treatment.categories.other')}</option>
-                                            </select>
+                                            <div className="relative">
+                                                <select
+                                                    value={treatmentCategory}
+                                                    onChange={(e) => setTreatmentCategory(e.target.value)}
+                                                    className="w-full px-4 py-3.5 pr-10 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 dark:text-white rounded-xl text-sm font-semibold outline-none cursor-pointer appearance-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 transition-all"
+                                                >
+                                                    <option value="biocontrol">{t('treatment.categories.biocontrol')}</option>
+                                                    <option value="natural_pesticide">{t('treatment.categories.natural_pesticide')}</option>
+                                                    <option value="fungicide">{t('treatment.categories.fungicide')}</option>
+                                                    <option value="insecticide">{t('treatment.categories.insecticide')}</option>
+                                                    <option value="herbicide">{t('treatment.categories.herbicide')}</option>
+                                                    <option value="acaricide">{t('treatment.categories.acaricide')}</option>
+                                                    <option value="foliar_fertilizer">{t('treatment.categories.foliar_fertilizer')}</option>
+                                                    <option value="biostimulant">{t('treatment.categories.biostimulant')}</option>
+                                                    <option value="other">{t('treatment.categories.other')}</option>
+                                                </select>
+                                                <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -270,15 +273,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
 
                                         <div>
                                             <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">{t('treatment.application_method')}</label>
-                                            <select
-                                                value={applicationMethod}
-                                                onChange={(e: any) => setApplicationMethod(e.target.value)}
-                                                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-xl text-xs font-bold outline-none cursor-pointer"
-                                            >
-                                                <option value="foliar_spray">{t('treatment.methods.foliar_spray')}</option>
-                                                <option value="irrigation_injection">{t('treatment.methods.irrigation_injection')}</option>
-                                                <option value="soil_drench">{t('treatment.methods.soil_drench')}</option>
-                                            </select>
+                                            <div className="relative">
+                                                <select
+                                                    value={applicationMethod}
+                                                    onChange={(e: any) => setApplicationMethod(e.target.value)}
+                                                    className="w-full px-4 py-3.5 pr-10 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 dark:text-white rounded-xl text-sm font-semibold outline-none cursor-pointer appearance-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 transition-all"
+                                                >
+                                                    <option value="foliar_spray">{t('treatment.methods.foliar_spray')}</option>
+                                                    <option value="irrigation_injection">{t('treatment.methods.irrigation_injection')}</option>
+                                                    <option value="soil_drench">{t('treatment.methods.soil_drench')}</option>
+                                                </select>
+                                                <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -295,18 +301,21 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                     value={dosageValue}
                                                     onChange={(e) => setDosageValue(e.target.value)}
                                                     placeholder={t('treatment.dosage_placeholder')}
-                                                    className="w-2/3 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-green-500 transition-all"
+                                                    className="w-3/5 px-4 py-3.5 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-bold dark:text-white outline-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 transition-all"
                                                 />
-                                                <select
-                                                    value={dosageUnit}
-                                                    onChange={(e: any) => setDosageUnit(e.target.value)}
-                                                    className="w-1/3 px-2 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-xl text-xs font-black outline-none cursor-pointer"
-                                                >
-                                                    <option value="ml_l">ml/L</option>
-                                                    <option value="g_l">g/L</option>
-                                                    <option value="l_ha">L/ha</option>
-                                                    <option value="kg_ha">kg/ha</option>
-                                                </select>
+                                                <div className="relative w-2/5">
+                                                    <select
+                                                        value={dosageUnit}
+                                                        onChange={(e: any) => setDosageUnit(e.target.value)}
+                                                        className="w-full px-3 py-3.5 pr-8 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 dark:text-white rounded-xl text-sm font-bold outline-none cursor-pointer appearance-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 transition-all"
+                                                    >
+                                                        <option value="ml_l">ml/L</option>
+                                                        <option value="g_l">g/L</option>
+                                                        <option value="l_ha">L/ha</option>
+                                                        <option value="kg_ha">kg/ha</option>
+                                                    </select>
+                                                    <svg className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -381,15 +390,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                             <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2 flex items-center gap-1">
                                                 <Wind className="h-3.5 w-3.5 text-amber-500" /> {t('treatment.wind_condition')}
                                             </label>
-                                            <select
-                                                value={windCondition}
-                                                onChange={(e: any) => setWindCondition(e.target.value)}
-                                                className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-xl text-xs font-bold outline-none cursor-pointer"
-                                            >
-                                                <option value="low">{t('treatment.winds.low')}</option>
-                                                <option value="medium">{t('treatment.winds.medium')}</option>
-                                                <option value="high">{t('treatment.winds.high')}</option>
-                                            </select>
+                                            <div className="relative">
+                                                <select
+                                                    value={windCondition}
+                                                    onChange={(e: any) => setWindCondition(e.target.value)}
+                                                    className="w-full px-4 py-3.5 pr-10 bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 dark:text-white rounded-xl text-sm font-semibold outline-none cursor-pointer appearance-none focus:border-amber-500 dark:focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 transition-all"
+                                                >
+                                                    <option value="low">{t('treatment.winds.low')}</option>
+                                                    <option value="medium">{t('treatment.winds.medium')}</option>
+                                                    <option value="high">{t('treatment.winds.high')}</option>
+                                                </select>
+                                                <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                                            </div>
                                         </div>
 
                                         <div>
