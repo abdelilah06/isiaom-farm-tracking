@@ -13,11 +13,6 @@ const OPERATION_TYPES = [
     'irrigation',
     'fertilization',
     'pest_control',
-    'pruning',
-    'harvest',
-    'observation',
-    'planting',
-    'other'
 ]
 
 interface QuickLogModalProps {
