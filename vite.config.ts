@@ -29,9 +29,40 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // Immediately activate new SW without waiting
+        skipWaiting: true,
+        clientsClaim: true,
+        // Only precache the HTML shell — let JS/CSS be fetched fresh
+        globPatterns: ['**/*.{ico,png,svg,webmanifest}'],
         runtimeCaching: [
           {
+            // JS and CSS: always try network first, fallback to cache
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'assets-cache',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 // 1 hour
+              },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            // HTML pages: always network first
+            urlPattern: /\/.*$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 5 // 5 minutes
+              },
+              cacheableResponse: { statuses: [0, 200] }
+            }
+          },
+          {
+            // Supabase API: network first
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/,
             handler: 'NetworkFirst',
             options: {
@@ -40,9 +71,7 @@ export default defineConfig({
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 // 24 hours
               },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
+              cacheableResponse: { statuses: [0, 200] }
             }
           }
         ]
