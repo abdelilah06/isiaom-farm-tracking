@@ -1,7 +1,7 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'isiaom-pwa-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export interface OfflineOperation {
     id?: string; // local id
@@ -29,6 +29,22 @@ export async function initDB() {
             // Queue for offline operations
             if (!db.objectStoreNames.contains('operations_queue')) {
                 db.createObjectStore('operations_queue', { keyPath: 'id', autoIncrement: true });
+            }
+            // Cache for billons
+            if (!db.objectStoreNames.contains('billons')) {
+                db.createObjectStore('billons', { keyPath: 'id' });
+            }
+            // Cache for billon activities
+            if (!db.objectStoreNames.contains('billon_activities')) {
+                db.createObjectStore('billon_activities', { keyPath: 'id' });
+            }
+            // Queue for offline billon activities
+            if (!db.objectStoreNames.contains('billon_activities_queue')) {
+                db.createObjectStore('billon_activities_queue', { keyPath: 'id', autoIncrement: true });
+            }
+            // Cache for billon cycles
+            if (!db.objectStoreNames.contains('billon_cycles')) {
+                db.createObjectStore('billon_cycles', { keyPath: 'id' });
             }
             // App state / Sync status
             if (!db.objectStoreNames.contains('app_state')) {
@@ -101,6 +117,103 @@ export async function updateQueuedOperation(id: number, updates: Partial<Offline
 export async function removeQueuedOperation(id: number) {
     const db = await initDB();
     await db.delete('operations_queue', id);
+}
+
+// Billons Cache
+export async function cacheBillons(billons: any[]) {
+    const db = await initDB();
+    const tx = db.transaction('billons', 'readwrite');
+    await tx.objectStore('billons').clear();
+    for (const b of billons) {
+        await tx.objectStore('billons').put(b);
+    }
+    await tx.done;
+}
+
+export async function getCachedBillons() {
+    const db = await initDB();
+    return db.getAll('billons');
+}
+
+export async function getCachedBillon(id: string) {
+    const db = await initDB();
+    return db.get('billons', id);
+}
+
+// Billon Activities Cache
+export async function cacheBillonActivities(activities: any[]) {
+    const db = await initDB();
+    const tx = db.transaction('billon_activities', 'readwrite');
+    for (const a of activities) {
+        await tx.objectStore('billon_activities').put(a);
+    }
+    await tx.done;
+}
+
+export async function getCachedActivitiesForBillon(billonId: string) {
+    const db = await initDB();
+    const acts = await db.getAll('billon_activities');
+    return acts.filter(a => a.billon_id === billonId);
+}
+
+// Billon Activities Offline Queue
+export interface OfflineBillonActivity {
+    id?: string;
+    billon_id: string;
+    activity_type: string;
+    notes?: string;
+    image_file?: Blob;
+    status: 'pending' | 'syncing' | 'failed';
+    error?: string;
+    retryCount: number;
+}
+
+export async function queueBillonActivity(op: Omit<OfflineBillonActivity, 'status' | 'retryCount'>) {
+    const db = await initDB();
+    return db.add('billon_activities_queue', {
+        ...op,
+        status: 'pending',
+        retryCount: 0
+    });
+}
+
+export async function getQueuedBillonActivities(): Promise<(OfflineBillonActivity & { id: number })[]> {
+    const db = await initDB();
+    return db.getAll('billon_activities_queue');
+}
+
+export async function updateQueuedBillonActivity(id: number, updates: Partial<OfflineBillonActivity>) {
+    const db = await initDB();
+    const op = await db.get('billon_activities_queue', id);
+    if (op) {
+        await db.put('billon_activities_queue', { ...op, ...updates }, id);
+    }
+}
+
+export async function removeQueuedBillonActivity(id: number) {
+    const db = await initDB();
+    await db.delete('billon_activities_queue', id);
+}
+
+// Billon Cycles Cache
+export async function cacheBillonCycles(cycles: any[]) {
+    const db = await initDB();
+    const tx = db.transaction('billon_cycles', 'readwrite');
+    for (const c of cycles) {
+        await tx.objectStore('billon_cycles').put(c);
+    }
+    await tx.done;
+}
+
+export async function getCachedCyclesForBillon(billonId: string) {
+    const db = await initDB();
+    const cycles = await db.getAll('billon_cycles');
+    return cycles.filter(c => c.billon_id === billonId);
+}
+
+export async function getCachedCycle(id: string) {
+    const db = await initDB();
+    return db.get('billon_cycles', id);
 }
 
 // Sync Status

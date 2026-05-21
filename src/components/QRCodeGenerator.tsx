@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next'
 interface QRCodeGeneratorProps {
     plotId: string
     onClose: () => void
+    type?: 'plot' | 'billon'
 }
 
-export default function QRCodeGenerator({ plotId, onClose }: QRCodeGeneratorProps) {
+export default function QRCodeGenerator({ plotId, onClose, type = 'plot' }: QRCodeGeneratorProps) {
     const { t } = useTranslation()
-    const url = `${window.location.origin}/plot/${plotId}`
+    const url = `${window.location.origin}/${type}/${plotId}`
 
     return (
         <AnimatePresence>
@@ -33,10 +34,10 @@ export default function QRCodeGenerator({ plotId, onClose }: QRCodeGeneratorProp
 
                     <div className="p-8 flex flex-col items-center text-center">
                         <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">
-                            {t('qr.title', { defaultValue: 'Lien de la parcelle' })}
+                            {type === 'billon' ? 'Billon QR' : t('qr.title', { defaultValue: 'Lien de la parcelle' })}
                         </h3>
                         <p className="text-gray-500 dark:text-gray-400 text-xs font-bold mb-8 uppercase tracking-wider">
-                            ID: <span className="text-green-600 dark:text-green-400">{plotId}</span>
+                            ID: <span className="text-green-600 dark:text-green-400">{plotId?.slice(0, 8)}</span>
                         </p>
 
                         <div className="bg-white p-6 rounded-3xl shadow-xl shadow-green-500/10 mb-8 border border-green-50">

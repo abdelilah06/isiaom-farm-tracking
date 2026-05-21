@@ -4,6 +4,9 @@ import {
     getQueuedOperations,
     removeQueuedOperation,
     updateQueuedOperation,
+    getQueuedBillonActivities,
+    removeQueuedBillonActivity,
+    updateQueuedBillonActivity,
     setLastSyncTime,
     getLastSyncTime
 } from './db';
@@ -26,14 +29,12 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const syncQueue = useCallback(async () => {
         if (!navigator.onLine || isSyncing) return;
-
-        const queue = await getQueuedOperations();
-        if (queue.length === 0) return;
-
         setIsSyncing(true);
-        if (import.meta.env.DEV) console.log(`Starting sync for ${queue.length} items...`);
+        if (import.meta.env.DEV) console.log('Starting sync...');
 
-        for (const op of queue) {
+        // Sync plot operations queue
+        const opQueue = await getQueuedOperations();
+        for (const op of opQueue) {
             try {
                 await updateQueuedOperation(op.id, { status: 'syncing' });
 
@@ -69,6 +70,47 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
             } catch (error) {
                 console.error('Failed to sync operation:', error);
                 await updateQueuedOperation(op.id, {
+                    status: 'failed',
+                    error: (error as Error).message,
+                    retryCount: op.retryCount + 1
+                });
+            }
+        }
+
+        // Sync billon activities queue
+        const billonQueue = await getQueuedBillonActivities();
+        for (const op of billonQueue) {
+            try {
+                await updateQueuedBillonActivity(op.id, { status: 'syncing' });
+
+                let imageUrl = null;
+                if (op.image_file) {
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('operation-proofs')
+                        .upload(fileName, op.image_file);
+                    if (uploadError) throw uploadError;
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('operation-proofs')
+                        .getPublicUrl(uploadData.path);
+                    imageUrl = publicUrl;
+                }
+
+                const { error: insertError } = await supabase
+                    .from('billon_activities')
+                    .insert([{
+                        billon_id: op.billon_id,
+                        activity_type: op.activity_type,
+                        notes: op.notes,
+                        image_url: imageUrl,
+                        performed_at: new Date().toISOString()
+                    }]);
+
+                if (insertError) throw insertError;
+                await removeQueuedBillonActivity(op.id);
+            } catch (error) {
+                console.error('Failed to sync billon activity:', error);
+                await updateQueuedBillonActivity(op.id, {
                     status: 'failed',
                     error: (error as Error).message,
                     retryCount: op.retryCount + 1

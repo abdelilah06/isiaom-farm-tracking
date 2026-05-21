@@ -21,8 +21,18 @@ export default function HomePage() {
     async function checkAuth() {
         try {
             const { data: { user } } = await supabase.auth.getUser()
-            setIsAdmin(user?.user_metadata?.role === 'admin')
-        } catch (error) {
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .maybeSingle()
+                const role = profile?.role || user.user_metadata?.role
+                setIsAdmin(role === 'admin')
+            } else {
+                setIsAdmin(false)
+            }
+        } catch {
             setIsAdmin(false)
         }
     }

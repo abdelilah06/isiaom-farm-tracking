@@ -89,3 +89,69 @@ export interface DiseaseLog {
     // Joined fields
     plots?: { name: string }
 }
+
+export interface Billon {
+    id: string
+    plot_id: string | null
+    billon_code: string | null
+    name: string
+    description: string | null
+    status: 'active' | 'fallow' | 'harvested' | 'empty' | 'planted' | 'resting'
+    location_data: Record<string, unknown> | null
+    image_url: string | null
+    active_cycle_id: string | null
+    created_by: string | null
+    created_at: string
+    updated_at: string
+    // Joined fields
+    active_cycle?: BillonCycle | null
+}
+
+
+export interface BillonCycle {
+    id: string
+    billon_id: string
+    cycle_number: number
+    target_crop: string | null
+    crop_variety: string | null
+    plant_count: number | null
+    planting_date: string | null
+    harvest_date: string | null
+    growing_cycle_days: number | null
+    seed_type: string | null
+    status: 'planned' | 'active' | 'completed'
+    yield_kg: number | null
+    notes: string | null
+    length_m: number | null
+    width_top_cm: number | null
+    height_cm: number | null
+    inter_billon_cm: number | null
+    ecartement_sur_rang_cm: number | null
+    mode_semis: 'direct' | 'plant' | 'bulbe' | 'bouture' | null
+    semis_layout: 'monorang' | 'double_rang' | 'quinconce' | null
+    mulching: 'none' | 'plastic_black' | 'plastic_transparent' | 'organic_straw' | 'plastic_white' | null
+    irrigation_lines: number | null
+    dripper_spacing_cm: number | null
+    dripper_flow_rate_lh: number | null
+    irrigation_system: string | null
+    soil_notes: string | null
+    is_control_group: boolean | null
+    created_at: string
+    updated_at: string
+    // Joined fields
+    billons?: { name: string }
+}
+
+export interface BillonActivity {
+    id: string
+    billon_id: string
+    activity_type: 'irrigation' | 'fertilization' | 'planting' | 'harvest' | 'observation' | 'other'
+    notes: string | null
+    image_url: string | null
+    performed_at: string
+    performed_by: string | null
+    created_at: string
+    // Joined fields
+    billons?: { name: string }
+    profiles?: { full_name: string }
+}

@@ -27,7 +27,7 @@ export default function LoginPage() {
 
             if (error) throw error
             navigate('/admin')
-        } catch (err: any) {
+        } catch {
             setError(t('login.error'))
         } finally {
             setLoading(false)

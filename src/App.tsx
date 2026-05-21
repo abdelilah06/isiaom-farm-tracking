@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PublicPlot from './pages/PublicPlot';
+import PublicBillon from './pages/PublicBillon';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/AdminDashboard';
 import HomePage from './pages/HomePage';
@@ -72,6 +73,7 @@ function App() {
               {/* Public Routes */}
               <Route path="/gallery" element={<PublicGallery />} />
               <Route path="/plot/:id" element={<PublicPlot />} />
+              <Route path="/billon/:id" element={<PublicBillon />} />
               <Route path="/" element={<HomePage />} />
 
               <Route path="*" element={<NotFoundPage />} />

@@ -36,7 +36,22 @@ export default function Analytics() {
             try {
                 const { data: { user } } = await supabase.auth.getUser()
 
-                if (!user || user.user_metadata?.role !== 'admin') {
+                if (!user) {
+                    console.warn('Unauthorized access attempt to /admin/analytics')
+                    navigate('/')
+                    return
+                }
+
+                // Check profile role from profiles table (source of truth)
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .maybeSingle()
+
+                const role = profile?.role || user.user_metadata?.role
+
+                if (role !== 'admin') {
                     console.warn('Unauthorized access attempt to /admin/analytics')
                     navigate('/')
                     return
