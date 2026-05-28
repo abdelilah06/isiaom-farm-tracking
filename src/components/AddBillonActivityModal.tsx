@@ -7,7 +7,13 @@ import { X, Loader2, Check, ClipboardList, Send, ShieldAlert, Info, Wind, Thermo
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const ACTIVITY_TYPES = ['irrigation', 'fertilization', 'pest_control', 'planting', 'harvest', 'observation', 'other'] as const
+const ACTIVITY_TYPES = [
+    { id: 'irrigation',    emoji: '💧', color: 'blue' },
+    { id: 'fertilization', emoji: '🌱', color: 'emerald' },
+    { id: 'pest_control',  emoji: '🛡️', color: 'amber' },
+] as const
+
+type ActivityTypeId = typeof ACTIVITY_TYPES[number]['id']
 
 interface AddBillonActivityModalProps {
     billonId: string
@@ -17,7 +23,7 @@ interface AddBillonActivityModalProps {
 
 export default function AddBillonActivityModal({ billonId, onClose, onAdded }: AddBillonActivityModalProps) {
     const { t } = useTranslation()
-    const [type, setType] = useState<string>(ACTIVITY_TYPES[0])
+    const [type, setType] = useState<ActivityTypeId>(ACTIVITY_TYPES[0].id)
     const [notes, setNotes] = useState('')
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
@@ -140,22 +146,30 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                         <div className="p-8 overflow-y-auto flex-grow bg-white dark:bg-gray-800 space-y-8">
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">{t('billons.activity_type')}</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {ACTIVITY_TYPES.map((actType) => (
-                                        <motion.button
-                                            key={actType}
-                                            type="button"
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setType(actType)}
-                                            className={`p-4 rounded-2xl border-2 text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center h-16 ${type === actType
-                                                ? 'border-green-500 bg-green-50/50 dark:bg-green-900/20 text-green-700 dark:text-green-400 ring-4 ring-green-500/10'
-                                                : 'border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-900/50'
-                                                }`}
-                                        >
-                                            {t(`quick_log.types.${actType}`, { defaultValue: actType })}
-                                        </motion.button>
-                                    ))}
+                                <div className="grid grid-cols-3 gap-3">
+                                    {ACTIVITY_TYPES.map(({ id: actId, emoji, color }) => {
+                                        const isSelected = type === actId
+                                        const colorMap: Record<string, string> = {
+                                            blue:    isSelected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 ring-4 ring-blue-500/10'    : 'border-gray-100 dark:border-gray-700 text-gray-500 bg-gray-50/50 dark:bg-gray-900/50 hover:border-blue-200',
+                                            emerald: isSelected ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 ring-4 ring-emerald-500/10' : 'border-gray-100 dark:border-gray-700 text-gray-500 bg-gray-50/50 dark:bg-gray-900/50 hover:border-emerald-200',
+                                            amber:   isSelected ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 ring-4 ring-amber-500/10'   : 'border-gray-100 dark:border-gray-700 text-gray-500 bg-gray-50/50 dark:bg-gray-900/50 hover:border-amber-200',
+                                        }
+                                        return (
+                                            <motion.button
+                                                key={actId}
+                                                type="button"
+                                                whileHover={{ scale: 1.03 }}
+                                                whileTap={{ scale: 0.97 }}
+                                                onClick={() => setType(actId)}
+                                                className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 h-24 ${colorMap[color]}`}
+                                            >
+                                                <span className="text-2xl">{emoji}</span>
+                                                <span className="text-[10px] font-black uppercase tracking-wider text-center leading-tight">
+                                                    {t(`quick_log.types.${actId}`, { defaultValue: actId })}
+                                                </span>
+                                            </motion.button>
+                                        )
+                                    })}
                                 </div>
                             </div>
 
