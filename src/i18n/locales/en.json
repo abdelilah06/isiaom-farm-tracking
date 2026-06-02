@@ -93,7 +93,11 @@
         "planting_date": "Planting Date",
         "illustration": "Illustration",
         "select_image": "Select Plot Image",
-        "submit": "Add Plot"
+        "submit": "Add Plot",
+        "dripper_flow_rate_lh": "Dripper Flow Rate (L/h)",
+        "irrigation_lines": "Irrigation Lines",
+        "lines_1": "1 Line (أنبوب واحد)",
+        "lines_2": "2 Lines (أنبوبين)"
     },
     "quick_log": {
         "title": "Log New Operation",

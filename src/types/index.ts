@@ -27,6 +27,8 @@ export interface Plot {
     image_url: string | null
     irrigation_system: string | null
     rootstock: string | null
+    dripper_flow_rate_lh: number | null
+    irrigation_lines: number | null
     created_by: string | null
     created_at: string
     updated_at: string

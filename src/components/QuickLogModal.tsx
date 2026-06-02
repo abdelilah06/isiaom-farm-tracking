@@ -51,6 +51,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
     const [plantCount, setPlantCount] = useState<number | null>(null)
     const [durationMinutes, setDurationMinutes] = useState<string>('')
     const [dripperFlowRate, setDripperFlowRate] = useState<string>('4')
+    const [irrigationLines, setIrrigationLines] = useState<number>(1)
     const [manualVolumeLiters, setManualVolumeLiters] = useState<string>('')
     const [isManualVolume, setIsManualVolume] = useState<boolean>(false)
 
@@ -63,12 +64,18 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
             try {
                 const { data, error } = await supabase
                     .from('plots')
-                    .select('plant_count')
+                    .select('plant_count, dripper_flow_rate_lh, irrigation_lines')
                     .eq('id', plotId)
                     .single()
                 if (error) throw error
                 if (data) {
                     setPlantCount(data.plant_count)
+                    if (data.dripper_flow_rate_lh) {
+                        setDripperFlowRate(data.dripper_flow_rate_lh.toString())
+                    }
+                    if (data.irrigation_lines) {
+                        setIrrigationLines(data.irrigation_lines)
+                    }
                 }
             } catch (e) {
                 console.error('Failed to fetch plot details for calculator:', e)
@@ -128,12 +135,13 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                 const isManual = effectiveManual || isNaN(dur) || isNaN(flow)
                 const estVolume = isManual 
                     ? (manualVolumeLiters ? parseFloat(manualVolumeLiters) : 0)
-                    : (plantCount! * flow * (dur / 60))
+                    : (plantCount! * flow * irrigationLines * (dur / 60))
                 
                 const irrigationData = {
                     is_structured_irrigation: true,
                     duration_minutes: isNaN(dur) ? null : dur,
                     dripper_flow_rate: isNaN(flow) ? null : flow,
+                    irrigation_lines: irrigationLines,
                     plant_count: plantCount,
                     estimated_volume_liters: estVolume,
                     is_manual: isManual,
@@ -556,9 +564,24 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                             </div>
 
                                             {plantCount !== null && (
-                                                <div className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
-                                                    <span className="font-bold text-gray-500 dark:text-gray-400">{t('public_plot.plant_count')}</span>
-                                                    <span className="font-black text-gray-900 dark:text-white">{plantCount}</span>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                    <div className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                                                        <span className="font-bold text-gray-500 dark:text-gray-400">{t('public_plot.plant_count')}</span>
+                                                        <span className="font-black text-gray-900 dark:text-white">{plantCount}</span>
+                                                    </div>
+                                                    <div className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                                                        <span className="font-bold text-gray-500 dark:text-gray-400">{t('add_plot.irrigation_lines', { defaultValue: 'Lignes' })}</span>
+                                                        <span className="font-black text-gray-900 dark:text-white">
+                                                            {irrigationLines === 2 
+                                                                ? t('add_plot.lines_2', { defaultValue: '2 Lignes (أنبوبين)' })
+                                                                : t('add_plot.lines_1', { defaultValue: '1 Ligne (أنبوب واحد)' })
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                    <div className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                                                        <span className="font-bold text-gray-500 dark:text-gray-400">{t('add_plot.dripper_flow_rate_lh', { defaultValue: 'Débit (L/h)' })}</span>
+                                                        <span className="font-black text-gray-900 dark:text-white">{dripperFlowRate} L/h</span>
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -578,7 +601,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                             )}
 
                                             {!effectiveManual ? (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-4">
                                                     <div>
                                                         <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
                                                             {t('irrigation_calculator.duration_minutes')}
@@ -590,21 +613,6 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                             value={durationMinutes}
                                                             onChange={(e) => setDurationMinutes(e.target.value)}
                                                             placeholder={t('irrigation_calculator.duration_minutes_placeholder')}
-                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
-                                                            {t('irrigation_calculator.dripper_flow_rate')}
-                                                        </label>
-                                                        <input
-                                                            type="number"
-                                                            min="0.1"
-                                                            step="0.1"
-                                                            required
-                                                            value={dripperFlowRate}
-                                                            onChange={(e) => setDripperFlowRate(e.target.value)}
-                                                            placeholder={t('irrigation_calculator.dripper_flow_rate_placeholder')}
                                                             className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
                                                         />
                                                     </div>
@@ -646,7 +654,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                         <p className="text-2xl font-black text-blue-900 dark:text-blue-300">
                                                             {effectiveManual 
                                                                 ? `${parseFloat(manualVolumeLiters).toLocaleString()} ${t('irrigation_calculator.liters')}`
-                                                                : `${Math.round(plantCount! * parseFloat(dripperFlowRate) * (parseFloat(durationMinutes) / 60)).toLocaleString()} ${t('irrigation_calculator.liters')}`
+                                                                : `${Math.round(plantCount! * parseFloat(dripperFlowRate) * irrigationLines * (parseFloat(durationMinutes) / 60)).toLocaleString()} ${t('irrigation_calculator.liters')}`
                                                             }
                                                         </p>
                                                     </div>
@@ -654,7 +662,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                         <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase">
                                                             {effectiveManual
                                                                 ? `${(parseFloat(manualVolumeLiters) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
-                                                                : `${((plantCount! * parseFloat(dripperFlowRate) * (parseFloat(durationMinutes) / 60)) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
+                                                                : `${((plantCount! * parseFloat(dripperFlowRate) * irrigationLines * (parseFloat(durationMinutes) / 60)) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
                                                             }
                                                         </span>
                                                     </div>

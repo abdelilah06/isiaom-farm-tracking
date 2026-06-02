@@ -8,13 +8,14 @@ import {
 import QuickLogModal from '@/components/QuickLogModal'
 import QRCodeGenerator from '@/components/QRCodeGenerator'
 import AddPlotModal from '@/components/AddPlotModal'
+import EditPlotModal from '@/components/EditPlotModal'
 import AddBillonModal from '@/components/AddBillonModal'
 import EditBillonModal from '@/components/EditBillonModal'
 import StartCycleModal from '@/components/StartCycleModal'
 import CloseCycleModal from '@/components/CloseCycleModal'
 import BillonCycleHistory from '@/components/BillonCycleHistory'
 import AddBillonActivityModal from '@/components/AddBillonActivityModal'
-import type { Billon } from '../types'
+import type { Billon, Plot } from '../types'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
@@ -29,6 +30,7 @@ export default function AdminDashboard() {
     const [selectedPlotForLog, setSelectedPlotForLog] = useState<string | null>(null)
     const [selectedPlotForQR, setSelectedPlotForQR] = useState<string | null>(null)
     const [showAddPlotModal, setShowAddPlotModal] = useState(false)
+    const [editingPlot, setEditingPlot] = useState<Plot | null>(null)
     const [stats, setStats] = useState({
         totalPlots: 0,
         opsThisMonth: 0,
@@ -532,6 +534,15 @@ export default function AdminDashboard() {
                                                     <motion.button
                                                         whileHover={{ scale: 1.1 }}
                                                         whileTap={{ scale: 0.9 }}
+                                                        onClick={() => setEditingPlot(plot)}
+                                                        className="p-3 min-h-[44px] min-w-[44px] bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-xl hover:bg-amber-600 hover:text-white transition-all shadow-sm flex items-center justify-center"
+                                                        title={t('common.edit')}
+                                                    >
+                                                        <SettingsIcon className="h-5 w-5" />
+                                                    </motion.button>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1 }}
+                                                        whileTap={{ scale: 0.9 }}
                                                         onClick={() => handleDeletePlot(plot.id, plot.name)}
                                                         className="p-3 min-h-[44px] min-w-[44px] bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm flex items-center justify-center"
                                                         title={t('common.delete')}
@@ -601,8 +612,17 @@ export default function AdminDashboard() {
                                         <motion.button
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
+                                            onClick={() => setEditingPlot(plot)}
+                                            className="flex items-center justify-center gap-3 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 py-4 rounded-2xl font-black text-xs active:bg-amber-100 dark:active:bg-amber-900/50 transition-colors shadow-sm min-h-[44px]"
+                                        >
+                                            <SettingsIcon className="h-4 w-4" />
+                                            {t('common.edit')}
+                                        </motion.button>
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
                                             onClick={() => handleDeletePlot(plot.id, plot.name)}
-                                            className="flex items-center justify-center gap-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 py-4 rounded-2xl font-black text-xs active:bg-red-100 dark:active:bg-red-900/50 transition-colors shadow-sm min-h-[44px] col-span-2"
+                                            className="flex items-center justify-center gap-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 py-4 rounded-2xl font-black text-xs active:bg-red-100 dark:active:bg-red-900/50 transition-colors shadow-sm min-h-[44px]"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                             {t('common.delete')}
@@ -923,6 +943,13 @@ export default function AdminDashboard() {
                         billon={editingBillon}
                         onClose={() => setEditingBillon(null)}
                         onUpdated={() => { fetchBillons(); setEditingBillon(null) }}
+                    />
+                )}
+                {editingPlot && (
+                    <EditPlotModal
+                        plot={editingPlot}
+                        onClose={() => setEditingPlot(null)}
+                        onUpdated={() => { fetchData(); setEditingPlot(null) }}
                     />
                 )}
                 {showStartCycleModalFor && (

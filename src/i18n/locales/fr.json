@@ -94,7 +94,11 @@
         "planting_date": "Date de plantation",
         "illustration": "Illustration",
         "select_image": "Choisir une image",
-        "submit": "Ajouter la parcelle"
+        "submit": "Ajouter la parcelle",
+        "dripper_flow_rate_lh": "Débit goutteur (L/h)",
+        "irrigation_lines": "Lignes d'irrigation",
+        "lines_1": "1 Ligne (أنبوب واحد)",
+        "lines_2": "2 Lignes (أنبوبين)"
     },
     "quick_log": {
         "title": "Enregistrer une opération",
