@@ -44,6 +44,22 @@ const parseTreatmentNotes = (notes: string | null) => {
     return null;
 }
 
+const parseIrrigationNotes = (notes: string | null) => {
+    if (!notes) return null;
+    try {
+        const trimmed = notes.trim();
+        if (trimmed.startsWith('{')) {
+            const data = JSON.parse(trimmed);
+            if (data && data.is_structured_irrigation) {
+                return data;
+            }
+        }
+    } catch (e) {
+        // Not structured irrigation JSON
+    }
+    return null;
+}
+
 interface BillonActivityTimelineProps {
     billonId: string
     isAdmin: boolean
@@ -151,6 +167,7 @@ export default function BillonActivityTimeline({ billonId, isAdmin, refreshTrigg
                                     const style = activityStyles[act.activity_type] || activityStyles.other
                                     const Icon = style.icon
                                     const treatmentData = act.activity_type === 'pest_control' ? parseTreatmentNotes(act.notes) : null
+                                    const irrigationData = act.activity_type === 'irrigation' ? parseIrrigationNotes(act.notes) : null
                                     return (
                                         <motion.div
                                             key={act.id}
@@ -332,6 +349,52 @@ export default function BillonActivityTimeline({ billonId, isAdmin, refreshTrigg
                                                             <div className="bg-amber-50/10 dark:bg-amber-950/5 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/5 mt-2">
                                                                 <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed font-bold">
                                                                     💬 "{treatmentData.notes}"
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : irrigationData ? (
+                                                    <div className="space-y-4 mt-3">
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            {irrigationData.duration_minutes !== null && (
+                                                                <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-100/50 dark:border-blue-900/30 text-center">
+                                                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">⏱️ Durée</p>
+                                                                    <p className="text-sm font-black text-blue-700 dark:text-blue-400 mt-1">{irrigationData.duration_minutes} min</p>
+                                                                </div>
+                                                            )}
+                                                            <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-100/50 dark:border-blue-900/30 text-center">
+                                                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">💧 Volume</p>
+                                                                <p className="text-sm font-black text-blue-700 dark:text-blue-400 mt-1">
+                                                                    {irrigationData.estimated_volume_liters >= 1000
+                                                                        ? `${(irrigationData.estimated_volume_liters / 1000).toFixed(2)} m³`
+                                                                        : `${Math.round(irrigationData.estimated_volume_liters)} L`
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        {!irrigationData.is_manual && irrigationData.length_m !== null && (
+                                                            <div className="bg-gray-50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-4.5 space-y-2 text-xs">
+                                                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider mb-1">📋 Spécifications Calcul</p>
+                                                                <div className="grid grid-cols-2 gap-1.5 font-bold text-gray-600 dark:text-gray-400">
+                                                                    <div>Long: <span className="text-gray-900 dark:text-white font-black">{irrigationData.length_m} m</span></div>
+                                                                    <div>Lignes: <span className="text-gray-900 dark:text-white font-black">{irrigationData.irrigation_lines}</span></div>
+                                                                    <div>Espac: <span className="text-gray-900 dark:text-white font-black">{irrigationData.dripper_spacing_cm} cm</span></div>
+                                                                    <div>Débit: <span className="text-gray-900 dark:text-white font-black">{irrigationData.dripper_flow_rate_lh} L/h</span></div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {irrigationData.is_manual && (
+                                                            <div className="p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-[10px] font-bold text-gray-500 text-center uppercase tracking-wide">
+                                                                ✍️ Saisie manuelle de la quantité
+                                                            </div>
+                                                        )}
+
+                                                        {irrigationData.notes && (
+                                                            <div className="bg-blue-50/10 dark:bg-blue-950/5 p-3 rounded-xl border border-blue-200/10 dark:border-blue-900/5 mt-2">
+                                                                <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed font-bold">
+                                                                    💬 "{irrigationData.notes}"
                                                                 </p>
                                                             </div>
                                                         )}

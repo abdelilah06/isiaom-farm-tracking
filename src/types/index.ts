@@ -145,7 +145,7 @@ export interface BillonCycle {
 export interface BillonActivity {
     id: string
     billon_id: string
-    activity_type: 'irrigation' | 'fertilization' | 'planting' | 'harvest' | 'observation' | 'other'
+    activity_type: 'irrigation' | 'fertilization' | 'pest_control' | 'observation' | 'other'
     notes: string | null
     image_url: string | null
     performed_at: string

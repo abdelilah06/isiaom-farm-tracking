@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { uploadImage } from '../lib/upload'
 import ImageUpload from './ImageUpload'
@@ -46,6 +46,79 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
     const [temperatureC, setTemperatureC] = useState('')
     const [ppeWorn, setPpeWorn] = useState(false)
 
+    // Irrigation-specific states
+    interface CycleSpec {
+        length_m: number | null
+        irrigation_lines: number | null
+        dripper_spacing_cm: number | null
+        dripper_flow_rate_lh: number | null
+    }
+
+    const [activeCycleSpec, setActiveCycleSpec] = useState<CycleSpec | null>(null)
+    const [durationMinutes, setDurationMinutes] = useState<string>('')
+    const [manualVolumeLiters, setManualVolumeLiters] = useState<string>('')
+    const [isManualVolume, setIsManualVolume] = useState<boolean>(false)
+
+    // Derived states
+    const hasFullSpecs = activeCycleSpec !== null && 
+        activeCycleSpec.length_m !== null && 
+        activeCycleSpec.irrigation_lines !== null && 
+        activeCycleSpec.dripper_spacing_cm !== null && 
+        activeCycleSpec.dripper_flow_rate_lh !== null && 
+        activeCycleSpec.dripper_spacing_cm > 0;
+
+    const effectiveManual = isManualVolume || !hasFullSpecs
+
+    // Fetch Billon active cycle details on mount
+    useEffect(() => {
+        async function fetchBillonSpecs() {
+            if (!billonId) return
+            try {
+                const { data: billon, error: bErr } = await supabase
+                    .from('billons')
+                    .select('active_cycle_id')
+                    .eq('id', billonId)
+                    .single()
+                if (bErr) throw bErr
+                if (billon && billon.active_cycle_id) {
+                    const { data: cycle, error: cErr } = await supabase
+                        .from('billon_cycles')
+                        .select('length_m, irrigation_lines, dripper_spacing_cm, dripper_flow_rate_lh')
+                        .eq('id', billon.active_cycle_id)
+                        .single()
+                    if (cErr) throw cErr
+                    if (cycle) {
+                        setActiveCycleSpec(cycle)
+                    }
+                }
+            } catch (e) {
+                console.error('Error fetching billon active cycle specs:', e)
+            }
+        }
+        fetchBillonSpecs()
+    }, [billonId])
+
+    const getBillonIrrigationCalculations = () => {
+        if (!hasFullSpecs) return null
+        const { length_m, dripper_spacing_cm, irrigation_lines, dripper_flow_rate_lh } = activeCycleSpec!
+        const drippersCount = Math.round(((length_m! * 100) / dripper_spacing_cm!) * irrigation_lines!)
+        const totalFlowRateLh = drippersCount * dripper_flow_rate_lh!
+        
+        let estimatedVolumeLiters = 0
+        const dur = parseFloat(durationMinutes)
+        if (!isNaN(dur)) {
+            estimatedVolumeLiters = totalFlowRateLh * (dur / 60)
+        }
+        
+        return {
+            drippersCount,
+            totalFlowRateLh,
+            estimatedVolumeLiters
+        }
+    }
+    
+    const calcs = getBillonIrrigationCalculations()
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -76,6 +149,24 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                     notes: notes.trim()
                 };
                 notesValue = JSON.stringify(treatmentData);
+            } else if (type === 'irrigation') {
+                const dur = parseFloat(durationMinutes)
+                const estVolume = effectiveManual 
+                    ? (manualVolumeLiters ? parseFloat(manualVolumeLiters) : 0)
+                    : (calcs?.estimatedVolumeLiters || 0)
+                
+                const irrigationData = {
+                    is_structured_irrigation: true,
+                    duration_minutes: isNaN(dur) ? null : dur,
+                    estimated_volume_liters: estVolume,
+                    is_manual: effectiveManual,
+                    length_m: activeCycleSpec?.length_m || null,
+                    irrigation_lines: activeCycleSpec?.irrigation_lines || null,
+                    dripper_spacing_cm: activeCycleSpec?.dripper_spacing_cm || null,
+                    dripper_flow_rate_lh: activeCycleSpec?.dripper_flow_rate_lh || null,
+                    notes: notes.trim()
+                }
+                notesValue = JSON.stringify(irrigationData)
             }
 
             const { error } = await supabase
@@ -179,7 +270,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
 
                                 {/* Right Column: Notes + Image or Treatment Form */}
                                 <div className="space-y-8">
-                                    {type === 'pest_control' ? (
+                                    {type === 'pest_control' && (
                                         <motion.div
                                             initial={{ opacity: 0, y: 15 }}
                                             animate={{ opacity: 1, y: 0 }}
@@ -455,7 +546,153 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                 />
                                             </div>
                                         </motion.div>
-                                    ) : (
+                                    )}
+
+                                    {type === 'irrigation' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="bg-blue-50/30 dark:bg-blue-950/15 p-6 rounded-[2rem] border border-blue-200/50 dark:border-blue-900/30 space-y-6"
+                                        >
+                                            {/* Header */}
+                                            <div className="flex items-center gap-3 border-b border-blue-200/30 dark:border-blue-900/20 pb-4">
+                                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
+                                                    <ClipboardList className="h-5 w-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-blue-900 dark:text-blue-400 uppercase tracking-wide">
+                                                        {t('irrigation_calculator.title')}
+                                                    </h4>
+                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-500">
+                                                        {t('irrigation_calculator.academic_banner')}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Specifications summary */}
+                                            {hasFullSpecs && (
+                                                <div className="p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 space-y-2 text-xs">
+                                                    <h5 className="font-black text-gray-400 dark:text-gray-500 uppercase tracking-wider text-[10px]">
+                                                        {t('irrigation_calculator.billon_specs_summary')}
+                                                    </h5>
+                                                    <div className="grid grid-cols-2 gap-2 font-bold text-gray-600 dark:text-gray-400">
+                                                        <div>{t('irrigation_calculator.billon_length')}: <span className="text-gray-950 dark:text-white font-black">{activeCycleSpec.length_m} m</span></div>
+                                                        <div>{t('irrigation_calculator.irrigation_lines')}: <span className="text-gray-950 dark:text-white font-black">{activeCycleSpec.irrigation_lines}</span></div>
+                                                        <div>{t('irrigation_calculator.dripper_spacing')}: <span className="text-gray-950 dark:text-white font-black">{activeCycleSpec.dripper_spacing_cm} cm</span></div>
+                                                        <div>{t('irrigation_calculator.dripper_flow_rate')}: <span className="text-gray-950 dark:text-white font-black">{activeCycleSpec.dripper_flow_rate_lh} L/h</span></div>
+                                                    </div>
+                                                    <div className="pt-2 border-t border-gray-100 dark:border-gray-800 flex justify-between">
+                                                        <span>{t('irrigation_calculator.drippers_count')}:</span>
+                                                        <span className="font-black text-gray-950 dark:text-white">{calcs?.drippersCount}</span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span>{t('irrigation_calculator.total_flow_rate')}:</span>
+                                                        <span className="font-black text-gray-950 dark:text-white">{calcs?.totalFlowRateLh} L/h</span>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Manual input toggle if specs are present */}
+                                            {hasFullSpecs && (
+                                                <div className="flex items-center gap-3 justify-end">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="manual_irrigation_toggle_billon"
+                                                        checked={isManualVolume}
+                                                        onChange={(e) => setIsManualVolume(e.target.checked)}
+                                                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500/20 cursor-pointer"
+                                                    />
+                                                    <label htmlFor="manual_irrigation_toggle_billon" className="text-xs font-bold text-gray-500 dark:text-gray-400 cursor-pointer select-none">
+                                                        {t('irrigation_calculator.manual_input_notice')}
+                                                    </label>
+                                                </div>
+                                            )}
+
+                                            {!effectiveManual ? (
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                        {t('irrigation_calculator.duration_minutes')}
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        min="1"
+                                                        required
+                                                        value={durationMinutes}
+                                                        onChange={(e) => setDurationMinutes(e.target.value)}
+                                                        placeholder={t('irrigation_calculator.duration_minutes_placeholder')}
+                                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {!hasFullSpecs && (
+                                                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400">
+                                                            ⚠️ {t('irrigation_calculator.no_active_cycle')}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('irrigation_calculator.manual_liters')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            required
+                                                            value={manualVolumeLiters}
+                                                            onChange={(e) => setManualVolumeLiters(e.target.value)}
+                                                            placeholder={t('irrigation_calculator.manual_liters_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Estimated Volume Card */}
+                                            {((!effectiveManual && durationMinutes) || (effectiveManual && manualVolumeLiters)) && (
+                                                <motion.div
+                                                    initial={{ scale: 0.95, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-between"
+                                                >
+                                                    <div>
+                                                        <h5 className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-1">
+                                                            {t('irrigation_calculator.estimated_volume')}
+                                                        </h5>
+                                                        <p className="text-2xl font-black text-blue-900 dark:text-blue-300">
+                                                            {effectiveManual 
+                                                                ? `${parseFloat(manualVolumeLiters).toLocaleString()} ${t('irrigation_calculator.liters')}`
+                                                                : `${Math.round(calcs?.estimatedVolumeLiters || 0).toLocaleString()} ${t('irrigation_calculator.liters')}`
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase">
+                                                            {effectiveManual
+                                                                ? `${(parseFloat(manualVolumeLiters) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
+                                                                : `${((calcs?.estimatedVolumeLiters || 0) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            {/* Standard notes field inside irrigation */}
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                    {t('irrigation_calculator.notes_title')}
+                                                </label>
+                                                <textarea
+                                                    value={notes}
+                                                    onChange={(e) => setNotes(e.target.value)}
+                                                    rows={2}
+                                                    className="w-full px-5 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-xs font-bold resize-none dark:placeholder:text-gray-600"
+                                                    placeholder="Détails de l'irrigation..."
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {type !== 'pest_control' && type !== 'irrigation' && (
                                         <div className="space-y-4">
                                             <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t('billons.notes')}</label>
                                             <textarea

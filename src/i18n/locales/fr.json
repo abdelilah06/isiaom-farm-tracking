@@ -476,5 +476,27 @@
         "temperature": "Température (°C)",
         "temperature_placeholder": "Ex: 24",
         "ppe_worn": "Équipements de protection individuelle (EPI) portés 😷"
+    },
+    "irrigation_calculator": {
+        "title": "Calculateur d'irrigation automatique 💧",
+        "academic_banner": "Ferme de recherche académique - Calculateur d'irrigation",
+        "duration_minutes": "Durée d'irrigation (Minutes)",
+        "duration_minutes_placeholder": "Ex: 45",
+        "dripper_flow_rate": "Débit du goutteur par arbre (L/h)",
+        "dripper_flow_rate_placeholder": "Ex: 4",
+        "estimated_volume": "Volume d'eau estimé",
+        "manual_input_notice": "Entrée manuelle (si spécifications indisponibles)",
+        "billon_specs_summary": "Spécifications de la planche de culture",
+        "billon_length": "Longueur",
+        "dripper_spacing": "Écartement goutteurs",
+        "irrigation_lines": "Lignes d'irrigation",
+        "drippers_count": "Nombre total de goutteurs",
+        "total_flow_rate": "Débit total de la planche",
+        "no_active_cycle": "Aucun cycle actif ou spécifications manquantes pour cette planche.",
+        "manual_liters": "Volume d'eau manuel (Litres)",
+        "manual_liters_placeholder": "Ex: 500",
+        "liters": "Litres",
+        "m3": "m³",
+        "notes_title": "Remarques complémentaires"
     }
 }

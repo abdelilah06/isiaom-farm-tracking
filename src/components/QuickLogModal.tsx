@@ -47,6 +47,36 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
     const [temperatureC, setTemperatureC] = useState('')
     const [ppeWorn, setPpeWorn] = useState(false)
 
+    // Irrigation-specific states
+    const [plantCount, setPlantCount] = useState<number | null>(null)
+    const [durationMinutes, setDurationMinutes] = useState<string>('')
+    const [dripperFlowRate, setDripperFlowRate] = useState<string>('4')
+    const [manualVolumeLiters, setManualVolumeLiters] = useState<string>('')
+    const [isManualVolume, setIsManualVolume] = useState<boolean>(false)
+
+    const effectiveManual = isManualVolume || plantCount === null
+
+    // Fetch Plot Details on mount
+    useEffect(() => {
+        async function fetchPlot() {
+            if (!plotId) return
+            try {
+                const { data, error } = await supabase
+                    .from('plots')
+                    .select('plant_count')
+                    .eq('id', plotId)
+                    .single()
+                if (error) throw error
+                if (data) {
+                    setPlantCount(data.plant_count)
+                }
+            } catch (e) {
+                console.error('Failed to fetch plot details for calculator:', e)
+            }
+        }
+        fetchPlot()
+    }, [plotId])
+
     // Drafts
     useEffect(() => {
         const draft = localStorage.getItem(`draft_op_${plotId}`)
@@ -70,7 +100,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
         setLoading(true)
 
         try {
-            // Build notes including treatment data if applicable
+            // Build notes including treatment/irrigation data if applicable
             let finalNotes = notes.trim()
             if (type === 'pest_control') {
                 const treatmentData = {
@@ -92,6 +122,24 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                     notes: notes.trim()
                 };
                 finalNotes = JSON.stringify(treatmentData);
+            } else if (type === 'irrigation') {
+                const dur = parseFloat(durationMinutes)
+                const flow = parseFloat(dripperFlowRate)
+                const isManual = effectiveManual || isNaN(dur) || isNaN(flow)
+                const estVolume = isManual 
+                    ? (manualVolumeLiters ? parseFloat(manualVolumeLiters) : 0)
+                    : (plantCount! * flow * (dur / 60))
+                
+                const irrigationData = {
+                    is_structured_irrigation: true,
+                    duration_minutes: isNaN(dur) ? null : dur,
+                    dripper_flow_rate: isNaN(flow) ? null : flow,
+                    plant_count: plantCount,
+                    estimated_volume_liters: estVolume,
+                    is_manual: isManual,
+                    notes: notes.trim()
+                }
+                finalNotes = JSON.stringify(irrigationData)
             }
 
             if (!isOnline) {
@@ -487,8 +535,148 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                             </div>
                                         </motion.div>
                                     )}
+                                    {type === 'irrigation' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="bg-blue-50/30 dark:bg-blue-950/15 p-6 rounded-[2rem] border border-blue-200/50 dark:border-blue-900/30 space-y-6"
+                                        >
+                                            <div className="flex items-center gap-3 border-b border-blue-200/30 dark:border-blue-900/20 pb-4">
+                                                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
+                                                    <ClipboardList className="h-5 w-5" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-blue-900 dark:text-blue-400 uppercase tracking-wide">
+                                                        {t('irrigation_calculator.title')}
+                                                    </h4>
+                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-500">
+                                                        {t('irrigation_calculator.academic_banner')}
+                                                    </p>
+                                                </div>
+                                            </div>
 
-                                    {type !== 'pest_control' && (
+                                            {plantCount !== null && (
+                                                <div className="p-3 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                                                    <span className="font-bold text-gray-500 dark:text-gray-400">{t('public_plot.plant_count')}</span>
+                                                    <span className="font-black text-gray-900 dark:text-white">{plantCount}</span>
+                                                </div>
+                                            )}
+
+                                            {plantCount !== null && (
+                                                <div className="flex items-center gap-3 justify-end">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="manual_irrigation_toggle"
+                                                        checked={isManualVolume}
+                                                        onChange={(e) => setIsManualVolume(e.target.checked)}
+                                                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-700 text-blue-600 focus:ring-blue-500/20 cursor-pointer"
+                                                    />
+                                                    <label htmlFor="manual_irrigation_toggle" className="text-xs font-bold text-gray-500 dark:text-gray-400 cursor-pointer select-none">
+                                                        {t('irrigation_calculator.manual_input_notice')}
+                                                    </label>
+                                                </div>
+                                            )}
+
+                                            {!effectiveManual ? (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('irrigation_calculator.duration_minutes')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            required
+                                                            value={durationMinutes}
+                                                            onChange={(e) => setDurationMinutes(e.target.value)}
+                                                            placeholder={t('irrigation_calculator.duration_minutes_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('irrigation_calculator.dripper_flow_rate')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            min="0.1"
+                                                            step="0.1"
+                                                            required
+                                                            value={dripperFlowRate}
+                                                            onChange={(e) => setDripperFlowRate(e.target.value)}
+                                                            placeholder={t('irrigation_calculator.dripper_flow_rate_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {plantCount === null && (
+                                                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400">
+                                                            ⚠️ {t('irrigation_calculator.no_active_cycle')}
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('irrigation_calculator.manual_liters')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            required
+                                                            value={manualVolumeLiters}
+                                                            onChange={(e) => setManualVolumeLiters(e.target.value)}
+                                                            placeholder={t('irrigation_calculator.manual_liters_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {((!effectiveManual && durationMinutes && dripperFlowRate) || (effectiveManual && manualVolumeLiters)) && (
+                                                <motion.div
+                                                    initial={{ scale: 0.95, opacity: 0 }}
+                                                    animate={{ scale: 1, opacity: 1 }}
+                                                    className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl flex items-center justify-between animate-fade-in"
+                                                >
+                                                    <div>
+                                                        <h5 className="text-[10px] font-black text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-1">
+                                                            {t('irrigation_calculator.estimated_volume')}
+                                                        </h5>
+                                                        <p className="text-2xl font-black text-blue-900 dark:text-blue-300">
+                                                            {effectiveManual 
+                                                                ? `${parseFloat(manualVolumeLiters).toLocaleString()} ${t('irrigation_calculator.liters')}`
+                                                                : `${Math.round(plantCount! * parseFloat(dripperFlowRate) * (parseFloat(durationMinutes) / 60)).toLocaleString()} ${t('irrigation_calculator.liters')}`
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase">
+                                                            {effectiveManual
+                                                                ? `${(parseFloat(manualVolumeLiters) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
+                                                                : `${((plantCount! * parseFloat(dripperFlowRate) * (parseFloat(durationMinutes) / 60)) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                    {t('irrigation_calculator.notes_title')}
+                                                </label>
+                                                <textarea
+                                                    value={notes}
+                                                    onChange={(e) => setNotes(e.target.value)}
+                                                    rows={2}
+                                                    className="w-full px-5 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-xs font-bold resize-none dark:placeholder:text-gray-600"
+                                                    placeholder="Détails de l'irrigation..."
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {type !== 'pest_control' && type !== 'irrigation' && (
                                         <div className="space-y-4">
                                             <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t('quick_log.notes')}</label>
                                             <textarea

@@ -574,10 +574,27 @@ const parseTreatmentNotes = (notes: string | null) => {
     return null;
 }
 
+const parseIrrigationNotes = (notes: string | null) => {
+    if (!notes) return null;
+    try {
+        const trimmed = notes.trim();
+        if (trimmed.startsWith('{')) {
+            const data = JSON.parse(trimmed);
+            if (data && data.is_structured_irrigation) {
+                return data;
+            }
+        }
+    } catch (e) {
+        // Not JSON
+    }
+    return null;
+}
+
 function HistoryCard({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
     const style = operationStyles[op.type] || { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', icon: ClipboardList };
     const Icon = style.icon;
     const treatmentData = op.type === 'pest_control' ? parseTreatmentNotes(op.notes) : null;
+    const irrigationData = op.type === 'irrigation' ? parseIrrigationNotes(op.notes) : null;
 
     return (
         <motion.div
@@ -768,6 +785,50 @@ function HistoryCard({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
                             <div className="bg-amber-50/10 dark:bg-amber-950/5 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/5 mt-2 w-full text-left">
                                 <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed font-bold">
                                     💬 "{treatmentData.notes}"
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                ) : irrigationData ? (
+                    <div className="space-y-4 mt-3 text-left">
+                        <div className="grid grid-cols-2 gap-3">
+                            {irrigationData.duration_minutes !== null && (
+                                <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-100/50 dark:border-blue-900/30 text-center">
+                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">⏱️ Durée</p>
+                                    <p className="text-sm font-black text-blue-700 dark:text-blue-400 mt-1">{irrigationData.duration_minutes} min</p>
+                                </div>
+                            )}
+                            <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-100/50 dark:border-blue-900/30 text-center">
+                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">💧 Volume</p>
+                                <p className="text-sm font-black text-blue-700 dark:text-blue-400 mt-1">
+                                    {irrigationData.estimated_volume_liters >= 1000
+                                        ? `${(irrigationData.estimated_volume_liters / 1000).toFixed(2)} m³`
+                                        : `${Math.round(irrigationData.estimated_volume_liters)} L`
+                                    }
+                                </p>
+                            </div>
+                        </div>
+
+                        {!irrigationData.is_manual && irrigationData.plant_count !== null && (
+                            <div className="bg-gray-50 dark:bg-gray-800/30 border border-gray-100 dark:border-gray-800/80 rounded-2xl p-4 space-y-2 text-xs">
+                                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider mb-1">📋 Spécifications Calcul</p>
+                                <div className="grid grid-cols-2 gap-1.5 font-bold text-gray-600 dark:text-gray-400">
+                                    <div>Arbres: <span className="text-gray-900 dark:text-white font-black">{irrigationData.plant_count}</span></div>
+                                    <div>Débit/Arbre: <span className="text-gray-900 dark:text-white font-black">{irrigationData.dripper_flow_rate} L/h</span></div>
+                                </div>
+                            </div>
+                        )}
+
+                        {irrigationData.is_manual && (
+                            <div className="p-2.5 bg-gray-100 dark:bg-gray-800 rounded-xl text-[10px] font-bold text-gray-500 text-center uppercase tracking-wide">
+                                ✍️ Saisie manuelle de la quantité
+                            </div>
+                        )}
+
+                        {irrigationData.notes && (
+                            <div className="bg-blue-50/10 dark:bg-blue-950/5 p-3 rounded-xl border border-blue-200/10 dark:border-blue-900/5 mt-2 w-full text-left">
+                                <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed font-bold">
+                                    💬 "{irrigationData.notes}"
                                 </p>
                             </div>
                         )}

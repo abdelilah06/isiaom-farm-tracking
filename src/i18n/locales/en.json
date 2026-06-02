@@ -475,5 +475,27 @@
         "temperature": "Temperature (°C)",
         "temperature_placeholder": "e.g., 24",
         "ppe_worn": "Personal Protective Equipment (PPE) worn 😷"
+    },
+    "irrigation_calculator": {
+        "title": "Automatic Irrigation Calculator 💧",
+        "academic_banner": "Academic Research Farm - Irrigation Calculator",
+        "duration_minutes": "Irrigation Duration (Minutes)",
+        "duration_minutes_placeholder": "e.g., 45",
+        "dripper_flow_rate": "Dripper Flow Rate per Tree (L/h)",
+        "dripper_flow_rate_placeholder": "e.g., 4",
+        "estimated_volume": "Estimated Water Volume",
+        "manual_input_notice": "Manual Input (if specifications unavailable)",
+        "billon_specs_summary": "Raised Bed Irrigation Specifications",
+        "billon_length": "Length",
+        "dripper_spacing": "Dripper Spacing",
+        "irrigation_lines": "Irrigation Lines",
+        "drippers_count": "Total Drippers Count",
+        "total_flow_rate": "Bed Total Flow Rate",
+        "no_active_cycle": "No active cycle or missing specifications for this raised bed.",
+        "manual_liters": "Manual Water Volume (Litres)",
+        "manual_liters_placeholder": "e.g., 500",
+        "liters": "Liters",
+        "m3": "m³",
+        "notes_title": "Additional Remarks"
     }
 }
