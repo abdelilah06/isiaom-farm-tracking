@@ -117,6 +117,7 @@
         "not_found": "Désolé ! Parcelle non trouvée",
         "crop": "Culture",
         "area": "Surface",
+        "area_unit": "m²",
         "date": "Date de plantation",
         "spacing": "Écartement",
         "plant_count": "Densité",
@@ -144,6 +145,7 @@
         "harvest_quality": "Distribution de la Qualité",
         "disease_severity": "Sévérité des Problèmes",
         "plot_status_dist": "Distribution du Statut",
+        "yield_per_plot": "Rendement par Parcelle (kg)",
         "recent_activities": "Activités Récentes",
         "sections": {
             "operations": "Activité Opérationnelle",
@@ -410,10 +412,22 @@
         "previous_cycles": "Cycles précédents",
         "planting": "Plantation",
         "harvest": "Récolte",
-        "yield": "Rendement"
+        "yield": "Rendement",
+        "mode_semis": {
+            "direct": "Semis Direct",
+            "plant": "Plant repiqué",
+            "bulbe": "Bulbe",
+            "bouture": "Bouture"
+        },
+        "semis_layout": {
+            "monorang": "Mono-rang",
+            "double_rang": "Double-rang",
+            "quinconce": "Quinconce"
+        }
     },
     "treatment": {
         "title": "Détails du Traitement 🧪",
+        "academic_banner": "Ferme de recherche académique - Formulaire de traitement standard",
         "type": "Type d'intervention",
         "preventative": "Préventif (وقائي)",
         "curative": "Curatif (علاجي)",

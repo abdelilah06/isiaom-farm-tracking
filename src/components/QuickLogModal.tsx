@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { uploadImage } from '../lib/upload'
 import ImageUpload from './ImageUpload'
 import CustomSelect from './CustomSelect'
-import { X, Loader2, Check, ClipboardList, Send, Scale, Star, ShieldAlert, Info, Wind, Thermometer } from 'lucide-react'
+import { X, Loader2, Check, ClipboardList, Send, ShieldAlert, Info, Wind, Thermometer } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOffline } from '../lib/OfflineContext'
@@ -29,10 +29,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
     const [success, setSuccess] = useState(false)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-    
-    // Harvest-specific fields
-    const [harvestQuantity, setHarvestQuantity] = useState('')
-    const [harvestQuality, setHarvestQuality] = useState('A')
+
 
     // Treatment-specific states
     const [treatmentType, setTreatmentType] = useState<'preventative' | 'curative'>('preventative')
@@ -73,12 +70,9 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
         setLoading(true)
 
         try {
-            // Build notes including harvest data or treatment data if applicable
+            // Build notes including treatment data if applicable
             let finalNotes = notes.trim()
-            if (type === 'harvest' && harvestQuantity) {
-                const harvestInfo = `📦 ${harvestQuantity} kg | ⭐ ${harvestQuality}`
-                finalNotes = harvestInfo + (notes ? ` | ${notes}` : '')
-            } else if (type === 'pest_control') {
+            if (type === 'pest_control') {
                 const treatmentData = {
                     is_structured_treatment: true,
                     treatment_type: treatmentType,
@@ -130,18 +124,6 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                 })
 
             if (error) throw error
-
-            // If harvest, also save to yield_records for analytics
-            if (type === 'harvest' && harvestQuantity) {
-                await supabase.from('yield_records').insert({
-                    plot_id: plotId,
-                    harvest_date: new Date().toISOString().split('T')[0],
-                    quantity_kg: parseFloat(harvestQuantity) || 0,
-                    quality_grade: harvestQuality,
-                    notes: notes.trim() || null,
-                    image_url
-                })
-            }
 
             localStorage.removeItem(`draft_op_${plotId}`)
             setSuccess(true)
@@ -227,55 +209,6 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                 {/* Notes & Upload */}
                                 <div className="space-y-8">
 
-                                    {/* Harvest-specific fields */}
-                                    {type === 'harvest' && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 rounded-3xl border border-amber-200 dark:border-amber-800/50 space-y-4"
-                                        >
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <Scale className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                                                <span className="text-xs font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest">{t('yield.title')}</span>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">{t('yield.quantity')}</label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.1"
-                                                            value={harvestQuantity}
-                                                            onChange={(e) => setHarvestQuantity(e.target.value)}
-                                                            className="w-full pl-5 pr-14 py-4 bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all text-sm font-black"
-                                                            placeholder="0"
-                                                        />
-                                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400 uppercase">kg</span>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">{t('yield.quality')}</label>
-                                                    <div className="relative group">
-                                                        <Star className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-amber-500 transition-colors" />
-                                                        <select
-                                                            value={harvestQuality}
-                                                            onChange={(e) => setHarvestQuality(e.target.value)}
-                                                            className="w-full pl-11 pr-4 py-4 bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all text-sm font-bold appearance-none cursor-pointer"
-                                                        >
-                                                            <option value="A">{t('yield.grades.A')}</option>
-                                                            <option value="B">{t('yield.grades.B')}</option>
-                                                            <option value="C">{t('yield.grades.C')}</option>
-                                                            <option value="export">{t('yield.grades.export')}</option>
-                                                            <option value="local">{t('yield.grades.local')}</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-
                                     {/* Treatment-specific fields */}
                                     {type === 'pest_control' && (
                                         <motion.div
@@ -292,7 +225,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                         {t('treatment.title')}
                                                     </h4>
                                                     <p className="text-[10px] font-bold text-amber-600 dark:text-amber-500">
-                                                        ضيعة أبحاث أكاديمية - استمارة معالجة معيارية
+                                                        {t('treatment.academic_banner', { defaultValue: 'ضيعة أبحاث أكاديمية - استمارة معالجة معيارية' })}
                                                     </p>
                                                 </div>
                                             </div>
@@ -341,7 +274,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                             { value: 'acaricide', emoji: '🕷️', label: 'Acaricide', description: 'مبيد عناكب' },
                                                             { value: 'foliar_fertilizer', emoji: '🍃', label: 'Engrais foliaire', description: 'سماد ورقي' },
                                                             { value: 'biostimulant', emoji: '⚡', label: 'Biostimulant', description: 'محفز نمو' },
-                                                            { value: 'other', emoji: '📦', label: t('treatment.categories.other') },
+                                                            { value: 'other', emoji: '📦', label: 'Autre', description: 'آخر' },
                                                         ]}
                                                     />
                                                 </div>

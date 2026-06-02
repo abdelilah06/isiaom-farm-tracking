@@ -116,6 +116,7 @@
         "not_found": "Sorry! Plot not found",
         "crop": "Crop",
         "area": "Area",
+        "area_unit": "m²",
         "date": "Date",
         "spacing": "Planting Spacing",
         "plant_count": "Plant Count",
@@ -143,6 +144,7 @@
         "harvest_quality": "Quality Distribution",
         "disease_severity": "Issue Severity",
         "plot_status_dist": "Status Distribution",
+        "yield_per_plot": "Yield per Plot (kg)",
         "recent_activities": "Recent Activities",
         "sections": {
             "operations": "Operational Activity",
@@ -409,10 +411,22 @@
         "previous_cycles": "Previous Cycles",
         "planting": "Planting",
         "harvest": "Harvest",
-        "yield": "Yield"
+        "yield": "Yield",
+        "mode_semis": {
+            "direct": "Direct Sowing",
+            "plant": "Transplanted Seedling",
+            "bulbe": "Bulb",
+            "bouture": "Cutting"
+        },
+        "semis_layout": {
+            "monorang": "Single-row",
+            "double_rang": "Double-row",
+            "quinconce": "Staggered (Quinconce)"
+        }
     },
     "treatment": {
         "title": "Treatment Details 🧪",
+        "academic_banner": "Academic Research Farm - Standard Treatment Form",
         "type": "Intervention Type",
         "preventative": "Preventative (وقائي)",
         "curative": "Curative (علاجي)",
