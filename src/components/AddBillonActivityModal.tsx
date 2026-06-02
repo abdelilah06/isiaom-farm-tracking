@@ -59,6 +59,17 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
     const [manualVolumeLiters, setManualVolumeLiters] = useState<string>('')
     const [isManualVolume, setIsManualVolume] = useState<boolean>(false)
 
+    // Fertilization-specific states
+    const [fertilizationType, setFertilizationType] = useState<'fertigation' | 'foliar' | 'soil'>('fertigation')
+    const [fertProductName, setFertProductName] = useState('')
+    const [fertNpkRatio, setFertNpkRatio] = useState('')
+    const [fertDosageValue, setFertDosageValue] = useState('')
+    const [fertDosageUnit, setFertDosageUnit] = useState<'kg_ha' | 'g_tree' | 'g_l' | 'ml_l' | 'kg_total'>('kg_total')
+    const [fertWaterVolumeL, setFertWaterVolumeL] = useState('')
+    const [fertPhValue, setFertPhValue] = useState('')
+    const [fertEcValue, setFertEcValue] = useState('')
+    const [fertOperatorName, setFertOperatorName] = useState('')
+
     // Derived states
     const hasFullSpecs = activeCycleSpec !== null && 
         activeCycleSpec.length_m !== null && 
@@ -167,6 +178,21 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                     notes: notes.trim()
                 }
                 notesValue = JSON.stringify(irrigationData)
+            } else if (type === 'fertilization') {
+                const fertilizationData = {
+                    is_structured_fertilization: true,
+                    fertilization_type: fertilizationType,
+                    product_name: fertProductName.trim(),
+                    npk_ratio: fertNpkRatio.trim(),
+                    dosage_value: fertDosageValue ? parseFloat(fertDosageValue) : null,
+                    dosage_unit: fertDosageUnit,
+                    water_volume_l: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertWaterVolumeL ? parseFloat(fertWaterVolumeL) : null,
+                    ph_value: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertPhValue ? parseFloat(fertPhValue) : null,
+                    ec_value: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertEcValue ? parseFloat(fertEcValue) : null,
+                    operator_name: fertOperatorName.trim(),
+                    notes: notes.trim()
+                }
+                notesValue = JSON.stringify(fertilizationData)
             }
 
             const { error } = await supabase
@@ -692,7 +718,222 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                         </motion.div>
                                     )}
 
-                                    {type !== 'pest_control' && type !== 'irrigation' && (
+                                    {type === 'fertilization' && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="bg-amber-50/30 dark:bg-amber-950/15 p-6 rounded-[2rem] border border-amber-200/50 dark:border-amber-900/30 space-y-6"
+                                        >
+                                            {/* Header */}
+                                            <div className="flex items-center gap-3 border-b border-amber-200/30 dark:border-amber-900/20 pb-4">
+                                                <div className="w-10 h-10 bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center">
+                                                    <span className="text-xl">🌱</span>
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-sm font-black text-amber-900 dark:text-amber-400 uppercase tracking-wide">
+                                                        {t('fertilization.title')}
+                                                    </h4>
+                                                    <p className="text-[10px] font-bold text-amber-600 dark:text-amber-500">
+                                                        {t('fertilization.academic_banner')}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Fertilization Type Tabs */}
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-3">
+                                                    {t('fertilization.type')}
+                                                </label>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {(['fertigation', 'foliar', 'soil'] as const).map((tId) => {
+                                                        const isSel = fertilizationType === tId;
+                                                        const emoji = tId === 'fertigation' ? '🚿' : tId === 'foliar' ? '🍃' : '🪵';
+                                                        return (
+                                                            <button
+                                                                key={tId}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setFertilizationType(tId);
+                                                                    // Update default unit based on selected type
+                                                                    if (tId === 'fertigation') setFertDosageUnit('kg_total');
+                                                                    else if (tId === 'foliar') setFertDosageUnit('g_l');
+                                                                    else if (tId === 'soil') setFertDosageUnit('kg_ha');
+                                                                }}
+                                                                className={`py-3 px-2 rounded-xl text-center border font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
+                                                                    isSel
+                                                                        ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 ring-2 ring-amber-500/10'
+                                                                        : 'border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 hover:border-amber-300'
+                                                                }`}
+                                                            >
+                                                                <span className="text-lg">{emoji}</span>
+                                                                <span className="text-[9px] uppercase tracking-wider">{t(`fertilization.types.${tId}`)}</span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Commercial Name & NPK Ratio */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                        {t('fertilization.product_name')}
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        value={fertProductName}
+                                                        onChange={(e) => setFertProductName(e.target.value)}
+                                                        placeholder={t('fertilization.product_name_placeholder')}
+                                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                        {t('fertilization.npk_ratio')}
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        required
+                                                        value={fertNpkRatio}
+                                                        onChange={(e) => setFertNpkRatio(e.target.value)}
+                                                        placeholder={t('fertilization.npk_ratio_placeholder')}
+                                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Dosage Value & Unit */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                        {t('fertilization.dosage')}
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0.01"
+                                                        required
+                                                        value={fertDosageValue}
+                                                        onChange={(e) => setFertDosageValue(e.target.value)}
+                                                        placeholder={t('fertilization.dosage_placeholder')}
+                                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                        {t('fertilization.dosage_unit')}
+                                                    </label>
+                                                    <select
+                                                        value={fertDosageUnit}
+                                                        onChange={(e: any) => setFertDosageUnit(e.target.value)}
+                                                        className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all appearance-none cursor-pointer"
+                                                    >
+                                                        {fertilizationType === 'fertigation' && (
+                                                            <>
+                                                                <option value="kg_total">{t('fertilization.units.kg_total')}</option>
+                                                                <option value="g_l">{t('fertilization.units.g_l')}</option>
+                                                            </>
+                                                        )}
+                                                        {fertilizationType === 'foliar' && (
+                                                            <>
+                                                                <option value="g_l">{t('fertilization.units.g_l')}</option>
+                                                                <option value="ml_l">{t('fertilization.units.ml_l')}</option>
+                                                                <option value="kg_total">{t('fertilization.units.kg_total')}</option>
+                                                            </>
+                                                        )}
+                                                        {fertilizationType === 'soil' && (
+                                                            <>
+                                                                <option value="kg_ha">{t('fertilization.units.kg_ha')}</option>
+                                                                <option value="g_tree">{t('fertilization.units.g_tree')}</option>
+                                                                <option value="kg_total">{t('fertilization.units.kg_total')}</option>
+                                                            </>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            {/* Water Volume, pH & EC (For fertigation & foliar spraying) */}
+                                            {(fertilizationType === 'fertigation' || fertilizationType === 'foliar') && (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('fertilization.water_volume')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            required
+                                                            value={fertWaterVolumeL}
+                                                            onChange={(e) => setFertWaterVolumeL(e.target.value)}
+                                                            placeholder={t('fertilization.water_volume_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('fertilization.ph')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.1"
+                                                            min="0"
+                                                            max="14"
+                                                            required
+                                                            value={fertPhValue}
+                                                            onChange={(e) => setFertPhValue(e.target.value)}
+                                                            placeholder={t('fertilization.ph_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                            {t('fertilization.ec')}
+                                                        </label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            min="0"
+                                                            required
+                                                            value={fertEcValue}
+                                                            onChange={(e) => setFertEcValue(e.target.value)}
+                                                            placeholder={t('fertilization.ec_placeholder')}
+                                                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Operator Name */}
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
+                                                    {t('fertilization.operator')}
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={fertOperatorName}
+                                                    onChange={(e) => setFertOperatorName(e.target.value)}
+                                                    placeholder={t('fertilization.operator_placeholder')}
+                                                    className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
+                                                />
+                                            </div>
+
+                                            {/* Standard notes field inside fertilization */}
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">{t('billons.notes')}</label>
+                                                <textarea
+                                                    value={notes}
+                                                    onChange={(e) => setNotes(e.target.value)}
+                                                    rows={2}
+                                                    className="w-full px-5 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 dark:text-white rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all text-xs font-bold resize-none dark:placeholder:text-gray-600"
+                                                    placeholder={t('billons.notes_placeholder')}
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {type !== 'pest_control' && type !== 'irrigation' && type !== 'fertilization' && (
                                         <div className="space-y-4">
                                             <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest px-1">{t('billons.notes')}</label>
                                             <textarea

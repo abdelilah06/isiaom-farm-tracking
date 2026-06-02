@@ -501,5 +501,37 @@
         "liters": "Liters",
         "m3": "m³",
         "notes_title": "Additional Remarks"
+    },
+    "fertilization": {
+        "title": "Fertilization Management 🌱",
+        "academic_banner": "Fertilization Form - Technical Tracking",
+        "type": "Fertilization Type",
+        "types": {
+            "fertigation": "Fertigation (Soluble Irrigation) 🚿",
+            "foliar": "Foliar Spray (Leaves application) 🍃",
+            "soil": "Soil Spreading (Solid epandage) 🪵"
+        },
+        "product_name": "Fertilizer Commercial Name",
+        "product_name_placeholder": "e.g., Solupotasse, Urea...",
+        "npk_ratio": "N-P-K Formulation",
+        "npk_ratio_placeholder": "e.g., 20-20-20 (N-P-K)",
+        "dosage": "Dose / Quantity",
+        "dosage_placeholder": "e.g., 25",
+        "dosage_unit": "Dosage Unit",
+        "units": {
+            "kg_ha": "kg/ha (كجم/هكتار)",
+            "g_tree": "g/tree (جرام/شجرة)",
+            "g_l": "g/L (جرام/لتر)",
+            "ml_l": "ml/L (مل/لتر)",
+            "kg_total": "kg total (كجم إجمالي)"
+        },
+        "water_volume": "Water Volume Prepared (Litres)",
+        "water_volume_placeholder": "e.g., 1000",
+        "ph": "pH Level (0 - 14)",
+        "ph_placeholder": "e.g., 6.2",
+        "ec": "Electrical Conductivity (EC - mS/cm)",
+        "ec_placeholder": "e.g., 1.8",
+        "operator": "Technician Name (Applicator)",
+        "operator_placeholder": "e.g., Ahmed..."
     }
 }

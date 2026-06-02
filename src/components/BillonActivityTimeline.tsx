@@ -60,6 +60,22 @@ const parseIrrigationNotes = (notes: string | null) => {
     return null;
 }
 
+const parseFertilizationNotes = (notes: string | null) => {
+    if (!notes) return null;
+    try {
+        const trimmed = notes.trim();
+        if (trimmed.startsWith('{')) {
+            const data = JSON.parse(trimmed);
+            if (data && data.is_structured_fertilization) {
+                return data;
+            }
+        }
+    } catch (e) {
+        // Not structured fertilization JSON
+    }
+    return null;
+}
+
 interface BillonActivityTimelineProps {
     billonId: string
     isAdmin: boolean
@@ -168,12 +184,17 @@ export default function BillonActivityTimeline({ billonId, isAdmin, refreshTrigg
                                     const Icon = style.icon
                                     const treatmentData = act.activity_type === 'pest_control' ? parseTreatmentNotes(act.notes) : null
                                     const irrigationData = act.activity_type === 'irrigation' ? parseIrrigationNotes(act.notes) : null
+                                    const fertilizationData = act.activity_type === 'fertilization' ? parseFertilizationNotes(act.notes) : null
                                     return (
                                         <motion.div
                                             key={act.id}
                                             initial={{ opacity: 0, scale: 0.95 }}
                                             animate={{ opacity: 1, scale: 1 }}
-                                            className="flex-shrink-0 w-[300px] sm:w-[350px] snap-center bg-white dark:bg-gray-900 rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 dark:shadow-black/20 border border-gray-50 dark:border-gray-800 flex flex-col gap-5 group hover:border-amber-500/30 transition-all"
+                                            className={`flex-shrink-0 w-[300px] sm:w-[350px] snap-center bg-white dark:bg-gray-900 rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 dark:shadow-black/20 border flex flex-col gap-5 group transition-all ${
+                                                fertilizationData
+                                                    ? 'border-amber-200/50 dark:border-amber-900/30 hover:border-amber-500 bg-amber-50/10 dark:bg-amber-950/5'
+                                                    : 'border-gray-50 dark:border-gray-800 hover:border-amber-500/30'
+                                            }`}
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className={`p-4 rounded-2xl ${style.bg} ${style.text} shadow-lg transition-transform group-hover:scale-110`}>
@@ -395,6 +416,79 @@ export default function BillonActivityTimeline({ billonId, isAdmin, refreshTrigg
                                                             <div className="bg-blue-50/10 dark:bg-blue-950/5 p-3 rounded-xl border border-blue-200/10 dark:border-blue-900/5 mt-2">
                                                                 <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed font-bold">
                                                                     💬 "{irrigationData.notes}"
+                                                                </p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : fertilizationData ? (
+                                                    <div className="space-y-4 mt-3">
+                                                        {/* Fertilization Type Badge */}
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200/50 dark:border-amber-900/30 flex items-center gap-1">
+                                                                <span>{fertilizationData.fertilization_type === 'fertigation' ? '🚿' : fertilizationData.fertilization_type === 'foliar' ? '🍃' : '🪵'}</span>
+                                                                <span>{t(`fertilization.types.${fertilizationData.fertilization_type}`, { defaultValue: fertilizationData.fertilization_type })}</span>
+                                                            </span>
+                                                        </div>
+
+                                                        {/* NPK Ratio & Product Name Grid */}
+                                                        <div className="bg-amber-500/5 dark:bg-amber-950/10 border border-amber-200/30 dark:border-amber-900/30 rounded-2xl p-4 space-y-3 text-xs">
+                                                            <div className="flex items-center justify-between">
+                                                                <div>
+                                                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">{t('fertilization.product_name')}</p>
+                                                                    <p className="font-extrabold text-gray-900 dark:text-white mt-0.5">{fertilizationData.product_name}</p>
+                                                                </div>
+                                                                <span className="px-2 py-1 bg-amber-500 text-white dark:bg-amber-600 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-md shadow-amber-500/10">
+                                                                    NPK {fertilizationData.npk_ratio}
+                                                                </span>
+                                                            </div>
+
+                                                            <div className="grid grid-cols-2 gap-2 pt-2.5 border-t border-amber-200/20 dark:border-amber-900/20">
+                                                                <div>
+                                                                    <p className="text-[9px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">{t('fertilization.dosage')}</p>
+                                                                    <p className="font-bold text-gray-800 dark:text-gray-200 mt-0.5">
+                                                                        {fertilizationData.dosage_value} <span className="text-[9px] font-black uppercase text-gray-500">{t(`fertilization.units.${fertilizationData.dosage_unit}`, { defaultValue: fertilizationData.dosage_unit })}</span>
+                                                                    </p>
+                                                                </div>
+                                                                {fertilizationData.water_volume_l && (
+                                                                    <div>
+                                                                        <p className="text-[9px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">{t('fertilization.water_volume')}</p>
+                                                                        <p className="font-bold text-gray-800 dark:text-gray-200 mt-0.5">{fertilizationData.water_volume_l} L</p>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {(fertilizationData.ph_value !== null || fertilizationData.ec_value !== null) && (
+                                                                <div className="pt-2.5 border-t border-amber-200/20 dark:border-amber-900/20 grid grid-cols-2 gap-2">
+                                                                    {fertilizationData.ph_value !== null && (
+                                                                        <div>
+                                                                            <p className="text-[9px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">pH</p>
+                                                                            <p className="font-black text-amber-600 dark:text-amber-400 mt-0.5">{fertilizationData.ph_value}</p>
+                                                                        </div>
+                                                                    )}
+                                                                    {fertilizationData.ec_value !== null && (
+                                                                        <div>
+                                                                            <p className="text-[9px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-wider">EC (mS/cm)</p>
+                                                                            <p className="font-black text-amber-600 dark:text-amber-400 mt-0.5">{fertilizationData.ec_value}</p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Operator Name */}
+                                                        {fertilizationData.operator_name && (
+                                                            <div className="flex items-center gap-1.5 text-[10px] text-gray-500 dark:text-gray-400 font-bold bg-amber-500/5 dark:bg-amber-950/5 p-2.5 rounded-xl border border-amber-200/10 dark:border-amber-900/10">
+                                                                <User className="h-3.5 w-3.5 text-amber-500/80" />
+                                                                <span>{t('fertilization.operator')}: </span>
+                                                                <span className="text-gray-800 dark:text-gray-200">{fertilizationData.operator_name}</span>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Notes (if any inside fertilization notes) */}
+                                                        {fertilizationData.notes && (
+                                                            <div className="bg-amber-50/10 dark:bg-amber-950/5 p-3 rounded-xl border border-amber-200/10 dark:border-amber-900/5 mt-2">
+                                                                <p className="text-gray-600 dark:text-gray-300 text-xs italic leading-relaxed font-bold">
+                                                                    💬 "{fertilizationData.notes}"
                                                                 </p>
                                                             </div>
                                                         )}
