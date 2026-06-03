@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
-import { exportPlotsToExcel, exportOperationsToExcel, exportToCSV, exportFullReport } from '@/lib/export'
+import { exportPlotsToExcel, exportOperationsToExcel, exportToCSV, exportFullReport, exportBillonActivitiesToExcel, exportBillonActivitiesToCSV } from '@/lib/export'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 
@@ -17,7 +17,14 @@ export default function Settings() {
     const { t } = useTranslation()
     const navigate = useNavigate()
     const { theme, toggleTheme } = useTheme()
-    const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance' | 'notifications' | 'general'>('account')
+    const [activeTab, setActiveTab] = useState<'account' | 'data' | 'appearance' | 'notifications' | 'general'>(() => {
+        const params = new URLSearchParams(window.location.search)
+        const tab = params.get('tab')
+        if (tab === 'data' || tab === 'account' || tab === 'appearance' || tab === 'notifications' || tab === 'general') {
+            return tab
+        }
+        return 'account'
+    })
 
     // Email update state
     const [newEmail, setNewEmail] = useState('')
@@ -73,7 +80,7 @@ export default function Settings() {
         }
     }
 
-    const handleExport = async (type: 'plots-excel' | 'ops-excel' | 'plots-csv' | 'ops-csv' | 'full') => {
+    const handleExport = async (type: 'plots-excel' | 'ops-excel' | 'plots-csv' | 'ops-csv' | 'full' | 'activities-excel' | 'activities-csv') => {
         setExportLoading(true)
         setExportMessage(null)
 
@@ -91,6 +98,12 @@ export default function Settings() {
                     break
                 case 'ops-csv':
                     result = await exportToCSV('operations')
+                    break
+                case 'activities-excel':
+                    result = await exportBillonActivitiesToExcel()
+                    break
+                case 'activities-csv':
+                    result = await exportBillonActivitiesToCSV()
                     break
                 case 'full':
                     result = await exportFullReport()
@@ -352,6 +365,30 @@ export default function Settings() {
                                                     </button>
                                                     <button
                                                         onClick={() => handleExport('ops-csv')}
+                                                        className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-gray-900 hover:text-white transition-all shadow-sm"
+                                                    >
+                                                        CSV
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Billon Activities Card */}
+                                            <div className="bg-gray-50/50 dark:bg-white/[0.02] rounded-[2.5rem] p-8 border border-gray-100 dark:border-gray-800 group hover:border-emerald-500/30 transition-all duration-500">
+                                                <div className="flex items-center gap-5 mb-8">
+                                                    <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-md">
+                                                        <Package className="h-7 w-7 text-emerald-500" />
+                                                    </div>
+                                                    <h4 className="font-black text-gray-900 dark:text-white uppercase tracking-tight">Activités des Billons</h4>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <button
+                                                        onClick={() => handleExport('activities-excel')}
+                                                        className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all shadow-sm"
+                                                    >
+                                                        Excel
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleExport('activities-csv')}
                                                         className="flex-1 px-4 py-4 bg-white dark:bg-gray-800 dark:text-white rounded-xl text-[10px] font-black uppercase tracking-widest border border-gray-100 dark:border-gray-700 hover:bg-gray-900 hover:text-white transition-all shadow-sm"
                                                     >
                                                         CSV

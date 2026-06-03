@@ -178,3 +178,145 @@ export async function exportFullReport() {
         return { success: false, error }
     }
 }
+
+// Export billon activities to Excel
+export async function exportBillonActivitiesToExcel() {
+    try {
+        const { data: acts, error: actsErr } = await supabase
+            .from('billon_activities')
+            .select('*')
+            .order('performed_at', { ascending: false });
+
+        if (actsErr) throw actsErr;
+
+        const { data: billonsData } = await supabase.from('billons').select('id, name, plot_id');
+        const { data: plotsData } = await supabase.from('plots').select('id, name');
+
+        const billonMap = new Map();
+        billonsData?.forEach(b => {
+            const plot = plotsData?.find(p => p.id === b.plot_id);
+            billonMap.set(b.id, {
+                name: b.name,
+                plotName: plot ? plot.name : '---'
+            });
+        });
+
+        const formattedData = acts?.map(act => {
+            const date = new Date(act.performed_at).toLocaleDateString('fr-FR');
+            const type = act.activity_type;
+            const b = billonMap.get(act.billon_id);
+            const billonName = b ? b.name : '---';
+            const plotName = b ? b.plotName : '---';
+
+            let notesText = act.notes || '';
+            if (notesText.trim().startsWith('{')) {
+                try {
+                    const parsed = JSON.parse(notesText);
+                    if (parsed.is_structured_treatment) {
+                        notesText = `Traitement: ${parsed.product_name} (${parsed.treatment_type}, PHI: ${parsed.phi_days}j)`;
+                    } else if (parsed.is_structured_irrigation) {
+                        notesText = `Irrigation: ${parsed.duration_minutes}min (${parsed.estimated_volume_liters}L)`;
+                    } else if (parsed.is_structured_fertilization) {
+                        notesText = `Tonnage/Engrais: ${parsed.product_name} (NPK: ${parsed.npk_ratio}, Dosage: ${parsed.dosage_value} ${parsed.dosage_unit})`;
+                    }
+                } catch (e) {
+                    // fallback
+                }
+            }
+
+            return {
+                'Date': date,
+                "Type d'Activité": type,
+                'Billon': billonName,
+                'Parcelle': plotName,
+                'Détails / Notes': notesText,
+                'Opérateur': act.performed_by || 'Système'
+            };
+        }) || [];
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData)
+        const workbook = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Activites')
+
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+        const date = new Date().toISOString().split('T')[0]
+        saveAs(blob, `ISIAOM_Activites_Billons_${date}.xlsx`)
+
+        return { success: true, count: acts?.length || 0 }
+    } catch (error) {
+        console.error('Export error:', error)
+        return { success: false, error }
+    }
+}
+
+// Export billon activities to CSV
+export async function exportBillonActivitiesToCSV() {
+    try {
+        const { data: acts, error: actsErr } = await supabase
+            .from('billon_activities')
+            .select('*')
+            .order('performed_at', { ascending: false });
+
+        if (actsErr) throw actsErr;
+
+        const { data: billonsData } = await supabase.from('billons').select('id, name, plot_id');
+        const { data: plotsData } = await supabase.from('plots').select('id, name');
+
+        const billonMap = new Map();
+        billonsData?.forEach(b => {
+            const plot = plotsData?.find(p => p.id === b.plot_id);
+            billonMap.set(b.id, {
+                name: b.name,
+                plotName: plot ? plot.name : '---'
+            });
+        });
+
+        const formattedData = acts?.map(act => {
+            const date = new Date(act.performed_at).toLocaleDateString('fr-FR');
+            const type = act.activity_type;
+            const b = billonMap.get(act.billon_id);
+            const billonName = b ? b.name : '---';
+            const plotName = b ? b.plotName : '---';
+
+            let notesText = act.notes || '';
+            if (notesText.trim().startsWith('{')) {
+                try {
+                    const parsed = JSON.parse(notesText);
+                    if (parsed.is_structured_treatment) {
+                        notesText = `Traitement: ${parsed.product_name} (${parsed.treatment_type}, PHI: ${parsed.phi_days}j)`;
+                    } else if (parsed.is_structured_irrigation) {
+                        notesText = `Irrigation: ${parsed.duration_minutes}min (${parsed.estimated_volume_liters}L)`;
+                    } else if (parsed.is_structured_fertilization) {
+                        notesText = `Tonnage/Engrais: ${parsed.product_name} (NPK: ${parsed.npk_ratio}, Dosage: ${parsed.dosage_value} ${parsed.dosage_unit})`;
+                    }
+                } catch (e) {
+                    // fallback
+                }
+            }
+
+            return {
+                'Date': date,
+                "Type d'Activité": type,
+                'Billon': billonName,
+                'Parcelle': plotName,
+                'Détails / Notes': notesText,
+                'Opérateur': act.performed_by || 'Système'
+            };
+        }) || [];
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData)
+        const csv = XLSX.utils.sheet_to_csv(worksheet)
+        const csvContent = "\uFEFF" + csv;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+
+        const date = new Date().toISOString().split('T')[0]
+        saveAs(blob, `ISIAOM_Activites_Billons_${date}.csv`)
+
+        return { success: true, count: acts?.length || 0 }
+    } catch (error) {
+        console.error('Export error:', error)
+        return { success: false, error }
+    }
+}

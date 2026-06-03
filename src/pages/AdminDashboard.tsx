@@ -15,8 +15,6 @@ import StartCycleModal from '@/components/StartCycleModal'
 import CloseCycleModal from '@/components/CloseCycleModal'
 import BillonCycleHistory from '@/components/BillonCycleHistory'
 import AddBillonActivityModal from '@/components/AddBillonActivityModal'
-import FarmMap from '@/components/FarmMap'
-import SafeHarvestCalendar from '@/components/SafeHarvestCalendar'
 import type { Billon, Plot } from '../types'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -53,7 +51,7 @@ export default function AdminDashboard() {
     const [showCloseCycleModalFor, setShowCloseCycleModalFor] = useState<{ billonId: string; activeCycle: any } | null>(null)
     const [showCycleHistoryFor, setShowCycleHistoryFor] = useState<{ billonId: string; billonName: string } | null>(null)
     const [showAddActivityFor, setShowAddActivityFor] = useState<string | null>(null)
-    const [treatmentActivities, setTreatmentActivities] = useState<any[]>([])
+
 
     // Filters state
     const [searchQuery, setSearchQuery] = useState('')
@@ -96,23 +94,12 @@ export default function AdminDashboard() {
         checkAuth()
     }, [navigate])
 
-    async function fetchTreatmentActivities() {
-        try {
-            const { data } = await supabase
-                .from('billon_activities')
-                .select('*')
-                .eq('activity_type', 'pest_control')
-            setTreatmentActivities(data || [])
-        } catch (e) {
-            console.error('Error fetching treatments:', e)
-        }
-    }
+
 
     useEffect(() => {
         if (!authChecking) {
             fetchData()
             fetchBillons()
-            fetchTreatmentActivities()
         }
     }, [authChecking])
 
@@ -198,7 +185,6 @@ export default function AdminDashboard() {
         } catch (error) {
             console.error('Error fetching billons:', error)
         } finally {
-            fetchTreatmentActivities()
             setBillonsLoading(false)
         }
     }
@@ -239,79 +225,7 @@ export default function AdminDashboard() {
         }
     }
 
-    const handleExportCSV = async () => {
-        try {
-            const { data: acts, error: actsErr } = await supabase
-                .from('billon_activities')
-                .select('*')
-                .order('performed_at', { ascending: false });
 
-            if (actsErr) throw actsErr;
-
-            const { data: billonsData } = await supabase.from('billons').select('id, name, plot_id');
-            const { data: plotsData } = await supabase.from('plots').select('id, name');
-
-            const billonMap = new Map();
-            billonsData?.forEach(b => {
-                const plot = plotsData?.find(p => p.id === b.plot_id);
-                billonMap.set(b.id, {
-                    name: b.name,
-                    plotName: plot ? plot.name : '---'
-                });
-            });
-
-            if (!acts || acts.length === 0) {
-                alert('Aucune activité à exporter.');
-                return;
-            }
-
-            // CSV header with UTF-8 BOM
-            let csvContent = "\uFEFFDate,Type d'Activité,Billon,Plot,Détails / Notes,Opérateur\n";
-
-            acts.forEach(act => {
-                const date = new Date(act.performed_at).toLocaleDateString('fr-FR');
-                const type = act.activity_type;
-                const b = billonMap.get(act.billon_id);
-                const billonName = b ? b.name : '---';
-                const plotName = b ? b.plotName : '---';
-
-                let notesText = act.notes || '';
-                if (notesText.trim().startsWith('{')) {
-                    try {
-                        const parsed = JSON.parse(notesText);
-                        if (parsed.is_structured_treatment) {
-                            notesText = `Traitement: ${parsed.product_name} (${parsed.treatment_type}, PHI: ${parsed.phi_days}j)`;
-                        } else if (parsed.is_structured_irrigation) {
-                            notesText = `Irrigation: ${parsed.duration_minutes}min (${parsed.estimated_volume_liters}L)`;
-                        } else if (parsed.is_structured_fertilization) {
-                            notesText = `Tonnage/Engrais: ${parsed.product_name} (NPK: ${parsed.npk_ratio}, Dosage: ${parsed.dosage_value} ${parsed.dosage_unit})`;
-                        }
-                    } catch (e) {
-                        // fallback
-                    }
-                }
-
-                const escapedNotes = `"${notesText.replace(/"/g, '""')}"`;
-                const escapedBillon = `"${billonName.replace(/"/g, '""')}"`;
-                const escapedPlot = `"${plotName.replace(/"/g, '""')}"`;
-                const operator = act.performed_by || 'Système';
-
-                csvContent += `${date},${type},${escapedBillon},${escapedPlot},${escapedNotes},${operator}\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `isiaom_activities_${new Date().toISOString().slice(0, 10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } catch (e) {
-            console.error('Failed to export CSV:', e);
-            alert(t('common.error'));
-        }
-    }
 
     const filteredPlots = useMemo(() => {
         return plots.filter(plot => {
@@ -522,22 +436,7 @@ export default function AdminDashboard() {
                     )}
                 </div>
 
-                <div className="mb-10">
-                    <FarmMap
-                        plots={plots}
-                        billons={billons}
-                        activeCycles={activeCycles}
-                        treatmentActivities={treatmentActivities}
-                        onBillonSelect={(id, name) => setShowCycleHistoryFor({ billonId: id, billonName: name })}
-                        onAddActivity={(id) => setShowAddActivityFor(id)}
-                        onStartCycle={(id) => setShowStartCycleModalFor(id)}
-                        onCloseCycle={(id, activeCycle) => setShowCloseCycleModalFor({ billonId: id, activeCycle })}
-                        onPlotSelect={(id) => {
-                            const plot = plots.find(p => p.id === id);
-                            if (plot) setSearchQuery(plot.name);
-                        }}
-                    />
-                </div>
+
 
                 <div className="flex flex-col gap-4 mb-8">
                     {/* Header Row */}
@@ -547,17 +446,15 @@ export default function AdminDashboard() {
                             {t('dashboard.all_plots')}
                         </h2>
                         <div className="flex items-center gap-3 w-full sm:w-auto">
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                            <Link
+                                to="/admin/settings?tab=data"
                                 className="bg-blue-600 text-white px-6 py-3 rounded-2xl flex items-center gap-2 hover:bg-blue-700 transition-all shadow-xl font-bold text-sm justify-center w-full sm:w-auto active:scale-95"
-                                onClick={handleExportCSV}
                             >
                                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
-                                <span>Exporter CSV</span>
-                            </motion.button>
+                                <span>Gérer les Exports</span>
+                            </Link>
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -1065,9 +962,7 @@ export default function AdminDashboard() {
                     </div>
                 </section>
 
-                <div className="mt-12">
-                    <SafeHarvestCalendar />
-                </div>
+
             </main>
 
             {/* Footer space */}
