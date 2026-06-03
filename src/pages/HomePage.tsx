@@ -99,7 +99,7 @@ export default function HomePage() {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-black shadow-lg">
-                            <Leaf className="h-6 w-6" />
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-7 w-7 object-contain" />
                         </div>
                         <div>
                             <span className="block font-black text-sm tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
@@ -359,7 +359,7 @@ export default function HomePage() {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white font-black shadow-lg">
-                            <Leaf className="h-6 w-6" />
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-7 w-7 object-contain" />
                         </div>
                         <span className="font-black text-lg tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
                     </div>

@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import {
     Grid, TrendingUp, Droplets, Plus, Search, Filter, X,
-    QrCode, BarChart3, User, LayoutDashboard, ClipboardList, Leaf, Settings as SettingsIcon,
+    QrCode, BarChart3, User, ClipboardList, Leaf, Settings as SettingsIcon,
     Trash2, Layers, Activity, Eye, Wheat, Sun
 } from 'lucide-react'
 import QuickLogModal from '@/components/QuickLogModal'
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
                 <div className="max-w-6xl mx-auto px-4 py-3 sm:h-20 flex items-center justify-between gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-primary rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                            <LayoutDashboard className="h-5 w-5 sm:w-6 sm:h-6 text-white" />
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-6 w-6 sm:h-8 sm:w-8 object-contain" />
                         </div>
                         <div className="min-w-0">
                             <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight truncate">

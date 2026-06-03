@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { Loader2, ArrowLeft, ShieldCheck } from 'lucide-react'
+import { Loader2, ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import LanguageSwitcher from '../components/LanguageSwitcher'
@@ -62,7 +62,7 @@ export default function LoginPage() {
                             animate={{ rotate: 0, scale: 1 }}
                             className="inline-flex w-20 h-20 bg-gradient-primary rounded-3xl mb-6 items-center justify-center shadow-2xl shadow-green-500/40"
                         >
-                            <ShieldCheck className="h-10 w-10 text-white" />
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-12 w-12 object-contain" />
                         </motion.div>
                         <h1 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-2">
                             {t('login.title')}

@@ -228,7 +228,7 @@ export default function PublicPlot() {
                         </button>
                         <div className="flex items-center gap-2">
                             <div className="w-9 h-9 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
-                                <Sprout className="h-5 w-5 text-white" />
+                                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-6 w-6 object-contain" />
                             </div>
                             <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">ISIAOM</span>
                         </div>
