@@ -97,8 +97,8 @@
         "submit": "Ajouter la parcelle",
         "dripper_flow_rate_lh": "Débit goutteur (L/h)",
         "irrigation_lines": "Lignes d'irrigation",
-        "lines_1": "1 Ligne (أنبوب واحد)",
-        "lines_2": "2 Lignes (أنبوبين)"
+        "lines_1": "1 Ligne",
+        "lines_2": "2 Lignes"
     },
     "quick_log": {
         "title": "Enregistrer une opération",
@@ -386,7 +386,7 @@
         "target_crop": "Culture",
         "crop_variety": "Variété",
         "crop_and_variety": "Culture & Variété",
-        "plant_count": "Densité de plantation",
+        "plant_count": "Nombre de plants",
         "planting_date": "Date de plantation",
         "area_m2": "Superficie (m²)",
         "irrigation_system": "Système d'irrigation",
@@ -433,18 +433,18 @@
         "title": "Détails du Traitement 🧪",
         "academic_banner": "Ferme de recherche académique - Formulaire de traitement standard",
         "type": "Type d'intervention",
-        "preventative": "Préventif (وقائي)",
-        "curative": "Curatif (علاجي)",
+        "preventative": "Préventif",
+        "curative": "Curatif",
         "category": "Catégorie de traitement",
         "categories": {
-            "biocontrol": "Biocontrôle (مكافحة بيولوجية) 🦠",
-            "natural_pesticide": "Traitement Bio (مبيد طبيعي) 🌿",
-            "fungicide": "Fongicide (مبيد فطري) 🍄",
-            "insecticide": "Insecticide (مبيد حشري) 🐛",
-            "herbicide": "Herbicide (مبيد أعشاب) 🌾",
-            "acaricide": "Acaricide (مبيد عناكب) 🕷️",
-            "foliar_fertilizer": "Engrais foliaire (سماد ورقي) 🍃",
-            "biostimulant": "Biostimulant (محفز نمو) ⚡",
+            "biocontrol": "Biocontrôle 🦠",
+            "natural_pesticide": "Traitement Bio 🌿",
+            "fungicide": "Fongicide 🍄",
+            "insecticide": "Insecticide 🐛",
+            "herbicide": "Herbicide 🌾",
+            "acaricide": "Acaricide 🕷️",
+            "foliar_fertilizer": "Engrais foliaire 🍃",
+            "biostimulant": "Biostimulant ⚡",
             "other": "Autre"
         },
         "target_pest": "Cible / Ravageur / Carence",
@@ -455,9 +455,9 @@
         "active_ingredient_placeholder": "Ex: Hydroxide de cuivre, Deltaméthrine...",
         "application_method": "Méthode d'application",
         "methods": {
-            "foliar_spray": "Pulvérisation foliaire (رش ورقي)",
-            "irrigation_injection": "Incorporation avec l'irrigation (مع الري)",
-            "soil_drench": "Trempage du sol / Drench (سقاية التربة)"
+            "foliar_spray": "Pulvérisation foliaire",
+            "irrigation_injection": "Incorporation avec l'irrigation",
+            "soil_drench": "Trempage du sol / Drench"
         },
         "dosage": "Dosage",
         "dosage_placeholder": "Ex: 2.5",
@@ -520,11 +520,11 @@
         "dosage_placeholder": "Ex: 25",
         "dosage_unit": "Unité de dose",
         "units": {
-            "kg_ha": "kg/ha (كجم/هكتار)",
-            "g_tree": "g/arbre (جرام/شجرة)",
-            "g_l": "g/L (جرام/لتر)",
-            "ml_l": "ml/L (مل/لتر)",
-            "kg_total": "kg total (كجم إجمالي)"
+            "kg_ha": "kg/ha",
+            "g_tree": "g/arbre",
+            "g_l": "g/L",
+            "ml_l": "ml/L",
+            "kg_total": "kg total"
         },
         "water_volume": "Volume d'eau préparé (Litres)",
         "water_volume_placeholder": "Ex: 1000",

@@ -47,10 +47,10 @@ export default function NotFoundPage() {
                     className="-mt-8"
                 >
                     <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-4">
-                        {t('not_found.title', 'الصفحة غير موجودة')}
+                        {t('not_found.title', 'Page non trouvée')}
                     </h2>
                     <p className="text-gray-400 dark:text-gray-500 text-sm font-bold uppercase tracking-widest max-w-sm mx-auto mb-10">
-                        {t('not_found.description', 'الصفحة التي تبحث عنها غير موجودة أو تم نقلها')}
+                        {t('not_found.description', "La page que vous recherchez n'existe pas ou a été déplacée")}
                     </p>
                 </motion.div>
 
@@ -66,14 +66,14 @@ export default function NotFoundPage() {
                         className="flex items-center gap-3 px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all min-h-[48px]"
                     >
                         <Home className="h-5 w-5" />
-                        {t('not_found.go_home', 'الصفحة الرئيسية')}
+                        {t('not_found.go_home', 'Accueil')}
                     </Link>
                     <button
                         onClick={() => window.history.back()}
                         className="flex items-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg border border-gray-100 dark:border-gray-700 hover:scale-105 transition-all min-h-[48px]"
                     >
                         <ArrowLeft className="h-5 w-5" />
-                        {t('not_found.go_back', 'العودة')}
+                        {t('not_found.go_back', 'Retour')}
                     </button>
                 </motion.div>
             </motion.div>

@@ -9,7 +9,7 @@ interface ImageUploadProps {
     error?: string | null
 }
 
-export default function ImageUpload({ label = 'صورة', onFileSelect, previewUrl, onClear, error }: ImageUploadProps) {
+export default function ImageUpload({ label = 'Photo', onFileSelect, previewUrl, onClear, error }: ImageUploadProps) {
     const inputRef = useRef<HTMLInputElement>(null)
     const [dragging, setDragging] = useState(false)
 
@@ -23,12 +23,12 @@ export default function ImageUpload({ label = 'صورة', onFileSelect, previewU
     const handleFile = (file: File) => {
         // Validate type
         if (!file.type.startsWith('image/')) {
-            alert('يرجى اختيار صورة صالحة (JPG, PNG)')
+            alert('Veuillez sélectionner une image valide (JPG, PNG)')
             return
         }
         // Validate size (5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert('حجم الصورة يجب أن يكون أقل من 5 ميجابايت')
+            alert('La taille de l\'image doit être inférieure à 5 Mo')
             return
         }
         onFileSelect(file)
@@ -97,19 +97,19 @@ export default function ImageUpload({ label = 'صورة', onFileSelect, previewU
 
                     <div className="text-center space-y-1">
                         <p className="text-base font-bold text-gray-900 group-hover:text-green-700 transition-colors">
-                            اضغط لاختيار صورة
+                            Cliquez pour choisir une photo
                         </p>
                         <p className="text-sm text-gray-500">
-                            أو اسحبها هنا
+                            ou glissez-déposez-la ici
                         </p>
                     </div>
 
                     <div className="mt-4 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-600 shadow-sm group-hover:border-green-300 group-hover:text-green-700 transition-all">
-                        تصفح الملفات
+                        Parcourir les fichiers
                     </div>
 
                     <p className="text-xs text-gray-400 mt-4">
-                        PNG, JPG (الحد الأقصى 5 ميجابايت)
+                        PNG, JPG (Max 5 Mo)
                     </p>
                 </div>
             )}

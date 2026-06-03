@@ -123,7 +123,7 @@ export default function BillonCycleHistory({ billonId, billonName, onClose }: Bi
                                             {cycle.plant_count && (
                                                 <div className="flex items-center gap-2">
                                                     <Hash className="h-3.5 w-3.5 text-blue-500" />
-                                                    <span className="font-bold text-gray-500 dark:text-gray-400">{cycle.plant_count} {t('billons.plant_count')}</span>
+                                                    <span className="font-bold text-gray-500 dark:text-gray-400">{cycle.plant_count} plants</span>
                                                 </div>
                                             )}
                                             {cycle.planting_date && (

@@ -175,7 +175,7 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                             </div>
                             <div>
                                 <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">{t('billons.start_cycle')}</h3>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">{t('billons.cycle_n', { n: nextCycleNumber })} — المنصة الشاملة لمواصفات الدورة</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">{t('billons.cycle_n', { n: nextCycleNumber })} — Spécifications de la campagne</p>
                             </div>
                         </div>
                         <button onClick={onClose} type="button" className="p-3 bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-2xl text-gray-400 hover:text-red-500 transition-all">
@@ -186,9 +186,9 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                     {/* Tab Navigation */}
                     <div className="flex border-b border-gray-100 dark:border-gray-700 bg-gray-50/20 dark:bg-gray-900/30 px-6 py-2 gap-2 flex-shrink-0">
                         {[
-                            { id: 'plantation', label: 'المحصول والزراعة', icon: Sprout },
-                            { id: 'dimensions', label: 'الأبعاد الهندسية', icon: Ruler },
-                            { id: 'irrigation', label: 'الري والغطاء', icon: Droplets }
+                            { id: 'plantation', label: 'Plantation', icon: Sprout },
+                            { id: 'dimensions', label: 'Dimensions', icon: Ruler },
+                            { id: 'irrigation', label: 'Irrigation & Paillage', icon: Droplets }
                         ].map((tab) => {
                             const Icon = tab.icon
                             const active = activeTab === tab.id
@@ -219,12 +219,12 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className={labelClass}>Culture Cible (المحصول المستهدف)</label>
+                                            <label className={labelClass}>Culture Cible</label>
                                             <input type="text" value={targetCrop} onChange={(e) => setTargetCrop(e.target.value)}
                                                 className={inputClass} placeholder="Ex: Tomate, Oignon..." />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>Variété / Cultivar (الصنف)</label>
+                                            <label className={labelClass}>Variété / Cultivar</label>
                                             <input type="text" value={cropVariety} onChange={(e) => setCropVariety(e.target.value)}
                                                 className={inputClass} placeholder="Ex: Roma VF, F1 San Marzano..." />
                                         </div>
@@ -237,7 +237,7 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                                 className={inputClass} />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>{t('billons.growing_cycle')} (يوم)</label>
+                                            <label className={labelClass}>{t('billons.growing_cycle')} (jours)</label>
                                             <input type="number" min="0" value={growingCycleDays} onChange={(e) => setGrowingCycleDays(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 90" />
                                         </div>
@@ -247,28 +247,28 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
 
                                     <div className="grid grid-cols-3 gap-4">
                                         <div>
-                                            <label className={labelClass}>نمط الإكثار (Semis)</label>
+                                            <label className={labelClass}>Mode de semis</label>
                                             <select value={modeSemis} onChange={(e: any) => setModeSemis(e.target.value)}
                                                 className={`${inputClass} appearance-none cursor-pointer`}>
                                                 <option value="">-- Sélectionner --</option>
-                                                <option value="direct">بذور مباشرة (Direct)</option>
-                                                <option value="plant">شتلات (Plants)</option>
-                                                <option value="bulbe">أبصال (Bulbes)</option>
-                                                <option value="bouture">عقل (Boutures)</option>
+                                                <option value="direct">Semis direct</option>
+                                                <option value="plant">Plants</option>
+                                                <option value="bulbe">Bulbes</option>
+                                                <option value="bouture">Boutures</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className={labelClass}>هندسة الصفوف (Layout)</label>
+                                            <label className={labelClass}>Layout (Disposition des rangs)</label>
                                             <select value={semisLayout} onChange={(e: any) => setSemisLayout(e.target.value)}
                                                 className={`${inputClass} appearance-none cursor-pointer`}>
                                                 <option value="">-- Sélectionner --</option>
-                                                <option value="monorang">صف واحد (Mono)</option>
-                                                <option value="double_rang">صف مزدوج (Double)</option>
-                                                <option value="quinconce">رجل الغراب (Quinconce)</option>
+                                                <option value="monorang">Monorang</option>
+                                                <option value="double_rang">Double rang</option>
+                                                <option value="quinconce">Quinconce</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className={labelClass}>تباعد بين النباتات (cm)</label>
+                                            <label className={labelClass}>Espacement sur rang (cm)</label>
                                             <input type="number" min="0" step="1" value={ecartementSurRangCm}
                                                 onChange={(e) => setEcartementSurRangCm(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 30" />
@@ -283,9 +283,9 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                                 <Sprout className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <h5 className="text-xs font-black text-green-800 dark:text-green-400 uppercase tracking-wider mb-1">الكثافة الزراعية المحسوبة تلقائياً</h5>
+                                                <h5 className="text-xs font-black text-green-800 dark:text-green-400 uppercase tracking-wider mb-1">Densité de plantation calculée</h5>
                                                 <p className="text-sm font-bold text-green-700 dark:text-green-300">
-                                                    النظام يقدر كثافة الغرس بـ <span className="font-black text-lg">{calculatedDensity}</span> نبات في المتر المربع (Plant/m²).
+                                                    La densité estimée est de <span className="font-black text-lg">{calculatedDensity}</span> plants par mètre carré (Plants/m²).
                                                 </p>
                                             </div>
                                         </motion.div>
@@ -297,27 +297,27 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                             {activeTab === 'dimensions' && (
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                     <p className="text-sm font-bold text-gray-500 dark:text-gray-400 leading-relaxed">
-                                        أدخل الأبعاد الهندسية للمصطبة المعتمدة خلال هذه الدورة الزراعية. يمكن تغييرها مع كل دورة جديدة حسب المحصول.
+                                        Saisissez les dimensions géométriques du billon pour ce cycle de culture. Elles peuvent être modifiées à chaque nouveau cycle.
                                     </p>
 
                                     <div className="grid grid-cols-2 gap-6">
                                         <div>
-                                            <label className={labelClass}>الطول (m) — Longueur</label>
+                                            <label className={labelClass}>Longueur (m)</label>
                                             <input type="number" min="0" step="0.1" value={lengthM} onChange={(e) => setLengthM(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 25" />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>عرض القمة (cm) — Largeur Sommet</label>
+                                            <label className={labelClass}>Largeur Sommet (cm)</label>
                                             <input type="number" min="0" step="1" value={widthTopCm} onChange={(e) => setWidthTopCm(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 80" />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>الارتفاع (cm) — Hauteur</label>
+                                            <label className={labelClass}>Hauteur (cm)</label>
                                             <input type="number" min="0" step="1" value={heightCm} onChange={(e) => setHeightCm(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 25" />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>التباعد بين المصاطب (cm)</label>
+                                            <label className={labelClass}>Espacement inter-billons (cm)</label>
                                             <input type="number" min="0" step="1" value={interBillonCm} onChange={(e) => setInterBillonCm(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 40" />
                                         </div>
@@ -327,13 +327,13 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                     {lengthM && widthTopCm && (
                                         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
                                             className="bg-amber-50 dark:bg-amber-950/15 border border-amber-200 dark:border-amber-900/30 rounded-2xl p-5 flex items-start gap-4">
-                                            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
+                                            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-950/30 rounded-xl flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
                                                 <Ruler className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <h5 className="text-xs font-black text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-1">المساحة المحسوبة تلقائياً</h5>
+                                                <h5 className="text-xs font-black text-amber-800 dark:text-amber-400 uppercase tracking-wider mb-1">Superficie calculée</h5>
                                                 <p className="text-sm font-bold text-amber-700 dark:text-amber-300">
-                                                    المساحة التقديرية = <span className="font-black text-lg">{(parseFloat(lengthM) * parseFloat(widthTopCm) / 100).toFixed(2)}</span> م² (m²)
+                                                    Superficie estimée = <span className="font-black text-lg">{(parseFloat(lengthM) * parseFloat(widthTopCm) / 100).toFixed(2)}</span> m²
                                                 </p>
                                             </div>
                                         </motion.div>
@@ -346,42 +346,42 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className={labelClass}>نظام الري</label>
+                                            <label className={labelClass}>Système d'irrigation</label>
                                             <div className="w-full px-5 py-4 bg-amber-50/50 dark:bg-amber-950/15 border border-amber-200 dark:border-amber-900/30 dark:text-white rounded-2xl text-sm font-black text-amber-800 dark:text-amber-400 flex items-center gap-2">
                                                 <Droplets className="h-4.5 w-4.5 text-amber-500" />
-                                                Goutte-à-goutte (تنقيط)
+                                                Goutte-à-goutte
                                             </div>
                                         </div>
                                         <div>
-                                            <label className={labelClass}>غطاء التربة (Mulching)</label>
+                                            <label className={labelClass}>Paillage (Mulching)</label>
                                             <select value={mulching} onChange={(e: any) => setMulching(e.target.value)}
                                                 className={`${inputClass} appearance-none cursor-pointer`}>
                                                 <option value="">-- Sélectionner --</option>
-                                                <option value="none">تربة عارية (Aucun)</option>
-                                                <option value="plastic_black">بلاستيك أسود (Noir)</option>
-                                                <option value="plastic_white">بلاستيك أبيض (Blanc)</option>
-                                                <option value="plastic_transparent">بلاستيك شفاف (Transparent)</option>
-                                                <option value="organic_straw">قش عضوي (Paille)</option>
+                                                <option value="none">Aucun (Sol nu)</option>
+                                                <option value="plastic_black">Plastique noir</option>
+                                                <option value="plastic_white">Plastique blanc</option>
+                                                <option value="plastic_transparent">Plastique transparent</option>
+                                                <option value="organic_straw">Paille organique</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
-                                    <h4 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-2 px-1">خصائص أنابيب الري والمنقطات</h4>
+                                    <h4 className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-2 px-1">Irrigation : Lignes & Goutteurs</h4>
 
                                     <div className="grid grid-cols-3 gap-4">
                                         <div>
-                                            <label className={labelClass}>عدد الأنابيب (Lines)</label>
+                                            <label className={labelClass}>Nombre de lignes (rampes)</label>
                                             <input type="number" min="1" step="1" value={irrigationLines} onChange={(e) => setIrrigationLines(e.target.value)}
                                                 className={inputClass} />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>تباعد المنقطات (cm)</label>
+                                            <label className={labelClass}>Espacement goutteurs (cm)</label>
                                             <input type="number" min="0" step="1" value={dripperSpacingCm} onChange={(e) => setDripperSpacingCm(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 30" />
                                         </div>
                                         <div>
-                                            <label className={labelClass}>تدفق المنقط (L/h)</label>
+                                            <label className={labelClass}>Débit du goutteur (L/h)</label>
                                             <input type="number" min="0" step="0.1" value={dripperFlowRateLh} onChange={(e) => setDripperFlowRateLh(e.target.value)}
                                                 className={inputClass} placeholder="Ex: 2.2" />
                                         </div>
@@ -395,9 +395,9 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                                 <Droplets className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <h5 className="text-xs font-black text-blue-800 dark:text-blue-400 uppercase tracking-wider mb-1">الاحتياج التدفقي للمتر الخطي</h5>
+                                                <h5 className="text-xs font-black text-blue-800 dark:text-blue-400 uppercase tracking-wider mb-1">Débit par mètre linéaire</h5>
                                                 <p className="text-sm font-bold text-blue-700 dark:text-blue-300">
-                                                    معدل التدفق التقديري هو <span className="font-black text-lg">{calculatedWaterFlow}</span> لتر في الساعة لكل متر طولي (L/h/m).
+                                                    Le débit estimé est de <span className="font-black text-lg">{calculatedWaterFlow}</span> L/h par mètre linéaire (L/h/m).
                                                 </p>
                                             </div>
                                         </motion.div>
@@ -406,10 +406,10 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                     <div className="h-px bg-gray-100 dark:bg-gray-700 my-2" />
 
                                     <div>
-                                        <label className={labelClass}>ملاحظات وخصائص التربة (Soil Notes)</label>
+                                        <label className={labelClass}>Notes sur le sol & observations (Soil Notes)</label>
                                         <textarea value={soilNotes} onChange={(e) => setSoilNotes(e.target.value)} rows={2}
                                             className={`${inputClass} resize-none`}
-                                            placeholder="Ex: تربة رملية طينية، نسبة رطوبة ممتازة..." />
+                                            placeholder="Ex: Sol sablonneux-limoneux, humidité optimale..." />
                                     </div>
 
                                     {/* Control Group Toggle */}
@@ -419,9 +419,9 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                                 🧪
                                             </div>
                                             <div>
-                                                <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">هل هذا خط شاهد (Témoin) ؟</h4>
+                                                <h4 className="text-sm font-black text-gray-900 dark:text-white uppercase tracking-tight">Est-ce un billon témoin ?</h4>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium max-w-sm mt-1">
-                                                    تفعيل هذا الخيار يعزل هذا الخط ليصبح خط مقارنة زراعية.
+                                                    Activer cette option pour définir ce billon comme zone témoin de contrôle/comparaison.
                                                 </p>
                                             </div>
                                         </div>
@@ -458,7 +458,7 @@ export default function StartCycleModal({ billonId, onClose, onStarted }: StartC
                                 ) : (
                                     <>
                                         <Play className="h-6 w-6" />
-                                        إطلاق الدورة الزراعية
+                                        Démarrer le cycle de culture
                                     </>
                                 )}
                             </motion.button>

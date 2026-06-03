@@ -258,8 +258,8 @@ export default function EditPlotModal({ plot, onClose, onUpdated }: EditPlotModa
                                                     onChange={handleChange}
                                                     className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-green-500/10 focus:border-green-500 outline-none transition-all text-sm font-bold appearance-none cursor-pointer"
                                                 >
-                                                    <option value="1">{t('add_plot.lines_1', { defaultValue: '1 Ligne (أنبوب واحد)' })}</option>
-                                                    <option value="2">{t('add_plot.lines_2', { defaultValue: '2 Lignes (أنبوبين)' })}</option>
+                                                    <option value="1">{t('add_plot.lines_1', { defaultValue: '1 Ligne' })}</option>
+                                                    <option value="2">{t('add_plot.lines_2', { defaultValue: '2 Lignes' })}</option>
                                                 </select>
                                             </div>
                                         </div>

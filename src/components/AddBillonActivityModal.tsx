@@ -311,7 +311,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         {t('treatment.title')}
                                                     </h4>
                                                     <p className="text-[10px] font-bold text-amber-600 dark:text-amber-500">
-                                                        {t('treatment.academic_banner', { defaultValue: 'ضيعة أبحاث أكاديمية - استمارة معالجة معيارية' })}
+                                                        {t('treatment.academic_banner', { defaultValue: 'Ferme de recherche académique - Formulaire de traitement standard' })}
                                                     </p>
                                                 </div>
                                             </div>
@@ -352,15 +352,15 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         value={treatmentCategory}
                                                         onChange={setTreatmentCategory}
                                                         options={[
-                                                            { value: 'biocontrol', emoji: '🦠', label: 'Biocontrôle', description: 'مكافحة بيولوجية' },
-                                                            { value: 'natural_pesticide', emoji: '🌿', label: 'Traitement Bio', description: 'مبيد طبيعي' },
-                                                            { value: 'fungicide', emoji: '🍄', label: 'Fongicide', description: 'مبيد فطري' },
-                                                            { value: 'insecticide', emoji: '🐛', label: 'Insecticide', description: 'مبيد حشري' },
-                                                            { value: 'herbicide', emoji: '🌾', label: 'Herbicide', description: 'مبيد أعشاب' },
-                                                            { value: 'acaricide', emoji: '🕷️', label: 'Acaricide', description: 'مبيد عناكب' },
-                                                            { value: 'foliar_fertilizer', emoji: '🍃', label: 'Engrais foliaire', description: 'سماد ورقي' },
-                                                            { value: 'biostimulant', emoji: '⚡', label: 'Biostimulant', description: 'محفز نمو' },
-                                                            { value: 'other', emoji: '📦', label: 'Autre', description: 'آخر' },
+                                                            { value: 'biocontrol', emoji: '🦠', label: 'Biocontrôle', description: 'Lutte biologique' },
+                                                            { value: 'natural_pesticide', emoji: '🌿', label: 'Traitement Bio', description: 'Pesticide naturel' },
+                                                            { value: 'fungicide', emoji: '🍄', label: 'Fongicide', description: 'Traitement anti-fongique' },
+                                                            { value: 'insecticide', emoji: '🐛', label: 'Insecticide', description: 'Cible les insectes ravageurs' },
+                                                            { value: 'herbicide', emoji: '🌾', label: 'Herbicide', description: 'Gestion des adventices' },
+                                                            { value: 'acaricide', emoji: '🕷️', label: 'Acaricide', description: 'Cible les acariens' },
+                                                            { value: 'foliar_fertilizer', emoji: '🍃', label: 'Engrais foliaire', description: 'Apport nutritionnel foliaire' },
+                                                            { value: 'biostimulant', emoji: '⚡', label: 'Biostimulant', description: 'Activation métabolique' },
+                                                            { value: 'other', emoji: '📦', label: 'Autre', description: 'Autre type de traitement' },
                                                         ]}
                                                     />
                                                 </div>
@@ -412,9 +412,9 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         value={applicationMethod}
                                                         onChange={(v: any) => setApplicationMethod(v)}
                                                         options={[
-                                                            { value: 'foliar_spray', emoji: '💧', label: 'Pulvérisation foliaire', description: 'رش ورقي' },
-                                                            { value: 'irrigation_injection', emoji: '🚿', label: 'Injection irrigation', description: 'مع الري' },
-                                                            { value: 'soil_drench', emoji: '🌱', label: 'Drench sol', description: 'سقاية التربة' },
+                                                            { value: 'foliar_spray', emoji: '💧', label: 'Pulvérisation foliaire', description: 'Application sur le feuillage' },
+                                                            { value: 'irrigation_injection', emoji: '🚿', label: 'Injection irrigation', description: 'Fertigation ou injection réseau' },
+                                                            { value: 'soil_drench', emoji: '🌱', label: 'Drench sol', description: 'Application directe au collet' },
                                                         ]}
                                                     />
                                                 </div>

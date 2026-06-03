@@ -98,6 +98,6 @@ export async function uploadImage(file: File, bucket: string, compress: boolean 
         return data.publicUrl
     } catch (error) {
         console.error('Upload error:', error)
-        throw new Error(`فشل رفع الصورة: ${error instanceof Error ? error.message : 'خطأ غير معروف'}`)
+        throw new Error(`Échec du téléchargement de l'image : ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
     }
 }

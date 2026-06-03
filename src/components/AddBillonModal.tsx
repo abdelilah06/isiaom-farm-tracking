@@ -117,7 +117,7 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                                     {t('billons.add_new')}
                                 </h3>
                                 <p className="text-xs text-gray-500 dark:text-gray-400 font-bold">
-                                    إنشاء مصطبة جديدة
+                                    Créer un nouveau billon
                                 </p>
                             </div>
                         </div>
@@ -137,7 +137,7 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
                                     <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
-                                        رمز المصطبة (Code)
+                                        Code du billon
                                     </label>
                                     <input
                                         type="text"
@@ -149,7 +149,7 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
-                                        الاسم (Nom) *
+                                        Nom *
                                     </label>
                                     <input
                                         type="text"
@@ -157,7 +157,7 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all text-sm font-bold placeholder:text-gray-300 dark:placeholder:text-gray-600"
-                                        placeholder="Ex: المصطبة الرئيسية"
+                                        placeholder="Ex: Billon Principal"
                                     />
                                 </div>
                             </div>
@@ -165,7 +165,7 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                             {/* Plot Selection */}
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
-                                    القطعة (Parcelle)
+                                    Parcelle
                                 </label>
                                 <select
                                     value={plotId}
@@ -174,7 +174,7 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                                     className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all text-sm font-bold appearance-none cursor-pointer disabled:opacity-50 placeholder:text-gray-300 dark:placeholder:text-gray-600"
                                 >
                                     <option value="">
-                                        {plotsLoading ? '...' : '-- اختر القطعة (اختياري) --'}
+                                        {plotsLoading ? '...' : '-- Sélectionner la parcelle (Optionnel) --'}
                                     </option>
                                     {plots.map((plot) => (
                                         <option key={plot.id} value={plot.id}>
@@ -187,14 +187,14 @@ export default function AddBillonModal({ onClose, onAdded }: AddBillonModalProps
                             {/* Description */}
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2 px-1">
-                                    الوصف (Description)
+                                    Description
                                 </label>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     rows={3}
                                     className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-900 border border-transparent dark:border-gray-700 dark:text-white rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 outline-none transition-all text-sm font-bold resize-none placeholder:text-gray-300 dark:placeholder:text-gray-600"
-                                    placeholder="وصف اختياري للمصطبة..."
+                                    placeholder="Description optionnelle..."
                                 />
                             </div>
                         </div>

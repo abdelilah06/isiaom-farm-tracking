@@ -146,7 +146,7 @@ export default function FarmMap({
                         🗺️ Layout spatial interactif de la ferme
                     </h2>
                     <p className="text-xs text-gray-450 dark:text-gray-500 font-bold mt-0.5">
-                        Vue aérienne dynamique de vos خطوط / مصاطب (Billons). Passez la souris pour analyser.
+                        Vue aérienne dynamique de vos lignes et billons. Passez la souris pour analyser.
                     </p>
                 </div>
 

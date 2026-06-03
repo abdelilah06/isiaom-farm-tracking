@@ -469,7 +469,7 @@ export default function BulkOperations() {
                             </h1>
                         </div>
                         <p className="text-xs text-gray-400 dark:text-gray-500 font-bold mt-1">
-                            Gérer et consigner les données de plusieurs مصاطب (Billons) simultanément.
+                            Gérer et consigner les données de plusieurs billons (lignes) simultanément.
                         </p>
                     </div>
                 </div>
@@ -567,7 +567,7 @@ export default function BulkOperations() {
                                                 <option value="lengthM">Longueur (m)</option>
                                                 <option value="irrigationLines">Lignes de goutteurs</option>
                                                 <option value="dripperSpacingCm">Espacement (cm)</option>
-                                                <option value="dripperFlowRateLh">Débit المنقط (L/h)</option>
+                                                <option value="dripperFlowRateLh">Débit du goutteur (L/h)</option>
                                             </select>
 
                                             <input
@@ -1049,7 +1049,7 @@ export default function BulkOperations() {
                                                 onChange={(e) => setNotes(e.target.value)}
                                                 rows={3}
                                                 className="w-full px-5 py-4 bg-gray-50 dark:bg-gray-950 border border-transparent dark:border-gray-800 dark:text-white rounded-2xl text-xs font-bold outline-none focus:ring-2 focus:ring-green-500/20 resize-none"
-                                                placeholder="Notes complémentaires pour toutes les مصاطب..."
+                                                placeholder="Notes complémentaires pour tous les billons..."
                                             />
                                         </div>
 

@@ -443,7 +443,7 @@ export default function PublicBillon() {
                             </h3>
                             <div className="grid grid-cols-2 gap-4 text-xs font-bold text-gray-600 dark:text-gray-300">
                                 <div>
-                                    <span className="text-[10px] text-gray-400 block mb-1">Système de الري</span>
+                                    <span className="text-[10px] text-gray-400 block mb-1">Système d'irrigation</span>
                                     <span className="text-sm font-black text-gray-900 dark:text-white">
                                         {activeCycle?.irrigation_system ? t(`billons.irrigation_types.${activeCycle.irrigation_system}`, { defaultValue: activeCycle.irrigation_system }) : '--'}
                                     </span>
@@ -479,7 +479,7 @@ export default function PublicBillon() {
 
                     {activeCycle?.soil_notes && (
                         <div className="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-800">
-                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest block mb-2">Observations sur la التربة (Soil Notes)</span>
+                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-black uppercase tracking-widest block mb-2">Observations sur le sol (Soil Notes)</span>
                             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 leading-relaxed">{activeCycle.soil_notes}</p>
                         </div>
                     )}

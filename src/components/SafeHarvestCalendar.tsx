@@ -238,7 +238,7 @@ export default function SafeHarvestCalendar() {
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Rechercher par مصطبة ou produit..."
+                        placeholder="Rechercher par billon ou produit..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-950 border border-transparent dark:border-gray-800 dark:text-white rounded-2xl text-xs font-bold outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
@@ -354,7 +354,7 @@ export default function SafeHarvestCalendar() {
                                             <ShieldCheck className="h-6 w-6" />
                                         </div>
                                         <p className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                                            Toutes les مصاطب sont prêtes pour la récolte.
+                                            Tous les billons sont prêts pour la récolte.
                                         </p>
                                         <p className="text-[10px] text-gray-400 mt-1">
                                             Aucun délai d'attente chimique n'est actif à cette date.

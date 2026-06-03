@@ -96,8 +96,8 @@
         "submit": "Add Plot",
         "dripper_flow_rate_lh": "Dripper Flow Rate (L/h)",
         "irrigation_lines": "Irrigation Lines",
-        "lines_1": "1 Line (أنبوب واحد)",
-        "lines_2": "2 Lines (أنبوبين)"
+        "lines_1": "1 Line",
+        "lines_2": "2 Lines"
     },
     "quick_log": {
         "title": "Log New Operation",
@@ -432,18 +432,18 @@
         "title": "Treatment Details 🧪",
         "academic_banner": "Academic Research Farm - Standard Treatment Form",
         "type": "Intervention Type",
-        "preventative": "Preventative (وقائي)",
-        "curative": "Curative (علاجي)",
+        "preventative": "Preventative",
+        "curative": "Curative",
         "category": "Treatment Category",
         "categories": {
-            "biocontrol": "Biocontrol (مكافحة بيولوجية) 🦠",
-            "natural_pesticide": "Bio/Natural Treatment (مبيد طبيعي) 🌿",
-            "fungicide": "Fungicide (مبيد فطري) 🍄",
-            "insecticide": "Insecticide (مبيد حشري) 🐛",
-            "herbicide": "Herbicide (مبيد أعشاب) 🌾",
-            "acaricide": "Acaricide (مبيد عناكب) 🕷️",
-            "foliar_fertilizer": "Foliar Fertilizer (سماد ورقي) 🍃",
-            "biostimulant": "Biostimulant (محفز نمو) ⚡",
+            "biocontrol": "Biocontrol 🦠",
+            "natural_pesticide": "Bio/Natural Treatment 🌿",
+            "fungicide": "Fungicide 🍄",
+            "insecticide": "Insecticide 🐛",
+            "herbicide": "Herbicide 🌾",
+            "acaricide": "Acaricide 🕷️",
+            "foliar_fertilizer": "Foliar Fertilizer 🍃",
+            "biostimulant": "Biostimulant ⚡",
             "other": "Other"
         },
         "target_pest": "Target Pest / Disease / Deficiency",
@@ -454,9 +454,9 @@
         "active_ingredient_placeholder": "e.g., Copper hydroxide, Deltamethrin...",
         "application_method": "Application Method",
         "methods": {
-            "foliar_spray": "Foliar Spraying (رش ورقي)",
-            "irrigation_injection": "Incorporation with Irrigation (مع الري)",
-            "soil_drench": "Soil Drenching / Drench (سقاية التربة)"
+            "foliar_spray": "Foliar Spraying",
+            "irrigation_injection": "Incorporation with Irrigation",
+            "soil_drench": "Soil Drenching / Drench"
         },
         "dosage": "Dosage",
         "dosage_placeholder": "e.g., 2.5",
@@ -519,11 +519,11 @@
         "dosage_placeholder": "e.g., 25",
         "dosage_unit": "Dosage Unit",
         "units": {
-            "kg_ha": "kg/ha (كجم/هكتار)",
-            "g_tree": "g/tree (جرام/شجرة)",
-            "g_l": "g/L (جرام/لتر)",
-            "ml_l": "ml/L (مل/لتر)",
-            "kg_total": "kg total (كجم إجمالي)"
+            "kg_ha": "kg/ha",
+            "g_tree": "g/tree",
+            "g_l": "g/L",
+            "ml_l": "ml/L",
+            "kg_total": "kg total"
         },
         "water_volume": "Water Volume Prepared (Litres)",
         "water_volume_placeholder": "e.g., 1000",
