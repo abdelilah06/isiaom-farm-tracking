@@ -641,6 +641,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                     </label>
                                                     <input
                                                         type="number"
+                                                        inputMode="decimal"
                                                         min="1"
                                                         required
                                                         value={durationMinutes}
@@ -648,6 +649,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         placeholder={t('irrigation_calculator.duration_minutes_placeholder')}
                                                         className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
                                                     />
+                                                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                        {['15', '30', '45', '60'].map(min => (
+                                                            <button
+                                                                key={min}
+                                                                type="button"
+                                                                onClick={() => setDurationMinutes(min)}
+                                                                className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[10px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                            >
+                                                                {min} min
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="space-y-3">
@@ -662,6 +675,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         </label>
                                                         <input
                                                             type="number"
+                                                            inputMode="decimal"
                                                             min="1"
                                                             required
                                                             value={manualVolumeLiters}
@@ -669,6 +683,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                             placeholder={t('irrigation_calculator.manual_liters_placeholder')}
                                                             className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-blue-500 transition-all"
                                                         />
+                                                        <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                            {['50', '100', '250', '500'].map(liters => (
+                                                                <button
+                                                                    key={liters}
+                                                                    type="button"
+                                                                    onClick={() => setManualVolumeLiters(liters)}
+                                                                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[10px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                                >
+                                                                    {liters} L
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )}
@@ -800,6 +826,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         placeholder={t('fertilization.npk_ratio_placeholder')}
                                                         className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
                                                     />
+                                                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                        {['20-20-20', '15-15-15', '19-19-19', '0-0-50'].map(ratio => (
+                                                            <button
+                                                                key={ratio}
+                                                                type="button"
+                                                                onClick={() => setFertNpkRatio(ratio)}
+                                                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[10px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                            >
+                                                                {ratio}
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -811,6 +849,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                     </label>
                                                     <input
                                                         type="number"
+                                                        inputMode="decimal"
                                                         step="0.01"
                                                         min="0.01"
                                                         required
@@ -819,6 +858,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         placeholder={t('fertilization.dosage_placeholder')}
                                                         className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
                                                     />
+                                                    <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                        {['0.5', '1', '2', '5', '10'].map(val => (
+                                                            <button
+                                                                key={val}
+                                                                type="button"
+                                                                onClick={() => setFertDosageValue(val)}
+                                                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[10px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                            >
+                                                                {val}
+                                                            </button>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
@@ -862,6 +913,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         </label>
                                                         <input
                                                             type="number"
+                                                            inputMode="decimal"
                                                             min="1"
                                                             required
                                                             value={fertWaterVolumeL}
@@ -869,6 +921,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                             placeholder={t('fertilization.water_volume_placeholder')}
                                                             className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
                                                         />
+                                                        <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                            {['100', '200', '500', '1000'].map(vol => (
+                                                                <button
+                                                                    key={vol}
+                                                                    type="button"
+                                                                    onClick={() => setFertWaterVolumeL(vol)}
+                                                                    className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[9px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                                >
+                                                                    {vol}L
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                     <div>
                                                         <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
@@ -876,6 +940,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         </label>
                                                         <input
                                                             type="number"
+                                                            inputMode="decimal"
                                                             step="0.1"
                                                             min="0"
                                                             max="14"
@@ -885,6 +950,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                             placeholder={t('fertilization.ph_placeholder')}
                                                             className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
                                                         />
+                                                        <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                            {['5.5', '6.0', '6.2', '6.5', '7.0'].map(ph => (
+                                                                <button
+                                                                    key={ph}
+                                                                    type="button"
+                                                                    onClick={() => setFertPhValue(ph)}
+                                                                    className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[9px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                                >
+                                                                    {ph}
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                     <div>
                                                         <label className="block text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase mb-2">
@@ -892,6 +969,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                         </label>
                                                         <input
                                                             type="number"
+                                                            inputMode="decimal"
                                                             step="0.01"
                                                             min="0"
                                                             required
@@ -900,6 +978,18 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                                                             placeholder={t('fertilization.ec_placeholder')}
                                                             className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-xs font-bold dark:text-white outline-none focus:border-amber-500 transition-all"
                                                         />
+                                                        <div className="flex gap-1.5 mt-2 flex-wrap">
+                                                            {['1.0', '1.4', '1.8', '2.2'].map(ec => (
+                                                                <button
+                                                                    key={ec}
+                                                                    type="button"
+                                                                    onClick={() => setFertEcValue(ec)}
+                                                                    className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 rounded-lg text-[9px] font-black text-gray-600 dark:text-gray-400 border border-gray-200/50 dark:border-gray-800"
+                                                                >
+                                                                    {ec}
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )}

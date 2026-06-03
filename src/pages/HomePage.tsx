@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers } from 'lucide-react'
+import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { motion } from 'framer-motion'
 import type { Plot, Billon } from '../types'
+import { useTheme } from '../contexts/ThemeContext'
 
 export default function HomePage() {
     const { t } = useTranslation()
+    const { isHighGlare, toggleHighGlare } = useTheme()
     const [plots, setPlots] = useState<Plot[]>([])
     const [billons, setBillons] = useState<Billon[]>([])
     const [activeCycles, setActiveCycles] = useState<Record<string, any>>({})
@@ -109,6 +111,21 @@ export default function HomePage() {
                         <div className="hidden sm:block">
                             <LanguageSwitcher />
                         </div>
+
+                        {/* High-Contrast Glare Mode Toggle */}
+                        <button
+                            type="button"
+                            onClick={toggleHighGlare}
+                            className={`p-2.5 rounded-xl border transition-all min-h-[40px] min-w-[40px] flex items-center justify-center ${
+                                isHighGlare 
+                                    ? 'bg-amber-500 text-white border-amber-600' 
+                                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-100 dark:border-gray-800 hover:bg-gray-50'
+                            }`}
+                            title="High-Contrast Outdoor Mode"
+                        >
+                            <Sun className="h-4 w-4" />
+                        </button>
+
                         {isAdmin ? (
                             <Link
                                 to="/admin"

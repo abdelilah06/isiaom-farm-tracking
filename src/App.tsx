@@ -17,6 +17,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 import ProtectedRoute from './components/ProtectedRoute';
+import BulkOperations from './pages/BulkOperations';
 
 function App() {
   return (
@@ -66,6 +67,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/bulk"
+                element={
+                  <ProtectedRoute>
+                    <BulkOperations />
                   </ProtectedRoute>
                 }
               />

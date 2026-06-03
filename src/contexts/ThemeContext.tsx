@@ -7,6 +7,8 @@ interface ThemeContextType {
     theme: Theme
     toggleTheme: () => void
     setTheme: (theme: Theme) => void
+    isHighGlare: boolean
+    toggleHighGlare: () => void
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
@@ -16,6 +18,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         // Get theme from localStorage or default to light
         const saved = localStorage.getItem('theme') as Theme
         return saved || 'light'
+    })
+
+    const [isHighGlare, setIsHighGlare] = useState<boolean>(() => {
+        return localStorage.getItem('high-glare') === 'true'
     })
 
     useEffect(() => {
@@ -31,6 +37,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('theme', theme)
     }, [theme])
 
+    useEffect(() => {
+        const root = document.documentElement
+        if (isHighGlare) {
+            root.classList.add('high-glare-mode')
+        } else {
+            root.classList.remove('high-glare-mode')
+        }
+        localStorage.setItem('high-glare', isHighGlare ? 'true' : 'false')
+    }, [isHighGlare])
+
     const toggleTheme = () => {
         setThemeState(prev => prev === 'light' ? 'dark' : 'light')
     }
@@ -39,8 +55,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setThemeState(newTheme)
     }
 
+    const toggleHighGlare = () => {
+        setIsHighGlare(prev => !prev)
+    }
+
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+        <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, isHighGlare, toggleHighGlare }}>
             {children}
         </ThemeContext.Provider>
     )
