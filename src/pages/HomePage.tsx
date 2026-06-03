@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight } from 'lucide-react'
+import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { motion } from 'framer-motion'
-import type { Plot } from '../types'
+import type { Plot, Billon } from '../types'
 
 export default function HomePage() {
     const { t } = useTranslation()
     const [plots, setPlots] = useState<Plot[]>([])
+    const [billons, setBillons] = useState<Billon[]>([])
+    const [activeCycles, setActiveCycles] = useState<Record<string, any>>({})
     const [loading, setLoading] = useState(true)
     const [isAdmin, setIsAdmin] = useState(false)
 
     useEffect(() => {
         checkAuth()
-        fetchPlots()
+        fetchData()
     }, [])
 
     async function checkAuth() {
@@ -37,17 +39,37 @@ export default function HomePage() {
         }
     }
 
-    async function fetchPlots() {
+    async function fetchData() {
         try {
-            const { data, error } = await supabase
-                .from('plots')
-                .select('*')
-                .order('name')
+            const [plotsRes, billonsRes] = await Promise.all([
+                supabase.from('plots').select('*').order('name'),
+                supabase.from('billons').select('*').order('name')
+            ])
 
-            if (error) throw error
-            setPlots(data || [])
+            if (plotsRes.error) throw plotsRes.error
+            if (billonsRes.error) throw billonsRes.error
+
+            setPlots(plotsRes.data || [])
+            const billonsData = billonsRes.data || []
+            setBillons(billonsData)
+
+            const billonIdsWithCycles = billonsData.filter(b => b.active_cycle_id).map(b => b.active_cycle_id)
+            if (billonIdsWithCycles.length > 0) {
+                const { data: cycles, error: cyclesError } = await supabase
+                    .from('billon_cycles')
+                    .select('*')
+                    .in('id', billonIdsWithCycles)
+                if (cyclesError) throw cyclesError
+                const cycleMap: Record<string, any> = {}
+                for (const c of cycles || []) {
+                    cycleMap[c.billon_id] = c
+                }
+                setActiveCycles(cycleMap)
+            } else {
+                setActiveCycles({})
+            }
         } catch (error) {
-            console.error('Error fetching plots:', error)
+            console.error('Error fetching homepage data:', error)
         } finally {
             setLoading(false)
         }
@@ -208,6 +230,109 @@ export default function HomePage() {
                                 </Link>
                             </motion.div>
                         ))}
+                    </div>
+                )}
+
+                {/* Billons Section */}
+                <div className="flex items-center justify-between mb-12 mt-24">
+                    <div>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('billons.title', { defaultValue: 'Nos Billons' })}</h2>
+                        <div className="h-1 w-20 bg-amber-500 mt-2 rounded-full" />
+                    </div>
+                </div>
+
+                {billons.length === 0 ? (
+                    <div className="text-center py-32 bg-white dark:bg-gray-900 rounded-[3rem] border-2 border-dashed border-gray-100 dark:border-gray-800">
+                        <Layers className="h-16 w-16 text-gray-200 dark:text-gray-700 mx-auto mb-6" />
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white uppercase">{t('billons.no_billons', { defaultValue: 'Aucun billon enregistré' })}</h3>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {billons.map((billon, index) => {
+                            const cycle = activeCycles[billon.id];
+                            return (
+                                <motion.div
+                                    key={billon.id}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    whileHover={{ y: -10 }}
+                                    className="group bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden border border-gray-100 dark:border-gray-800 shadow-xl shadow-amber-900/5 transition-all duration-500"
+                                >
+                                    <Link to={`/billon/${billon.id}`} className="block">
+                                        <div className="h-64 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
+                                            {billon.image_url ? (
+                                                <img
+                                                    src={billon.image_url}
+                                                    alt={billon.name}
+                                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-800 dark:to-gray-900">
+                                                    <Layers className="h-16 w-16 text-amber-200 dark:text-gray-700" />
+                                                </div>
+                                            )}
+                                            <div className="absolute top-6 left-6">
+                                                <span className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-2xl backdrop-blur-md ${
+                                                    billon.status === 'active' || billon.status === 'planted'
+                                                        ? 'bg-amber-500 text-white'
+                                                        : 'bg-blue-500 text-white'
+                                                }`}>
+                                                    {t(`billons.statuses.${billon.status}`, { defaultValue: billon.status })}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-10">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h3 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter group-hover:text-amber-600 transition-colors">
+                                                    {billon.name}
+                                                </h3>
+                                                {billon.billon_code && (
+                                                    <span className="px-2.5 py-1 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 rounded-lg text-[10px] font-black uppercase tracking-wider border border-amber-200/50 dark:border-amber-900/30">
+                                                        {billon.billon_code}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div className="flex flex-wrap gap-3 mb-8">
+                                                {cycle ? (
+                                                    <>
+                                                        <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-xl border border-transparent group-hover:border-amber-500/20 transition-all">
+                                                            <Sprout className="h-4 w-4 text-amber-500" />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
+                                                                {cycle.target_crop} ({cycle.crop_variety})
+                                                            </span>
+                                                        </div>
+                                                        {cycle.length_m && cycle.width_top_cm && (
+                                                            <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-xl border border-transparent group-hover:border-blue-500/20 transition-all">
+                                                                <MapPin className="h-4 w-4 text-blue-500" />
+                                                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-600 dark:text-gray-400">
+                                                                    {(cycle.length_m * cycle.width_top_cm / 100).toFixed(1)} m²
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 px-4 py-2 rounded-xl border border-transparent transition-all">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                                            {t('billons.statuses.empty', { defaultValue: 'Aucune culture active' })}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex items-center justify-between pt-6 border-t border-gray-50 dark:border-gray-800/50">
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{t('home.qr_available')}</span>
+                                                <div className="w-10 h-10 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all">
+                                                    <ArrowRight className="h-5 w-5" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 )}
             </main>
