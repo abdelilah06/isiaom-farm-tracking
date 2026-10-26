@@ -273,8 +273,8 @@ export default function AdminDashboard() {
             <header className="glass sticky top-0 z-30 border-b border-white/20 dark:border-gray-800 shadow-lg">
                 <div className="max-w-6xl mx-auto px-4 py-3 sm:h-20 flex items-center justify-between gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-primary rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-6 w-6 sm:h-8 sm:w-8 object-contain" />
+                        <div className="bg-white dark:bg-white rounded-xl sm:rounded-2xl px-2.5 py-1 sm:px-3.5 sm:py-1.5 shadow-md border border-gray-200/70 dark:border-gray-700/60 flex items-center shrink-0">
+                            <img src="/logo.png" alt="ISIAOM" className="h-7 sm:h-9 w-auto max-w-[130px] sm:max-w-[180px] object-contain" />
                         </div>
                         <div className="min-w-0">
                             <h1 className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight truncate">

@@ -97,11 +97,11 @@ export default function HomePage() {
             {/* Nav */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 h-20">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center text-white font-black shadow-lg">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-7 w-7 object-contain" />
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="bg-white dark:bg-white rounded-xl px-2.5 py-1 sm:px-3 sm:py-1.5 shadow-sm border border-gray-200/70 dark:border-gray-700/60 flex items-center shrink-0">
+                            <img src="/logo.png" alt="ISIAOM" className="h-8 sm:h-10 w-auto object-contain" />
                         </div>
-                        <div>
+                        <div className="hidden sm:block">
                             <span className="block font-black text-sm tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
                             <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">Model Farm</span>
                         </div>
@@ -358,10 +358,9 @@ export default function HomePage() {
             <footer className="py-20 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center">
                     <div className="flex items-center gap-3 mb-10">
-                        <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center text-white font-black shadow-lg">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-7 w-7 object-contain" />
+                        <div className="bg-white dark:bg-white rounded-2xl px-4 py-2 shadow-lg border border-gray-200/70 flex items-center justify-center">
+                            <img src="/logo.png" alt="ISIAOM" className="h-10 sm:h-12 w-auto object-contain" />
                         </div>
-                        <span className="font-black text-lg tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
                     </div>
 
                     <div className="flex gap-8 mb-10">

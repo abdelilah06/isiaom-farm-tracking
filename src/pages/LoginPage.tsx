@@ -56,13 +56,13 @@ export default function LoginPage() {
                 className="max-w-md w-full"
             >
                 <div className="bg-white dark:bg-gray-900 rounded-[3rem] shadow-2xl shadow-green-900/10 border border-gray-100 dark:border-gray-800 p-10 md:p-12 relative z-10">
-                    <div className="text-center mb-10">
+                    <div className="text-center mb-8">
                         <motion.div
-                            initial={{ rotate: -20, scale: 0.5 }}
-                            animate={{ rotate: 0, scale: 1 }}
-                            className="inline-flex w-20 h-20 bg-gradient-primary rounded-3xl mb-6 items-center justify-center shadow-2xl shadow-green-500/40"
+                            initial={{ scale: 0.85, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="inline-flex bg-white dark:bg-white rounded-2xl px-5 py-3 mb-6 items-center justify-center shadow-xl shadow-gray-200/50 dark:shadow-black/20 border border-gray-100"
                         >
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-12 w-12 object-contain" />
+                            <img src="/logo.png" alt="ISIAOM" className="h-12 sm:h-16 w-auto max-w-[220px] sm:max-w-[260px] object-contain" />
                         </motion.div>
                         <h1 className="text-4xl font-black text-gray-900 dark:text-white uppercase tracking-tighter mb-2">
                             {t('login.title')}

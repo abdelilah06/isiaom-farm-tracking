@@ -223,15 +223,12 @@ export default function PublicPlot() {
             {/* Nav */}
             <nav className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 px-4 h-18">
                 <div className="max-w-4xl mx-auto h-full flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                         <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors">
                             <ArrowLeft className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                         </button>
-                        <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
-                                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEik0kGQiIx1qg4fc5VlZUXoxgLWW1nVasRFiiqlvS4nvQdRE2_SjBuvPwb2KLnQEiE3AqTqqi2f50ewjfxxvUmaZv3uS6NedxphxQBMS7mB67RGhLdVc2UY1DUHoCIMg8Vv01YRSfvNgJuu/s1600/Untitled-15555555.png" alt="Logo" className="h-6 w-6 object-contain" />
-                            </div>
-                            <span className="font-black text-xs tracking-widest text-gray-900 dark:text-white uppercase">ISIAOM</span>
+                        <div className="bg-white dark:bg-white rounded-xl px-2.5 py-1 shadow-sm border border-gray-200/60 dark:border-gray-700/60 flex items-center shrink-0">
+                            <img src="/logo.png" alt="ISIAOM" className="h-7 sm:h-8 w-auto object-contain" />
                         </div>
                     </div>
                     <LanguageSwitcher />
