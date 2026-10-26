@@ -97,13 +97,9 @@ export default function HomePage() {
             {/* Nav */}
             <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 h-20">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-full flex items-center justify-between">
-                    <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="flex items-center">
                         <div className="bg-white dark:bg-white rounded-xl px-2.5 py-1 sm:px-3 sm:py-1.5 shadow-sm border border-gray-200/70 dark:border-gray-700/60 flex items-center shrink-0">
                             <img src="/logo.png" alt="ISIAOM" className="h-8 sm:h-10 w-auto object-contain" />
-                        </div>
-                        <div className="hidden sm:block">
-                            <span className="block font-black text-sm tracking-tight text-gray-900 dark:text-white uppercase leading-none">ISIAOM</span>
-                            <span className="block text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">Model Farm</span>
                         </div>
                     </div>
 
