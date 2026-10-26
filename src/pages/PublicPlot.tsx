@@ -14,6 +14,7 @@ import WeatherWidget from '../components/WeatherWidget';
 import { Share2, ClipboardList, TreeDeciduous, Layout, Droplet, Bug, Scissors, GitBranch, Sprout, Thermometer, Info, ArrowLeft, Trash2, Camera, EyeOff, LayoutGrid, ShieldAlert, ShieldCheck, Wind, User, FlaskConical } from 'lucide-react';
 import { getCachedPlot, getCachedOperationsForPlot, cacheOperations } from '@/lib/db';
 import { uploadImage } from '@/lib/upload';
+import { parseActivity } from '@/lib/activityData';
 
 const operationStyles: Record<string, { bg: string, text: string, icon: any }> = {
     irrigation: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', icon: Droplet },
@@ -558,60 +559,13 @@ const categoryStyles: Record<string, { bg: string, text: string, border: string,
     other: { bg: 'bg-gray-50 dark:bg-gray-800/30', text: 'text-gray-700 dark:text-gray-400', border: 'border-gray-200/50 dark:border-gray-700/30', icon: '🧪' }
 }
 
-const parseTreatmentNotes = (notes: string | null) => {
-    if (!notes) return null;
-    try {
-        const trimmed = notes.trim();
-        if (trimmed.startsWith('{')) {
-            const data = JSON.parse(trimmed);
-            if (data && data.is_structured_treatment) {
-                return data;
-            }
-        }
-    } catch (e) {
-        // Not JSON
-    }
-    return null;
-}
-
-const parseIrrigationNotes = (notes: string | null) => {
-    if (!notes) return null;
-    try {
-        const trimmed = notes.trim();
-        if (trimmed.startsWith('{')) {
-            const data = JSON.parse(trimmed);
-            if (data && data.is_structured_irrigation) {
-                return data;
-            }
-        }
-    } catch (e) {
-        // Not JSON
-    }
-    return null;
-}
-
-const parseFertilizationNotes = (notes: string | null) => {
-    if (!notes) return null;
-    try {
-        const trimmed = notes.trim();
-        if (trimmed.startsWith('{')) {
-            const data = JSON.parse(trimmed);
-            if (data && data.is_structured_fertilization) {
-                return data;
-            }
-        }
-    } catch (e) {
-        // Not JSON
-    }
-    return null;
-}
-
 function HistoryCard({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
     const style = operationStyles[op.type] || { bg: 'bg-gray-50 dark:bg-gray-800', text: 'text-gray-600 dark:text-gray-400', icon: ClipboardList };
     const Icon = style.icon;
-    const treatmentData = op.type === 'pest_control' ? parseTreatmentNotes(op.notes) : null;
-    const irrigationData = op.type === 'irrigation' ? parseIrrigationNotes(op.notes) : null;
-    const fertilizationData = op.type === 'fertilization' ? parseFertilizationNotes(op.notes) : null;
+    const parsed = parseActivity(op.notes, op.metadata);
+    const treatmentData = parsed.type === 'pest_control' ? parsed.data : null;
+    const irrigationData = parsed.type === 'irrigation' ? parsed.data : null;
+    const fertilizationData = parsed.type === 'fertilization' ? parsed.data : null;
 
     return (
         <motion.div
@@ -928,10 +882,10 @@ function HistoryCard({ op, t, isAdmin, onDelete, onUpdateImage }: any) {
                         )}
                     </div>
                 ) : (
-                    op.notes && (
+                    parsed.displayNote && (
                         <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50">
                             <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed font-bold line-clamp-3">
-                                {op.notes}
+                                {parsed.displayNote}
                             </p>
                         </div>
                     )

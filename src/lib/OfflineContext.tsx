@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { supabase } from './supabase';
+import { uploadImage } from './upload';
+import { parseActivity } from './activityData';
 import {
     getQueuedOperations,
     removeQueuedOperation,
@@ -40,29 +42,37 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
                 let imageUrl = null;
                 if (op.image_file) {
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-                    const { data: uploadData, error: uploadError } = await supabase.storage
-                        .from('operation-proofs')
-                        .upload(fileName, op.image_file);
-
-                    if (uploadError) throw uploadError;
-
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('operation-proofs')
-                        .getPublicUrl(uploadData.path);
-
-                    imageUrl = publicUrl;
+                    const file = op.image_file instanceof File 
+                        ? op.image_file 
+                        : new File([op.image_file], `${Date.now()}-proof.jpg`, { type: 'image/jpeg' });
+                    try {
+                        imageUrl = await uploadImage(file, 'operations-images');
+                    } catch {
+                        imageUrl = await uploadImage(file, 'operation-proofs');
+                    }
                 }
 
-                const { error: insertError } = await supabase
+                const parsed = parseActivity(op.notes);
+                const metadataPayload = parsed.type !== 'standard' ? parsed.data : {};
+
+                const insertBody: any = {
+                    plot_id: op.plot_id,
+                    type: op.type,
+                    notes: op.notes,
+                    metadata: metadataPayload,
+                    date: op.date,
+                    image_url: imageUrl
+                };
+
+                let { error: insertError } = await supabase
                     .from('operations')
-                    .insert([{
-                        plot_id: op.plot_id,
-                        type: op.type,
-                        notes: op.notes,
-                        date: op.date,
-                        image_url: imageUrl
-                    }]);
+                    .insert([insertBody]);
+
+                if (insertError && (insertError.message?.includes('metadata') || (insertError as any).code === 'PGRST204')) {
+                    delete insertBody.metadata;
+                    const retry = await supabase.from('operations').insert([insertBody]);
+                    insertError = retry.error;
+                }
 
                 if (insertError) throw insertError;
 
@@ -85,26 +95,37 @@ export const OfflineProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
                 let imageUrl = null;
                 if (op.image_file) {
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-                    const { data: uploadData, error: uploadError } = await supabase.storage
-                        .from('operation-proofs')
-                        .upload(fileName, op.image_file);
-                    if (uploadError) throw uploadError;
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('operation-proofs')
-                        .getPublicUrl(uploadData.path);
-                    imageUrl = publicUrl;
+                    const file = op.image_file instanceof File 
+                        ? op.image_file 
+                        : new File([op.image_file], `${Date.now()}-proof.jpg`, { type: 'image/jpeg' });
+                    try {
+                        imageUrl = await uploadImage(file, 'operations-images');
+                    } catch {
+                        imageUrl = await uploadImage(file, 'operation-proofs');
+                    }
                 }
 
-                const { error: insertError } = await supabase
+                const parsed = parseActivity(op.notes);
+                const metadataPayload = parsed.type !== 'standard' ? parsed.data : {};
+
+                const insertBody: any = {
+                    billon_id: op.billon_id,
+                    activity_type: op.activity_type,
+                    notes: op.notes,
+                    metadata: metadataPayload,
+                    image_url: imageUrl,
+                    performed_at: new Date().toISOString()
+                };
+
+                let { error: insertError } = await supabase
                     .from('billon_activities')
-                    .insert([{
-                        billon_id: op.billon_id,
-                        activity_type: op.activity_type,
-                        notes: op.notes,
-                        image_url: imageUrl,
-                        performed_at: new Date().toISOString()
-                    }]);
+                    .insert([insertBody]);
+
+                if (insertError && (insertError.message?.includes('metadata') || (insertError as any).code === 'PGRST204')) {
+                    delete insertBody.metadata;
+                    const retry = await supabase.from('billon_activities').insert([insertBody]);
+                    insertError = retry.error;
+                }
 
                 if (insertError) throw insertError;
                 await removeQueuedBillonActivity(op.id);

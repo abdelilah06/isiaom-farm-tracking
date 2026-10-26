@@ -6,6 +6,8 @@ import CustomSelect from './CustomSelect'
 import { X, Loader2, Check, ClipboardList, Send, ShieldAlert, Info, Wind, Thermometer } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
+import { prepareActivityPayload } from '../lib/activityData'
+import { calculateBillonIrrigation } from '../lib/irrigationCalculator'
 
 const ACTIVITY_TYPES = [
     { id: 'irrigation',    emoji: '💧', color: 'blue' },
@@ -111,21 +113,7 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
 
     const getBillonIrrigationCalculations = () => {
         if (!hasFullSpecs) return null
-        const { length_m, dripper_spacing_cm, irrigation_lines, dripper_flow_rate_lh } = activeCycleSpec!
-        const drippersCount = Math.round(((length_m! * 100) / dripper_spacing_cm!) * irrigation_lines!)
-        const totalFlowRateLh = drippersCount * dripper_flow_rate_lh!
-        
-        let estimatedVolumeLiters = 0
-        const dur = parseFloat(durationMinutes)
-        if (!isNaN(dur)) {
-            estimatedVolumeLiters = totalFlowRateLh * (dur / 60)
-        }
-        
-        return {
-            drippersCount,
-            totalFlowRateLh,
-            estimatedVolumeLiters
-        }
+        return calculateBillonIrrigation(activeCycleSpec, durationMinutes)
     }
     
     const calcs = getBillonIrrigationCalculations()
@@ -139,9 +127,9 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                 image_url = await uploadImage(imageFile, 'operations-images')
             }
 
-            let notesValue = notes.trim();
+            let structuredData: any = null
             if (type === 'pest_control') {
-                const treatmentData = {
+                structuredData = {
                     is_structured_treatment: true,
                     treatment_type: treatmentType,
                     treatment_category: treatmentCategory,
@@ -156,17 +144,15 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                     operator_name: operatorName.trim(),
                     wind_condition: windCondition,
                     temperature_c: temperatureC ? parseFloat(temperatureC) : null,
-                    ppe_worn: ppeWorn,
-                    notes: notes.trim()
+                    ppe_worn: ppeWorn
                 };
-                notesValue = JSON.stringify(treatmentData);
             } else if (type === 'irrigation') {
                 const dur = parseFloat(durationMinutes)
                 const estVolume = effectiveManual 
                     ? (manualVolumeLiters ? parseFloat(manualVolumeLiters) : 0)
                     : (calcs?.estimatedVolumeLiters || 0)
                 
-                const irrigationData = {
+                structuredData = {
                     is_structured_irrigation: true,
                     duration_minutes: isNaN(dur) ? null : dur,
                     estimated_volume_liters: estVolume,
@@ -174,12 +160,10 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                     length_m: activeCycleSpec?.length_m || null,
                     irrigation_lines: activeCycleSpec?.irrigation_lines || null,
                     dripper_spacing_cm: activeCycleSpec?.dripper_spacing_cm || null,
-                    dripper_flow_rate_lh: activeCycleSpec?.dripper_flow_rate_lh || null,
-                    notes: notes.trim()
+                    dripper_flow_rate_lh: activeCycleSpec?.dripper_flow_rate_lh || null
                 }
-                notesValue = JSON.stringify(irrigationData)
             } else if (type === 'fertilization') {
-                const fertilizationData = {
+                structuredData = {
                     is_structured_fertilization: true,
                     fertilization_type: fertilizationType,
                     product_name: fertProductName.trim(),
@@ -189,21 +173,35 @@ export default function AddBillonActivityModal({ billonId, onClose, onAdded }: A
                     water_volume_l: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertWaterVolumeL ? parseFloat(fertWaterVolumeL) : null,
                     ph_value: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertPhValue ? parseFloat(fertPhValue) : null,
                     ec_value: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertEcValue ? parseFloat(fertEcValue) : null,
-                    operator_name: fertOperatorName.trim(),
-                    notes: notes.trim()
+                    operator_name: fertOperatorName.trim()
                 }
-                notesValue = JSON.stringify(fertilizationData)
             }
 
-            const { error } = await supabase
+            const payload = prepareActivityPayload({
+                type,
+                structuredData,
+                rawNote: notes
+            })
+
+            const insertBody: any = {
+                billon_id: billonId,
+                activity_type: type,
+                notes: payload.notes,
+                metadata: payload.metadata,
+                image_url,
+                performed_at: new Date().toISOString()
+            }
+
+            let { error } = await supabase
                 .from('billon_activities')
-                .insert({
-                    billon_id: billonId,
-                    activity_type: type,
-                    notes: notesValue || null,
-                    image_url,
-                    performed_at: new Date().toISOString()
-                })
+                .insert(insertBody)
+
+            // Graceful fallback if the Supabase table doesn't have metadata column yet
+            if (error && (error.message?.includes('metadata') || (error as any).code === 'PGRST204')) {
+                delete insertBody.metadata
+                const retry = await supabase.from('billon_activities').insert(insertBody)
+                error = retry.error
+            }
 
             if (error) throw error
 

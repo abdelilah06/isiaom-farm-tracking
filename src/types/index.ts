@@ -39,6 +39,7 @@ export interface Operation {
     plot_id: string
     type: 'irrigation' | 'fertilization' | 'pest_control' | 'pruning' | 'harvest' | 'observation' | 'planting' | 'other'
     notes: string | null
+    metadata?: Record<string, any> | null
     image_url: string | null
     date: string
     performed_by: string | null
@@ -70,6 +71,7 @@ export interface YieldRecord {
     quantity_kg: number
     quality_grade: string | null
     notes: string | null
+    metadata?: Record<string, any> | null
     image_url: string | null
     created_at: string
     // Joined fields
@@ -87,6 +89,7 @@ export interface DiseaseLog {
     treatment: string | null
     image_url: string | null
     notes: string | null
+    metadata?: Record<string, any> | null
     created_at: string
     // Joined fields
     plots?: { name: string }
@@ -124,6 +127,7 @@ export interface BillonCycle {
     status: 'planned' | 'active' | 'completed'
     yield_kg: number | null
     notes: string | null
+    metadata?: Record<string, any> | null
     length_m: number | null
     width_top_cm: number | null
     height_cm: number | null
@@ -149,6 +153,7 @@ export interface BillonActivity {
     billon_id: string
     activity_type: 'irrigation' | 'fertilization' | 'pest_control' | 'observation' | 'other'
     notes: string | null
+    metadata?: Record<string, any> | null
     image_url: string | null
     performed_at: string
     performed_by: string | null
@@ -157,3 +162,58 @@ export interface BillonActivity {
     billons?: { name: string }
     profiles?: { full_name: string }
 }
+
+
+export interface StructuredIrrigationData {
+    is_structured_irrigation: true
+    duration_minutes: number | null
+    estimated_volume_liters: number
+    is_manual?: boolean
+    dripper_count?: number | null
+    dripper_flow_rate_lh?: number | null
+    dripper_flow_rate?: number | null
+    irrigation_lines?: number | null
+    plant_count?: number | null
+    length_m?: number | null
+    dripper_spacing_cm?: number | null
+    notes?: string
+}
+
+export interface StructuredFertilizationData {
+    is_structured_fertilization: true
+    fertilization_type: 'fertigation' | 'foliar' | 'soil'
+    product_name: string
+    npk_ratio?: string
+    dosage_value: number | null
+    dosage_unit: 'kg_ha' | 'g_tree' | 'g_l' | 'ml_l' | 'kg_total' | string
+    water_volume_l?: number | null
+    ph_value?: number | null
+    ec_value?: number | null
+    operator_name?: string
+    notes?: string
+}
+
+export interface StructuredTreatmentData {
+    is_structured_treatment: true
+    treatment_type: 'preventative' | 'curative'
+    treatment_category: string
+    target_pest: string
+    product_name: string
+    active_ingredient?: string
+    application_method: 'foliar_spray' | 'irrigation_injection' | 'soil_drench' | string
+    dosage_value: number | null
+    dosage_unit: 'ml_l' | 'g_l' | 'l_ha' | 'kg_ha' | string
+    water_volume_l?: number | null
+    phi_days: number
+    operator_name?: string
+    wind_condition?: 'low' | 'medium' | 'high'
+    temperature_c?: number | null
+    ppe_worn?: boolean
+    notes?: string
+}
+
+export type ParsedActivityData = 
+    | { type: 'irrigation'; data: StructuredIrrigationData; displayNote: string }
+    | { type: 'fertilization'; data: StructuredFertilizationData; displayNote: string }
+    | { type: 'pest_control'; data: StructuredTreatmentData; displayNote: string }
+    | { type: 'standard'; data: null; displayNote: string }

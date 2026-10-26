@@ -1,6 +1,7 @@
 import { supabase } from './supabase'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
+import { parseActivity } from './activityData'
 
 // Export plots to Excel
 export async function exportPlotsToExcel() {
@@ -209,19 +210,15 @@ export async function exportBillonActivitiesToExcel() {
             const plotName = b ? b.plotName : '---';
 
             let notesText = act.notes || '';
-            if (notesText.trim().startsWith('{')) {
-                try {
-                    const parsed = JSON.parse(notesText);
-                    if (parsed.is_structured_treatment) {
-                        notesText = `Traitement: ${parsed.product_name} (${parsed.treatment_type}, PHI: ${parsed.phi_days}j)`;
-                    } else if (parsed.is_structured_irrigation) {
-                        notesText = `Irrigation: ${parsed.duration_minutes}min (${parsed.estimated_volume_liters}L)`;
-                    } else if (parsed.is_structured_fertilization) {
-                        notesText = `Tonnage/Engrais: ${parsed.product_name} (NPK: ${parsed.npk_ratio}, Dosage: ${parsed.dosage_value} ${parsed.dosage_unit})`;
-                    }
-                } catch (e) {
-                    // fallback
-                }
+            const parsed = parseActivity(act.notes, act.metadata);
+            if (parsed.type === 'pest_control') {
+                notesText = `Traitement: ${parsed.data.product_name} (${parsed.data.treatment_type}, PHI: ${parsed.data.phi_days}j)${parsed.displayNote ? ` - Note: ${parsed.displayNote}` : ''}`;
+            } else if (parsed.type === 'irrigation') {
+                notesText = `Irrigation: ${parsed.data.duration_minutes}min (${parsed.data.estimated_volume_liters}L)${parsed.displayNote ? ` - Note: ${parsed.displayNote}` : ''}`;
+            } else if (parsed.type === 'fertilization') {
+                notesText = `Engrais: ${parsed.data.product_name} (NPK: ${parsed.data.npk_ratio || '-'}, Dosage: ${parsed.data.dosage_value || '-'} ${parsed.data.dosage_unit})${parsed.displayNote ? ` - Note: ${parsed.displayNote}` : ''}`;
+            } else if (parsed.displayNote) {
+                notesText = parsed.displayNote;
             }
 
             return {
@@ -281,19 +278,15 @@ export async function exportBillonActivitiesToCSV() {
             const plotName = b ? b.plotName : '---';
 
             let notesText = act.notes || '';
-            if (notesText.trim().startsWith('{')) {
-                try {
-                    const parsed = JSON.parse(notesText);
-                    if (parsed.is_structured_treatment) {
-                        notesText = `Traitement: ${parsed.product_name} (${parsed.treatment_type}, PHI: ${parsed.phi_days}j)`;
-                    } else if (parsed.is_structured_irrigation) {
-                        notesText = `Irrigation: ${parsed.duration_minutes}min (${parsed.estimated_volume_liters}L)`;
-                    } else if (parsed.is_structured_fertilization) {
-                        notesText = `Tonnage/Engrais: ${parsed.product_name} (NPK: ${parsed.npk_ratio}, Dosage: ${parsed.dosage_value} ${parsed.dosage_unit})`;
-                    }
-                } catch (e) {
-                    // fallback
-                }
+            const parsed = parseActivity(act.notes, act.metadata);
+            if (parsed.type === 'pest_control') {
+                notesText = `Traitement: ${parsed.data.product_name} (${parsed.data.treatment_type}, PHI: ${parsed.data.phi_days}j)${parsed.displayNote ? ` - Note: ${parsed.displayNote}` : ''}`;
+            } else if (parsed.type === 'irrigation') {
+                notesText = `Irrigation: ${parsed.data.duration_minutes}min (${parsed.data.estimated_volume_liters}L)${parsed.displayNote ? ` - Note: ${parsed.displayNote}` : ''}`;
+            } else if (parsed.type === 'fertilization') {
+                notesText = `Engrais: ${parsed.data.product_name} (NPK: ${parsed.data.npk_ratio || '-'}, Dosage: ${parsed.data.dosage_value || '-'} ${parsed.data.dosage_unit})${parsed.displayNote ? ` - Note: ${parsed.displayNote}` : ''}`;
+            } else if (parsed.displayNote) {
+                notesText = parsed.displayNote;
             }
 
             return {

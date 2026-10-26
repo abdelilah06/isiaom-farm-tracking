@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ClipboardList, Droplets, Sprout, Bug, Scissors, Thermometer, Trash2, Camera, EyeOff, Eye, Scale, ShieldAlert, ShieldCheck, Wind, User, FlaskConical } from 'lucide-react'
 import { uploadImage } from '@/lib/upload'
+import { parseActivity } from '@/lib/activityData'
 
 const activityStyles: Record<string, { bg: string, text: string, icon: any }> = {
     irrigation: { bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400', icon: Droplets },
@@ -26,54 +27,6 @@ const categoryStyles: Record<string, { bg: string, text: string, border: string,
     foliar_fertilizer: { bg: 'bg-sky-50 dark:bg-sky-950/30', text: 'text-sky-700 dark:text-sky-400', border: 'border-sky-200/50 dark:border-sky-900/30', icon: '🍃' },
     biostimulant: { bg: 'bg-fuchsia-50 dark:bg-fuchsia-950/30', text: 'text-fuchsia-700 dark:text-fuchsia-400', border: 'border-fuchsia-200/50 dark:border-fuchsia-900/30', icon: '⚡' },
     other: { bg: 'bg-gray-50 dark:bg-gray-800/30', text: 'text-gray-700 dark:text-gray-400', border: 'border-gray-200/50 dark:border-gray-700/30', icon: '🧪' }
-}
-
-const parseTreatmentNotes = (notes: string | null) => {
-    if (!notes) return null;
-    try {
-        const trimmed = notes.trim();
-        if (trimmed.startsWith('{')) {
-            const data = JSON.parse(trimmed);
-            if (data && data.is_structured_treatment) {
-                return data;
-            }
-        }
-    } catch (e) {
-        // Not structured treatment JSON
-    }
-    return null;
-}
-
-const parseIrrigationNotes = (notes: string | null) => {
-    if (!notes) return null;
-    try {
-        const trimmed = notes.trim();
-        if (trimmed.startsWith('{')) {
-            const data = JSON.parse(trimmed);
-            if (data && data.is_structured_irrigation) {
-                return data;
-            }
-        }
-    } catch (e) {
-        // Not structured irrigation JSON
-    }
-    return null;
-}
-
-const parseFertilizationNotes = (notes: string | null) => {
-    if (!notes) return null;
-    try {
-        const trimmed = notes.trim();
-        if (trimmed.startsWith('{')) {
-            const data = JSON.parse(trimmed);
-            if (data && data.is_structured_fertilization) {
-                return data;
-            }
-        }
-    } catch (e) {
-        // Not structured fertilization JSON
-    }
-    return null;
 }
 
 interface BillonActivityTimelineProps {
@@ -182,9 +135,10 @@ export default function BillonActivityTimeline({ billonId, isAdmin, refreshTrigg
                                 {activities.map((act) => {
                                     const style = activityStyles[act.activity_type] || activityStyles.other
                                     const Icon = style.icon
-                                    const treatmentData = act.activity_type === 'pest_control' ? parseTreatmentNotes(act.notes) : null
-                                    const irrigationData = act.activity_type === 'irrigation' ? parseIrrigationNotes(act.notes) : null
-                                    const fertilizationData = act.activity_type === 'fertilization' ? parseFertilizationNotes(act.notes) : null
+                                    const parsed = parseActivity(act.notes, act.metadata)
+                                    const treatmentData = parsed.type === 'pest_control' ? parsed.data : null
+                                    const irrigationData = parsed.type === 'irrigation' ? parsed.data : null
+                                    const fertilizationData = parsed.type === 'fertilization' ? parsed.data : null
                                     return (
                                         <motion.div
                                             key={act.id}
@@ -494,9 +448,9 @@ export default function BillonActivityTimeline({ billonId, isAdmin, refreshTrigg
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    act.notes && (
+                                                    parsed.displayNote && (
                                                         <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/50 mt-3">
-                                                            <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed font-bold">{act.notes}</p>
+                                                            <p className="text-gray-600 dark:text-gray-300 text-xs leading-relaxed font-bold">{parsed.displayNote}</p>
                                                         </div>
                                                     )
                                                 )}

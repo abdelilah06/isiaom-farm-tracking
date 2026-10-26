@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import type { BillonCycle } from '../types';
+import { prepareActivityPayload } from '@/lib/activityData';
 
 export default function BulkOperations() {
     const { t } = useTranslation();
@@ -369,25 +370,23 @@ export default function BulkOperations() {
 
         setActivityLoading(true);
         try {
-            let notesValue = notes.trim();
+            let structuredData: any = null;
 
             if (activityType === 'irrigation') {
                 const dur = parseFloat(durationMinutes);
                 const manualVol = parseFloat(manualVolumeLiters);
-                const irrigationData = {
+                structuredData = {
                     is_structured_irrigation: true,
                     duration_minutes: isNaN(dur) ? null : dur,
                     estimated_volume_liters: isManualIrrigation ? (isNaN(manualVol) ? 0 : manualVol) : 0,
-                    is_manual: isManualIrrigation,
-                    notes: notes.trim()
+                    is_manual: isManualIrrigation
                 };
-                notesValue = JSON.stringify(irrigationData);
             } else if (activityType === 'fertilization') {
                 const fDos = parseFloat(fertDosage);
                 const fWat = parseFloat(fertWaterVolume);
                 const fPh = parseFloat(fertPh);
                 const fEc = parseFloat(fertEc);
-                const fertilizationData = {
+                structuredData = {
                     is_structured_fertilization: true,
                     fertilization_type: fertType,
                     product_name: fertProduct.trim(),
@@ -396,15 +395,13 @@ export default function BulkOperations() {
                     dosage_unit: fertUnit,
                     water_volume_l: isNaN(fWat) ? null : fWat,
                     ph_value: isNaN(fPh) ? null : fPh,
-                    ec_value: isNaN(fEc) ? null : fEc,
-                    notes: notes.trim()
+                    ec_value: isNaN(fEc) ? null : fEc
                 };
-                notesValue = JSON.stringify(fertilizationData);
             } else if (activityType === 'pest_control') {
                 const pDos = parseFloat(pestDosage);
                 const pWat = parseFloat(pestWaterVolume);
                 const pPhi = parseInt(pestPhi);
-                const treatmentData = {
+                structuredData = {
                     is_structured_treatment: true,
                     treatment_type: pestType,
                     treatment_category: pestCategory,
@@ -413,20 +410,30 @@ export default function BulkOperations() {
                     dosage_value: isNaN(pDos) ? null : pDos,
                     dosage_unit: pestUnit,
                     water_volume_l: isNaN(pWat) ? null : pWat,
-                    phi_days: isNaN(pPhi) ? 0 : pPhi,
-                    notes: notes.trim()
+                    phi_days: isNaN(pPhi) ? 0 : pPhi
                 };
-                notesValue = JSON.stringify(treatmentData);
             }
 
+            const payload = prepareActivityPayload({
+                type: activityType,
+                structuredData,
+                rawNote: notes
+            });
+
             // Insert activities in parallel
-            await Promise.all(checkedIds.map(billonId => {
-                return supabase.from('billon_activities').insert({
+            await Promise.all(checkedIds.map(async (billonId) => {
+                const insertBody: any = {
                     billon_id: billonId,
                     activity_type: activityType,
-                    notes: notesValue || null,
+                    notes: payload.notes,
+                    metadata: payload.metadata,
                     performed_at: new Date().toISOString()
-                });
+                };
+                let { error } = await supabase.from('billon_activities').insert(insertBody);
+                if (error && (error.message?.includes('metadata') || (error as any).code === 'PGRST204')) {
+                    delete insertBody.metadata;
+                    await supabase.from('billon_activities').insert(insertBody);
+                }
             }));
 
             setActivitySuccess(true);

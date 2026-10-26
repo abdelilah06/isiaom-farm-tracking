@@ -1,4 +1,5 @@
 import { openDB } from 'idb';
+import { compressImage } from './upload';
 
 const DB_NAME = 'isiaom-pwa-db';
 const DB_VERSION = 2;
@@ -94,8 +95,17 @@ export async function getCachedOperationsForPlot(plotId: string) {
 // Operations Queue
 export async function queueOperation(op: Omit<OfflineOperation, 'status' | 'retryCount'>) {
     const db = await initDB();
+    let imageToStore = op.image_file;
+    if (imageToStore) {
+        try {
+            imageToStore = await compressImage(imageToStore);
+        } catch (e) {
+            console.warn('Could not compress offline image, storing original:', e);
+        }
+    }
     return db.add('operations_queue', {
         ...op,
+        image_file: imageToStore,
         status: 'pending',
         retryCount: 0
     });
@@ -170,8 +180,17 @@ export interface OfflineBillonActivity {
 
 export async function queueBillonActivity(op: Omit<OfflineBillonActivity, 'status' | 'retryCount'>) {
     const db = await initDB();
+    let imageToStore = op.image_file;
+    if (imageToStore) {
+        try {
+            imageToStore = await compressImage(imageToStore);
+        } catch (e) {
+            console.warn('Could not compress offline image, storing original:', e);
+        }
+    }
     return db.add('billon_activities_queue', {
         ...op,
+        image_file: imageToStore,
         status: 'pending',
         retryCount: 0
     });

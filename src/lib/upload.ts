@@ -1,13 +1,13 @@
 import { supabase } from './supabase'
 
 /**
- * Compresses an image file before upload
- * @param file The original image file
- * @param maxWidth Maximum width in pixels (default: 1920)
- * @param quality Image quality 0-1 (default: 0.8)
+ * Compresses an image file or blob before upload or local storage
+ * @param file The original image file or blob
+ * @param maxWidth Maximum width in pixels (default: 1600)
+ * @param quality Image quality 0-1 (default: 0.75)
  * @returns Promise resolving to compressed File
  */
-async function compressImage(file: File, maxWidth: number = 1920, quality: number = 0.8): Promise<File> {
+export async function compressImage(file: File | Blob, maxWidth: number = 1600, quality: number = 0.75): Promise<File> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.readAsDataURL(file)
@@ -42,7 +42,8 @@ async function compressImage(file: File, maxWidth: number = 1920, quality: numbe
                             reject(new Error('Failed to compress image'))
                             return
                         }
-                        const compressedFile = new File([blob], file.name, {
+                        const fileName = (file as File).name || 'compressed_image.jpg'
+                        const compressedFile = new File([blob], fileName, {
                             type: 'image/jpeg',
                             lastModified: Date.now(),
                         })

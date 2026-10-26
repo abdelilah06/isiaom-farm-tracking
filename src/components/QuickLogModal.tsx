@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useOffline } from '../lib/OfflineContext'
 import { queueOperation } from '../lib/db'
+import { prepareActivityPayload } from '../lib/activityData'
+import { calculatePlotIrrigation } from '../lib/irrigationCalculator'
 
 const OPERATION_TYPES = [
     'irrigation',
@@ -56,6 +58,12 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
     const [isManualVolume, setIsManualVolume] = useState<boolean>(false)
 
     const effectiveManual = isManualVolume || plantCount === null
+
+    const calcs = calculatePlotIrrigation({
+        plant_count: plantCount,
+        dripper_flow_rate_lh: parseFloat(dripperFlowRate) || 4,
+        irrigation_lines: irrigationLines
+    }, durationMinutes)
 
     // Fertilization-specific states
     const [fertilizationType, setFertilizationType] = useState<'fertigation' | 'foliar' | 'soil'>('fertigation')
@@ -118,10 +126,10 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
         setLoading(true)
 
         try {
-            // Build notes including treatment/irrigation data if applicable
-            let finalNotes = notes.trim()
+            // Build structured data if applicable
+            let structuredData: any = null
             if (type === 'pest_control') {
-                const treatmentData = {
+                structuredData = {
                     is_structured_treatment: true,
                     treatment_type: treatmentType,
                     treatment_category: treatmentCategory,
@@ -136,31 +144,27 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                     operator_name: operatorName.trim(),
                     wind_condition: windCondition,
                     temperature_c: temperatureC ? parseFloat(temperatureC) : null,
-                    ppe_worn: ppeWorn,
-                    notes: notes.trim()
+                    ppe_worn: ppeWorn
                 };
-                finalNotes = JSON.stringify(treatmentData);
             } else if (type === 'irrigation') {
                 const dur = parseFloat(durationMinutes)
                 const flow = parseFloat(dripperFlowRate)
                 const isManual = effectiveManual || isNaN(dur) || isNaN(flow)
                 const estVolume = isManual 
                     ? (manualVolumeLiters ? parseFloat(manualVolumeLiters) : 0)
-                    : (plantCount! * flow * irrigationLines * (dur / 60))
+                    : (calcs?.estimatedVolumeLiters || 0)
                 
-                const irrigationData = {
+                structuredData = {
                     is_structured_irrigation: true,
                     duration_minutes: isNaN(dur) ? null : dur,
                     dripper_flow_rate: isNaN(flow) ? null : flow,
                     irrigation_lines: irrigationLines,
                     plant_count: plantCount,
                     estimated_volume_liters: estVolume,
-                    is_manual: isManual,
-                    notes: notes.trim()
+                    is_manual: isManual
                 }
-                finalNotes = JSON.stringify(irrigationData)
             } else if (type === 'fertilization') {
-                const fertilizationData = {
+                structuredData = {
                     is_structured_fertilization: true,
                     fertilization_type: fertilizationType,
                     product_name: fertProductName.trim(),
@@ -170,17 +174,21 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                     water_volume_l: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertWaterVolumeL ? parseFloat(fertWaterVolumeL) : null,
                     ph_value: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertPhValue ? parseFloat(fertPhValue) : null,
                     ec_value: (fertilizationType === 'fertigation' || fertilizationType === 'foliar') && fertEcValue ? parseFloat(fertEcValue) : null,
-                    operator_name: fertOperatorName.trim(),
-                    notes: notes.trim()
+                    operator_name: fertOperatorName.trim()
                 }
-                finalNotes = JSON.stringify(fertilizationData)
             }
+
+            const payload = prepareActivityPayload({
+                type,
+                structuredData,
+                rawNote: notes
+            })
 
             if (!isOnline) {
                 await queueOperation({
                     plot_id: plotId,
                     type: type,
-                    notes: finalNotes,
+                    notes: payload.notes || '',
                     date: new Date().toISOString(),
                     image_file: imageFile || undefined
                 })
@@ -195,15 +203,25 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                 image_url = await uploadImage(imageFile, 'operations-images')
             }
 
-            const { error } = await supabase
+            const insertBody: any = {
+                plot_id: plotId,
+                type: type,
+                notes: payload.notes,
+                metadata: payload.metadata,
+                date: new Date().toISOString(),
+                image_url
+            }
+
+            let { error } = await supabase
                 .from('operations')
-                .insert({
-                    plot_id: plotId,
-                    type: type,
-                    notes: finalNotes,
-                    date: new Date().toISOString(),
-                    image_url
-                })
+                .insert(insertBody)
+
+            // Graceful fallback if the Supabase table doesn't have metadata column yet
+            if (error && (error.message?.includes('metadata') || (error as any).code === 'PGRST204')) {
+                delete insertBody.metadata
+                const retry = await supabase.from('operations').insert(insertBody)
+                error = retry.error
+            }
 
             if (error) throw error
 
@@ -706,7 +724,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                         <p className="text-2xl font-black text-blue-900 dark:text-blue-300">
                                                             {effectiveManual 
                                                                 ? `${parseFloat(manualVolumeLiters).toLocaleString()} ${t('irrigation_calculator.liters')}`
-                                                                : `${Math.round(plantCount! * parseFloat(dripperFlowRate) * irrigationLines * (parseFloat(durationMinutes) / 60)).toLocaleString()} ${t('irrigation_calculator.liters')}`
+                                                                : `${Math.round(calcs?.estimatedVolumeLiters || 0).toLocaleString()} ${t('irrigation_calculator.liters')}`
                                                             }
                                                         </p>
                                                     </div>
@@ -714,7 +732,7 @@ export default function QuickLogModal({ plotId, onClose }: QuickLogModalProps) {
                                                         <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase">
                                                             {effectiveManual
                                                                 ? `${(parseFloat(manualVolumeLiters) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
-                                                                : `${((plantCount! * parseFloat(dripperFlowRate) * irrigationLines * (parseFloat(durationMinutes) / 60)) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
+                                                                : `${((calcs?.estimatedVolumeLiters || 0) / 1000).toFixed(2)} ${t('irrigation_calculator.m3')}`
                                                             }
                                                         </span>
                                                     </div>
