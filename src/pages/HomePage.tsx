@@ -5,6 +5,7 @@ import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers, Sun, Graduat
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import HeroCardStack from '../components/HeroCardStack'
+import InstallAppButton from '../components/InstallAppButton'
 import { motion } from 'framer-motion'
 import type { Plot, Billon } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
@@ -122,6 +123,9 @@ export default function HomePage() {
                         >
                             <Sun className="h-4 w-4" />
                         </button>
+
+                        {/* Download / Install App Button */}
+                        <InstallAppButton variant="navbar" />
 
                         {isAdmin ? (
                             <Link
@@ -371,6 +375,10 @@ export default function HomePage() {
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 text-[11px] font-bold text-gray-600 dark:text-gray-300">
                                     Ferme Modèle
                                 </span>
+                            </div>
+
+                            <div className="mt-5">
+                                <InstallAppButton variant="footer" />
                             </div>
                         </div>
 
