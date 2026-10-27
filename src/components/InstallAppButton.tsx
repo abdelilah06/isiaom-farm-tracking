@@ -157,9 +157,11 @@ export default function InstallAppButton({ variant = 'navbar', className = '' }:
                             </button>
 
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-600 dark:text-green-400">
-                                    <Smartphone className="h-6 w-6" />
-                                </div>
+                                <img 
+                                    src="/pwa-192x192.png" 
+                                    alt="ISIAOM App Icon" 
+                                    className="w-12 h-12 rounded-2xl shadow-md border border-gray-100 dark:border-gray-800 object-cover shrink-0" 
+                                />
                                 <div>
                                     <h3 className="text-lg font-black tracking-tight">
                                         {isArabic ? 'تحميل وتثبيت برنامج ISIAOM' : 'Installer l\'Application ISIAOM'}
