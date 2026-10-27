@@ -387,6 +387,10 @@ export default function HomePage() {
                                         <span className="font-black text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-950 px-2 py-0.5 rounded-md border border-green-300/60 dark:border-green-700/60">
                                             MA202
                                         </span>
+                                        {' '}
+                                        <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                            (2025 - 2026)
+                                        </span>
                                     </p>
                                 </div>
 
@@ -471,7 +475,7 @@ export default function HomePage() {
                         </p>
                         <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-green-600/80 dark:text-green-400/80">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                            Promotion MA202
+                            Promotion MA202 (2025 - 2026)
                         </div>
                     </div>
                 </div>
