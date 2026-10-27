@@ -144,31 +144,23 @@ export default function HomePage() {
             </nav>
 
             {/* Hero Section */}
-            <header className="relative pt-40 pb-20 px-4 overflow-hidden">
+            <header className="relative pt-28 sm:pt-36 pb-12 sm:pb-16 px-4 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/10 dark:from-green-950/20 dark:to-transparent pointer-events-none" />
                 <div className="max-w-5xl mx-auto relative z-10">
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="text-center"
                     >
-                        <h1 className="text-6xl md:text-8xl font-black text-gray-900 dark:text-white mb-6 uppercase tracking-tighter leading-none">
-                            {t('home.hero_title_1')} <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500">{t('home.hero_title_2')}</span>
-                        </h1>
-                        <p className="text-gray-500 dark:text-gray-400 text-lg md:text-2xl font-bold uppercase tracking-widest max-w-2xl mx-auto leading-relaxed">
-                            {t('home.hero_subtitle')}
-                        </p>
+                        {/* 3D Floating Overlapping Cards */}
+                        <HeroCardStack />
 
-                        <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
-                            <Link to="/gallery" className="px-10 py-5 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-green-500/20 transition-all flex items-center gap-3 group">
+                        <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-4">
+                            <Link to="/gallery" className="px-8 sm:px-10 py-4 sm:py-5 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-green-500/20 transition-all flex items-center gap-3 group">
                                 {t('gallery.title')}
                                 <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </div>
-
-                        {/* 3D Floating Overlapping Cards */}
-                        <HeroCardStack />
                     </motion.div>
                 </div>
             </header>

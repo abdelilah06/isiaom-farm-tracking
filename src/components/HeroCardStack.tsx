@@ -1,51 +1,18 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Sparkles, MapPin } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 
 interface HeroImage {
     id: number
-    title: string
-    subtitle: string
-    badge: string
     src: string
 }
 
 const HERO_IMAGES: HeroImage[] = [
-    {
-        id: 1,
-        title: "Oléiculture de Précision",
-        subtitle: "Production oléicole & vergers expérimentaux de Meknès",
-        badge: "Oléiculture ISIAOM",
-        src: "/hero/olives.jpg"
-    },
-    {
-        id: 2,
-        title: "Serres Bioclimatiques",
-        subtitle: "Recherche appliquée et cultures sous abri de pointe",
-        badge: "Haute Technologie",
-        src: "/hero/greenhouse.jpg"
-    },
-    {
-        id: 3,
-        title: "Campus & Espaces Agricoles",
-        subtitle: "Infrastructures d'expérimentation et ferme modèle",
-        badge: "Ferme Modèle",
-        src: "/hero/campus.jpg"
-    },
-    {
-        id: 4,
-        title: "Oliveraies & Réseau d'Irrigation",
-        subtitle: "Système de goutte-à-goutte et suivi agronomique",
-        badge: "Irrigation Localisée",
-        src: "/hero/pathway.jpg"
-    },
-    {
-        id: 5,
-        title: "Vergers Expérimentaux",
-        subtitle: "Suivi des cycles végétatifs et de la santé des cultures",
-        badge: "Expérimentation",
-        src: "/hero/orchard.jpg"
-    }
+    { id: 1, src: "/hero/olives.jpg" },
+    { id: 2, src: "/hero/greenhouse.jpg" },
+    { id: 3, src: "/hero/campus.jpg" },
+    { id: 4, src: "/hero/pathway.jpg" },
+    { id: 5, src: "/hero/orchard.jpg" }
 ]
 
 export default function HeroCardStack() {
@@ -82,7 +49,7 @@ export default function HeroCardStack() {
 
     return (
         <div 
-            className="w-full max-w-4xl mx-auto mt-12 sm:mt-16 flex flex-col items-center select-none"
+            className="w-full max-w-4xl mx-auto flex flex-col items-center select-none"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
@@ -97,7 +64,7 @@ export default function HeroCardStack() {
                         opacity: 0.65, 
                         scale: 0.84, 
                         x: -55, 
-                        y: 15,
+                        y: 15, 
                         rotateZ: -6,
                         zIndex: 10 
                     }}
@@ -107,10 +74,9 @@ export default function HeroCardStack() {
                 >
                     <img 
                         src={leftCard.src} 
-                        alt={leftCard.title} 
+                        alt="ISIAOM Meknès" 
                         className="w-full h-full object-cover" 
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
                 </motion.div>
 
                 {/* 2nd Card (Right Background) */}
@@ -121,7 +87,7 @@ export default function HeroCardStack() {
                         opacity: 0.82, 
                         scale: 0.92, 
                         x: 50, 
-                        y: 10,
+                        y: 10, 
                         rotateZ: 5,
                         zIndex: 20 
                     }}
@@ -131,10 +97,9 @@ export default function HeroCardStack() {
                 >
                     <img 
                         src={rightCard.src} 
-                        alt={rightCard.title} 
+                        alt="ISIAOM Meknès" 
                         className="w-full h-full object-cover" 
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
                 </motion.div>
 
                 {/* 1st Card (Foreground Active Card) */}
@@ -146,7 +111,7 @@ export default function HeroCardStack() {
                             opacity: 1, 
                             scale: 1, 
                             x: 0, 
-                            y: 0,
+                            y: 0, 
                             rotateZ: 0,
                             zIndex: 30 
                         }}
@@ -156,34 +121,16 @@ export default function HeroCardStack() {
                     >
                         <img 
                             src={frontCard.src} 
-                            alt={frontCard.title} 
+                            alt="ISIAOM Meknès" 
                             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                         />
 
-                        {/* Top Badge */}
-                        <div className="absolute top-4 sm:top-6 left-4 sm:left-6 flex items-center gap-2">
-                            <span className="px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-black tracking-wide uppercase flex items-center gap-1.5 shadow-lg">
-                                <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-400" />
-                                {frontCard.badge}
-                            </span>
-                        </div>
-
-                        {/* Location Tag */}
+                        {/* Location Tag ONLY */}
                         <div className="absolute top-4 sm:top-6 right-4 sm:right-6">
-                            <span className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-[10px] sm:text-xs font-bold tracking-wider flex items-center gap-1 border border-white/20">
-                                <MapPin className="h-3 w-3 text-green-400" />
+                            <span className="px-3.5 py-1.5 rounded-full bg-black/45 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold tracking-wider flex items-center gap-1.5 border border-white/20 shadow-lg">
+                                <MapPin className="h-3.5 w-3.5 text-green-400" />
                                 Meknès, Maroc
                             </span>
-                        </div>
-
-                        {/* Bottom Gradient and Caption */}
-                        <div className="absolute inset-x-0 bottom-0 pt-20 pb-5 sm:pb-7 px-5 sm:px-8 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end">
-                            <h3 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-snug drop-shadow-md">
-                                {frontCard.title}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-gray-200 font-medium mt-1 drop-shadow-sm max-w-xl">
-                                {frontCard.subtitle}
-                            </p>
                         </div>
                     </motion.div>
                 </AnimatePresence>
@@ -206,30 +153,20 @@ export default function HeroCardStack() {
                 </button>
             </div>
 
-            {/* Pagination Dots & Farm Live Pill */}
-            <div className="mt-5 sm:mt-7 flex items-center justify-between w-full max-w-xs sm:max-w-sm px-4">
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                    {HERO_IMAGES.map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setCurrentIndex(i)}
-                            aria-label={`Aller à la photo ${i + 1}`}
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                                i === currentIndex 
-                                    ? 'w-8 bg-green-600 dark:bg-green-500 shadow-md shadow-green-500/30' 
-                                    : 'w-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400'
-                            }`}
-                        />
-                    ))}
-                </div>
-
-                <div className="flex items-center gap-2 text-[11px] font-bold text-gray-500 dark:text-gray-400">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
-                    </span>
-                    <span>{currentIndex + 1} / {HERO_IMAGES.length}</span>
-                </div>
+            {/* Pagination Dots */}
+            <div className="mt-5 sm:mt-7 flex items-center justify-center gap-2">
+                {HERO_IMAGES.map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setCurrentIndex(i)}
+                        aria-label={`Photo ${i + 1}`}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                            i === currentIndex 
+                                ? 'w-8 bg-green-600 dark:bg-green-500 shadow-md shadow-green-500/30' 
+                                : 'w-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400'
+                        }`}
+                    />
+                ))}
             </div>
         </div>
     )
