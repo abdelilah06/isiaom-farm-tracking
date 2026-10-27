@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers, Sun } from 'lucide-react'
+import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers, Sun, GraduationCap, Award, ArrowUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import HeroCardStack from '../components/HeroCardStack'
@@ -166,7 +166,7 @@ export default function HomePage() {
             </header>
 
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 md:px-8 py-20">
+            <main id="parcelles" className="max-w-7xl mx-auto px-4 md:px-8 py-20">
                 <div className="flex items-center justify-between mb-12">
                     <div>
                         <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">{t('home.our_plots')}</h2>
@@ -347,22 +347,132 @@ export default function HomePage() {
             </main>
 
             {/* Footer */}
-            <footer className="py-20 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
-                <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center">
-                    <div className="flex items-center gap-3 mb-10">
-                        <div className="bg-white dark:bg-white rounded-2xl px-4 py-2 shadow-lg border border-gray-200/70 flex items-center justify-center">
-                            <img src="/logo.png" alt="ISIAOM" className="h-10 sm:h-12 w-auto object-contain" />
+            <footer className="pt-16 pb-12 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    {/* Top Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 pb-12 border-b border-gray-100 dark:border-gray-800/80">
+                        
+                        {/* Col 1: Institute Identity */}
+                        <div className="md:col-span-5 flex flex-col items-start">
+                            <div className="bg-white rounded-2xl px-3.5 py-1.5 shadow-sm border border-gray-200/80 inline-flex items-center mb-4">
+                                <img src="/logo.png" alt="ISIAOM" className="h-9 w-auto object-contain" />
+                            </div>
+                            <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight">
+                                ISIAOM Meknès
+                            </h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mt-1 leading-relaxed max-w-sm">
+                                Institut Spécialisé en Industrie Agroalimentaire et Oléiculture de Meknès
+                            </p>
+                            <div className="mt-4 flex flex-wrap items-center gap-2">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-950/60 border border-green-200/60 dark:border-green-800/40 text-[11px] font-bold text-green-700 dark:text-green-300">
+                                    <MapPin className="h-3 w-3 text-green-500" />
+                                    Meknès, Maroc
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 text-[11px] font-bold text-gray-600 dark:text-gray-300">
+                                    Ferme Modèle
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Col 2: Academic Tribute & Dedication Card (MA202 & Amine Alami) */}
+                        <div className="md:col-span-4 flex flex-col">
+                            <div className="h-full rounded-2xl p-5 bg-gradient-to-br from-green-50/80 via-emerald-50/40 to-white dark:from-gray-800/60 dark:via-gray-800/40 dark:to-gray-900 border border-green-200/60 dark:border-green-800/30 shadow-sm flex flex-col justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 text-green-700 dark:text-green-400 font-black text-[11px] uppercase tracking-wider mb-2.5">
+                                        <GraduationCap className="h-4 w-4" />
+                                        <span>Projet Académique & Développement</span>
+                                    </div>
+                                    <p className="text-xs text-gray-700 dark:text-gray-200 font-medium leading-relaxed">
+                                        Système conçu et développé par les stagiaires de la promotion{' '}
+                                        <span className="font-black text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-950 px-2 py-0.5 rounded-md border border-green-300/60 dark:border-green-700/60">
+                                            MA202
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div className="mt-4 pt-3 border-t border-green-200/50 dark:border-gray-700/60 flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-full bg-green-600/10 dark:bg-green-400/10 flex items-center justify-center shrink-0">
+                                        <Award className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    <div className="text-[11px] text-gray-600 dark:text-gray-300">
+                                        <span className="text-gray-400 dark:text-gray-500 block text-[10px] uppercase font-bold tracking-wider">
+                                            Encadrant
+                                        </span>
+                                        <span className="font-black text-gray-900 dark:text-white text-xs">
+                                            M. Amine Alami
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Col 3: Navigation Links */}
+                        <div className="md:col-span-3 flex flex-col items-start md:items-end justify-between">
+                            <div className="w-full">
+                                <span className="text-[11px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500 block mb-4">
+                                    Navigation
+                                </span>
+                                <ul className="space-y-2.5 text-xs font-bold">
+                                    <li>
+                                        <button 
+                                            type="button"
+                                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                            className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors flex items-center gap-1.5"
+                                        >
+                                            <ArrowRight className="h-3 w-3 text-green-500" />
+                                            {t('home.footer_home', { defaultValue: 'Accueil' })}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <Link 
+                                            to="/gallery" 
+                                            className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors flex items-center gap-1.5"
+                                        >
+                                            <ArrowRight className="h-3 w-3 text-green-500" />
+                                            {t('home.footer_gallery', { defaultValue: 'Galerie' })}
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <a 
+                                            href="#parcelles" 
+                                            className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors flex items-center gap-1.5"
+                                        >
+                                            <ArrowRight className="h-3 w-3 text-green-500" />
+                                            {t('home.our_plots', { defaultValue: 'Nos Parcelles' })}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <Link 
+                                            to={isAdmin ? "/admin" : "/login"} 
+                                            className="text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors flex items-center gap-1.5"
+                                        >
+                                            <ArrowRight className="h-3 w-3 text-green-500" />
+                                            {isAdmin ? t('common.dashboard') : t('login.submit')}
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                className="mt-6 md:mt-0 p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-green-600 hover:text-white dark:hover:bg-green-600 text-gray-500 dark:text-gray-400 transition-all flex items-center gap-1 text-[11px] font-bold"
+                                title="Retour en haut"
+                            >
+                                <ArrowUp className="h-4 w-4" />
+                            </button>
                         </div>
                     </div>
 
-                    <div className="flex gap-8 mb-10">
-                        {[t('home.footer_home'), t('home.footer_gallery'), t('home.footer_admin'), t('home.footer_contact')].map(item => (
-                            <span key={item} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-green-500 cursor-pointer transition-colors">{item}</span>
-                        ))}
-                    </div>
-
-                    <div className="text-[10px] font-black text-gray-300 dark:text-gray-700 uppercase tracking-[0.5em]">
-                        &copy; 2026 Model Farm Tracking System
+                    {/* Bottom Copyright */}
+                    <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                        <p className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
+                            &copy; 2026 <span className="font-bold text-gray-600 dark:text-gray-400">ISIAOM Meknès</span> — Institut Spécialisé en Industrie Agroalimentaire et Oléiculture.
+                        </p>
+                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-green-600/80 dark:text-green-400/80">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                            Promotion MA202
+                        </div>
                     </div>
                 </div>
             </footer>
