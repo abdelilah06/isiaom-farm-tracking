@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { Sprout, MapPin, LayoutDashboard, Leaf, ArrowRight, Layers, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import HeroCardStack from '../components/HeroCardStack'
 import { motion } from 'framer-motion'
 import type { Plot, Billon } from '../types'
 import { useTheme } from '../contexts/ThemeContext'
@@ -165,6 +166,9 @@ export default function HomePage() {
                                 <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
                             </Link>
                         </div>
+
+                        {/* 3D Floating Overlapping Cards */}
+                        <HeroCardStack />
                     </motion.div>
                 </div>
             </header>
